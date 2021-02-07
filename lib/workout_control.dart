@@ -193,15 +193,17 @@ class _WorkoutListState extends State<WorkoutList> {
 
   WorkoutData setData = WorkoutData();
 
-  setSetter(WorkoutData setData) {
-    this.setData = setData;
+  setSetter(WorkoutData workoutData) {
+    this.setData = workoutData;
   }
 
   addList() {
     this._setList.removeLast();
     List<Widget> _list = this._setList;
     List<Widget> _list2 = this._deleteSetList;
-    for (int i = 0; i < setData.set; i++) {
+    for (int i = 0; i < this.setData.set; i++) {
+      setData.saveReps.add(0);
+      setData.saveTime.add(0);
       _list.add(SetButton(this.setData,i));
       _list2.add(DeleteSetButton(this.setData,i));
     }

@@ -171,7 +171,6 @@ class SetButton extends StatefulWidget {
 
 class _SetButtonState extends State<SetButton>
     with SingleTickerProviderStateMixin {
-
   int _reps;
   Timer _timer;
   num _time = 0;
@@ -215,10 +214,10 @@ class _SetButtonState extends State<SetButton>
 
   @override
   void initState() {
-    saveReps=widget.workoutData.saveReps;
-    saveTime=widget.workoutData.saveTime;
-    saveReps[widget.index]=0;
-    saveTime[widget.index]=0;
+    saveReps = widget.workoutData.saveReps;
+    saveTime = widget.workoutData.saveTime;
+    saveReps[widget.index] = 0;
+    saveTime[widget.index] = 0;
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),
@@ -285,21 +284,17 @@ class _SetButtonState extends State<SetButton>
           }
         }
       });
-    }
-    else {
+    } else {
       setState(() {
-        print(saveReps[widget.index]);
         if (_pressed == true) {
           if (_reps == 1) {
-            saveReps[widget.index]=0;
             _pressed = false;
           }
           _reps = (_reps - 2) % widget.workoutData.reps + 1;
-          saveReps[widget.index]=_reps;
         } else {
-          saveReps[widget.index]=_reps;
           _pressed = true;
         }
+        _pressed ? saveReps[widget.index] = _reps : saveReps[widget.index] = 0;
       });
     }
   }
@@ -325,6 +320,7 @@ class _SetButtonState extends State<SetButton>
         } else {
           _pressed = true;
         }
+        _pressed ? saveReps[widget.index] = _reps : saveReps[widget.index] = 0;
       });
     }
   }
@@ -363,6 +359,7 @@ class _SetButtonState extends State<SetButton>
         } else {
           _pressed = true;
         }
+        _pressed ? saveReps[widget.index] = _reps : saveReps[widget.index] = 0;
       });
     }
   }
