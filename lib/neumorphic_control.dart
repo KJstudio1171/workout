@@ -285,8 +285,9 @@ class _SetButtonState extends State<SetButton>
           }
         }
       });
-    } else {//
-      setState(() {
+    }
+    else {
+      setState(() {//
         if (_pressed == true) {
           if (_reps == 1) {
             _pressed = false;
