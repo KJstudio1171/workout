@@ -41,15 +41,14 @@ class WorkoutData {
 
   List<int> saveReps = [];
   List<num> saveTime = [];
-
-  copyWorkoutData(WorkoutData original,WorkoutData copy){
+/* copyWorkoutData(WorkoutData original,WorkoutData copy){
     copy.set = original.set;
     copy.reps = original.reps;
     copy.weight = original.weight;
     copy.time = original.time;
     copy.unitWeight = original.unitWeight;
     copy.unitTime = original.unitTime;
-  }
+  }*/
 
 }
 
@@ -63,6 +62,13 @@ class WorkoutSaveData {
       }
     }
   };
+
+  static List rawData = [];
+
+  static addRawData(
+      String routineName, String workoutName, WorkoutData workoutData) {
+    rawData.add([routineName,workoutName,workoutData]);
+  }
 }
 
 class WorkoutParse {
@@ -79,7 +85,6 @@ class WorkoutParse {
   final String unitWeight = 'unit_weight';
   final String unitTime = 'unit_time';
   final String datetime = 'datetime';
-
 
   Map workoutData = {};
   Map map = {};
@@ -110,33 +115,27 @@ class WorkoutParse {
     return list;
   }
 
-  repsData(WorkoutData workoutData,int reps){
-    workoutData.reps=reps;
-  }
-
-
   addRepsData(String workoutName, List list, int repsData) {
-    if(this.workoutData[this.wkoCategory][workoutName].isEmpty){
+    if (this.workoutData[this.wkoCategory][workoutName].isEmpty) {
       this.workoutData[this.wkoCategory][workoutName].addAll({list: 1});
     }
     this.workoutData[this.wkoCategory][workoutName].forEach((key, value) {
       if (listEquals(list, key)) {
-        return this.workoutData[this.wkoCategory][workoutName].update(
-            key, (value) => value + 1);
+        return this
+            .workoutData[this.wkoCategory][workoutName]
+            .update(key, (value) => value + 1);
       }
       return this.workoutData[this.wkoCategory][workoutName].addAll({list: 1});
     });
     print(this.workoutData.toString());
   }
 
-
   addTimeData(String workoutName, List list, num timeData) {
     list[2] = timeData;
 
     if (this.workoutData[this.wkoCategory][workoutName][list] == null) {
       this.workoutData[this.wkoCategory][workoutName].addAll({list: 1});
-    }
-    else {
+    } else {
       this.workoutData[this.wkoCategory][workoutName][list] += 1;
     }
   }

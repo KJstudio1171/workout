@@ -287,15 +287,17 @@ class _SetButtonState extends State<SetButton>
       });
     }
     else {
-      setState(() {//
+      setState(() {
+        print(saveReps[widget.index]);
         if (_pressed == true) {
           if (_reps == 1) {
+            saveReps[widget.index]=0;
             _pressed = false;
           }
           _reps = (_reps - 2) % widget.workoutData.reps + 1;
           saveReps[widget.index]=_reps;
-          print( widget.workoutData.saveReps);
         } else {
+          saveReps[widget.index]=_reps;
           _pressed = true;
         }
       });

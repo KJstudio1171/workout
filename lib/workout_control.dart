@@ -220,6 +220,7 @@ class _WorkoutListState extends State<WorkoutList> {
   void initState() {
     widget.fireStoreWorkoutData.forEach((element) {
       WorkoutData workoutData = WorkoutData();
+      WorkoutSaveData.addRawData(widget.routineName, widget.workoutName, workoutData);
       for (int i = 0; i < int.parse(element['set']); i++) {
         workoutData.saveReps.add(0);
         workoutData.saveTime.add(0);
