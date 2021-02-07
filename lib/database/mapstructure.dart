@@ -69,6 +69,7 @@ class WorkoutSaveData {
       String routineName, String workoutName, WorkoutData workoutData) {
     rawData.add([routineName,workoutName,workoutData]);
   }
+
 }
 
 class WorkoutParse {

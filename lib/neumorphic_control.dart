@@ -53,8 +53,8 @@ class _PlusButtonState extends State<PlusButton> {
 class DeleteSetButton extends StatefulWidget {
   DeleteSetButton(this.workoutData, this.index);
 
-  WorkoutData workoutData;
-  int index;
+  final WorkoutData workoutData;
+  final int index;
   bool _pressed = false;
 
   get getPressed => _pressed;
@@ -162,8 +162,8 @@ class _DeleteSetButtonState extends State<DeleteSetButton> {
 class SetButton extends StatefulWidget {
   SetButton(this.workoutData, this.index);
 
-  WorkoutData workoutData;
-  int index;
+  final WorkoutData workoutData;
+  final int index;
 
   @override
   _SetButtonState createState() => _SetButtonState();
@@ -206,7 +206,6 @@ class _SetButtonState extends State<SetButton>
 
   @override
   void dispose() {
-    // TODO: implement dispose
     _timer?.cancel();
     _controller.dispose();
     super.dispose();
