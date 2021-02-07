@@ -251,6 +251,7 @@ class _SetButtonState extends State<SetButton>
         setState(() {
           _paused = true;
           _pressed = true;
+          saveTime[widget.index] = widget.workoutData.time;
         });
         _timer.cancel();
       }
@@ -284,6 +285,9 @@ class _SetButtonState extends State<SetButton>
           }
         }
       });
+      _pressed
+          ? saveTime[widget.index] = widget.workoutData.time
+          : saveTime[widget.index] = 0;
     } else {
       setState(() {
         if (_pressed == true) {
@@ -294,8 +298,8 @@ class _SetButtonState extends State<SetButton>
         } else {
           _pressed = true;
         }
-        _pressed ? saveReps[widget.index] = _reps : saveReps[widget.index] = 0;
       });
+      _pressed ? saveReps[widget.index] = _reps : saveReps[widget.index] = 0;
     }
   }
 
@@ -310,6 +314,7 @@ class _SetButtonState extends State<SetButton>
           _pause();
         }
       });
+      _pressed ? saveTime[widget.index] = _time : saveTime[widget.index] = 0;
     } else {
       setState(() {
         if (_pressed == true) {
@@ -320,8 +325,8 @@ class _SetButtonState extends State<SetButton>
         } else {
           _pressed = true;
         }
-        _pressed ? saveReps[widget.index] = _reps : saveReps[widget.index] = 0;
       });
+      _pressed ? saveReps[widget.index] = _reps : saveReps[widget.index] = 0;
     }
   }
 
@@ -351,6 +356,9 @@ class _SetButtonState extends State<SetButton>
           _time = _timeStart;
         }
       });
+      _pressed
+          ? saveTime[widget.index] = widget.workoutData.time
+          : saveTime[widget.index] = 0;
     } else {
       setState(() {
         if (_pressed == true) {
@@ -359,8 +367,8 @@ class _SetButtonState extends State<SetButton>
         } else {
           _pressed = true;
         }
-        _pressed ? saveReps[widget.index] = _reps : saveReps[widget.index] = 0;
       });
+      _pressed ? saveReps[widget.index] = _reps : saveReps[widget.index] = 0;
     }
   }
 

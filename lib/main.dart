@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 
 //import 'package:table_calendar/table_calendar.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'package:workout/database/mapstructure.dart';
 import 'lib_control/ui_size_control.dart';
 import 'date_control.dart';
 import 'workout_control.dart';
@@ -151,10 +152,11 @@ class _MainPageState extends State<MainPage> {
           ]),
       floatingActionButton: FloatingActionButton.extended(
         label: Text('                    저장하기                     '),
-
+        onPressed: () {
+          print(WorkoutSaveData.rawData);
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-
     );
   }
 }

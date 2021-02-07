@@ -195,6 +195,7 @@ class _WorkoutListState extends State<WorkoutList> {
 
   setSetter(WorkoutData workoutData) {
     this.setData = workoutData;
+    WorkoutSaveData.addRawData(widget.routineName, widget.workoutName, this.setData);
   }
 
   addList() {
