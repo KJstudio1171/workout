@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:workout/database/routine_firestore.dart';
 import 'package:workout/database/firestore.dart';
 import 'package:workout/database/mapstructure.dart';
+import 'package:workout/date_control.dart';
 
 class WorkOutSection extends StatefulWidget {
   @override
@@ -25,10 +26,28 @@ class _WorkOutSectionState extends State<WorkOutSection> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Wrap(
-        children: [
-          ListView.builder(
+    return Column(
+      children: [
+        DateSection(),
+        InkWell(
+          enableFeedback: true,
+          child: ListTile(
+            title: Text('루틴추가하기'),
+            leading: Icon(Icons.add),
+          ),
+          onTap: () async {
+            List result = await Get.to(FireStoreSelectedRoutine());
+            List<Widget> _list = activeRoutineList;
+            result.forEach((element) {
+              _list.add(RoutineList(element));
+            });
+            setState(() {
+              activeRoutineList = _list;
+            });
+          },
+        ),
+        Expanded(
+          child: ListView.builder(
             physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             padding: EdgeInsets.all(0),
             scrollDirection: Axis.vertical,
@@ -57,25 +76,8 @@ class _WorkOutSectionState extends State<WorkOutSection> {
             },
             itemCount: activeRoutineList.length,
           ),
-          InkWell(
-            enableFeedback: true,
-            child: ListTile(
-              title: Text('루틴추가하기'),
-              leading: Icon(Icons.add),
-            ),
-            onTap: () async {
-              List result = await Get.to(FireStoreSelectedRoutine());
-              List<Widget> _list = activeRoutineList;
-              result.forEach((element) {
-                _list.add(RoutineList(element));
-              });
-              setState(() {
-                activeRoutineList = _list;
-              });
-            },
-          )
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

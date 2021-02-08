@@ -57,18 +57,9 @@ class WorkoutData {
 
 class WorkoutSaveData {
   static List saveData = [];
-  var saveMap = {
-    'routine_name': 'name',
-    'wko_category': {
-      'workoutName': {
-        [0, 1, 2, 3, 4]: 2
-      }
-    }
-  };
 
   static Map result = {
-    '루틴': {'루틴1', '루틴2'},
-    '푸쉬업': ['kg 회 시', 'kg 회 시'],
+    '루틴': Set(),
   };
 
   static List rawData = [];
@@ -88,22 +79,22 @@ class WorkoutSaveData {
           : workoutData.saveReps.forEach((element) {
               workoutData.sumReps += element;
             });
-      if(workoutData.sumReps!=0||workoutData.sumTime!=0) {
+      if (workoutData.sumReps != 0 || workoutData.sumTime != 0) {
         if (workoutData.reps == 0 || workoutData.reps == null) {
           workoutData.weight == 0 || workoutData.weight == null
               ? workoutData.visualData =
-              '${workoutData.sumTime}' + '${workoutData.unitTime}'
+                  '${workoutData.sumTime}' + '${workoutData.unitTime}'
               : workoutData.visualData = '${workoutData.weight}' +
-              '${workoutData.unitWeight}' +
-              '${workoutData.sumTime}' +
-              '${workoutData.unitTime}';
+                  '${workoutData.unitWeight}' +
+                  '${workoutData.sumTime}' +
+                  '${workoutData.unitTime}';
         } else {
           workoutData.weight == 0 || workoutData.weight == null
               ? workoutData.visualData = '${workoutData.sumReps}' + '회'
               : workoutData.visualData = '${workoutData.weight}' +
-              '${workoutData.unitWeight}' +
-              '${workoutData.sumReps}' +
-              '회';
+                  '${workoutData.unitWeight}' +
+                  '${workoutData.sumReps}' +
+                  '회';
         }
         print(workoutData.visualData);
       }
@@ -111,12 +102,16 @@ class WorkoutSaveData {
   }
 
   static dataVisualizing() {
-    Set a;
-    Map b;
-    List c;
+    print(rawData);
     rawData.forEach((element) {
       result['루틴'].add(element[0]);
+      if (!result.containsKey(element[1])) {
+        result.addAll({element[1]: []});
+      }
+      if (element[2].visualData != null)
+        result[element[1]].add(element[2].visualData);
     });
+    print(result);
   }
 }
 

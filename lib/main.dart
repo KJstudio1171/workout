@@ -95,8 +95,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _index = 0;
   var currentWidget = [
-    Column(
-      mainAxisSize: MainAxisSize.min,
+    Wrap(
       children: [
         DateSection(),
         WorkOutSection(),
@@ -134,8 +133,9 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
-      body: currentWidget[_index],
-      bottomNavigationBar: BottomNavigationBar(
+      body: WorkOutSection(),
+
+      /*bottomNavigationBar: BottomNavigationBar(
           onTap: (index) {
             setState(() {
               _index = index;
@@ -149,13 +149,12 @@ class _MainPageState extends State<MainPage> {
             ),
             BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
             BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          ]),
+          ]),*/
       floatingActionButton: FloatingActionButton.extended(
         label: Text('                    저장하기                     '),
         onPressed: () {
-          print(WorkoutSaveData.rawData);
-          print(WorkoutSaveData.result);
           WorkoutSaveData.initData();
+          WorkoutSaveData.dataVisualizing();
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
