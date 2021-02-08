@@ -154,6 +154,8 @@ class _MainPageState extends State<MainPage> {
         label: Text('                    저장하기                     '),
         onPressed: () {
           print(WorkoutSaveData.rawData);
+          print(WorkoutSaveData.result);
+          WorkoutSaveData.initData();
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

@@ -38,6 +38,9 @@ class WorkoutData {
   num time = 0;
   String unitWeight = 'kg';
   String unitTime = '분';
+  int sumReps = 0;
+  num sumTime = 0;
+  String visualData;
 
   List<int> saveReps = [];
   List<num> saveTime = [];
@@ -63,13 +66,58 @@ class WorkoutSaveData {
     }
   };
 
+  static Map result = {
+    '루틴': {'루틴1', '루틴2'},
+    '푸쉬업': ['kg 회 시', 'kg 회 시'],
+  };
+
   static List rawData = [];
 
   static addRawData(
       String routineName, String workoutName, WorkoutData workoutData) {
-    rawData.add([routineName,workoutName,workoutData]);
+    rawData.add([routineName, workoutName, workoutData]);
   }
 
+  static initData() {
+    rawData.forEach((element) {
+      WorkoutData workoutData = element[2];
+      workoutData.reps == 0 || workoutData.reps == null
+          ? workoutData.saveTime.forEach((element) {
+              workoutData.sumTime += element;
+            })
+          : workoutData.saveReps.forEach((element) {
+              workoutData.sumReps += element;
+            });
+      if(workoutData.sumReps!=0||workoutData.sumTime!=0) {
+        if (workoutData.reps == 0 || workoutData.reps == null) {
+          workoutData.weight == 0 || workoutData.weight == null
+              ? workoutData.visualData =
+              '${workoutData.sumTime}' + '${workoutData.unitTime}'
+              : workoutData.visualData = '${workoutData.weight}' +
+              '${workoutData.unitWeight}' +
+              '${workoutData.sumTime}' +
+              '${workoutData.unitTime}';
+        } else {
+          workoutData.weight == 0 || workoutData.weight == null
+              ? workoutData.visualData = '${workoutData.sumReps}' + '회'
+              : workoutData.visualData = '${workoutData.weight}' +
+              '${workoutData.unitWeight}' +
+              '${workoutData.sumReps}' +
+              '회';
+        }
+        print(workoutData.visualData);
+      }
+    });
+  }
+
+  static dataVisualizing() {
+    Set a;
+    Map b;
+    List c;
+    rawData.forEach((element) {
+      result['루틴'].add(element[0]);
+    });
+  }
 }
 
 class WorkoutParse {
