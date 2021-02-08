@@ -210,7 +210,7 @@ class _WorkoutListState extends State<WorkoutList> {
     }
     setState(() {
       this._setList = _list;
-      this._deleteSetList = _list2;
+      this._deleteSetList = _list2;//
     });
     _setList.add(PlusButton(setSetter, addList));
     setState(() {
