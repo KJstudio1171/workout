@@ -1,12 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'dart:async';
 import 'dart:math' as Math;
+
+import 'package:path/path.dart';
 
 void main() {
   runApp(TestWidget());
 }
 
-enum Mode { TIMER, STOPWATCH }
+class WorkoutTime extends StatefulWidget {
+  @override
+  _WorkoutTimeState createState() => _WorkoutTimeState();
+}
+
+class _WorkoutTimeState extends State<WorkoutTime> {
+  Timer _timer;
+  num _progressTime = 0;
+  num _visualTime = 0;
+  bool _paused = true;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '$_progressTime',
+      style: TextStyle(
+        fontSize: 80,
+      ),
+    );
+  }
+
+  void _start() {
+    _paused = false;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      setState(() {
+        _progressTime++;
+      });
+    });
+  }
+
+  void _pause() {
+    _paused = true;
+    _timer.cancel();
+  }
+
+  void _reset() {
+    setState(() {
+      _paused = true;
+      _progressTime = 0;
+      _timer.cancel();
+    });
+  }
+}
 
 class CircleProgressBar extends StatefulWidget {
   final Color backgroundColor;
@@ -48,7 +99,8 @@ class _CircleProgressBarState extends State<CircleProgressBar>
     );
     this._controller.forward();
     this.valueTween = Tween<double>(begin: 0, end: this.widget.value);
-    this.foregroundColorTween = ColorTween(begin: Colors.greenAccent,end: this.widget.foregroundColor);
+    this.foregroundColorTween =
+        ColorTween(begin: Colors.greenAccent, end: this.widget.foregroundColor);
   }
 
   @override
@@ -64,7 +116,18 @@ class _CircleProgressBarState extends State<CircleProgressBar>
       aspectRatio: 1,
       child: AnimatedBuilder(
           animation: this.curve,
-          child: Container(),
+          child: Container(
+            child: Neumorphic(
+              child: Center(child: WorkoutTime()),
+              style: NeumorphicStyle(
+                  shape: NeumorphicShape.flat,
+                  intensity: 1.0,
+                  boxShape: NeumorphicBoxShape.circle(),
+                  lightSource: LightSource.topLeft,
+                  depth: 100,
+                  color: Colors.greenAccent),
+            ),
+          ),
           builder: (context, child) {
             final foregroundColor =
                 this.foregroundColorTween?.evaluate(this.curve) ??
@@ -76,7 +139,7 @@ class _CircleProgressBarState extends State<CircleProgressBar>
                 backgroundColor: backgroundColor,
                 foregroundColor: foregroundColor,
                 percentage: this.valueTween.evaluate(this.curve),
-                strokeWidth: 8,
+                strokeWidth: this.widget.strokeWidth,
               ),
             );
           }),
@@ -95,7 +158,6 @@ class _CircleProgressBarState extends State<CircleProgressBar>
         begin: beginValue,
         end: this.widget.value ?? 1,
       );
-
 
       if (oldWidget.foregroundColor != this.widget.foregroundColor) {
         this.foregroundColorTween = ColorTween(
@@ -178,8 +240,10 @@ class TestWidget extends StatefulWidget {
 }
 
 class _TestWidgetState extends State<TestWidget> {
-  Mode mode = Mode.TIMER;
   int selected = 0;
+  bool _pause = false;
+  bool _play = false;
+  bool _stop = true;
 
   @override
   Widget build(BuildContext context) {
@@ -191,92 +255,135 @@ class _TestWidgetState extends State<TestWidget> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 100,
-              height: 100,
+              width: 200,
+              height: 200,
+              margin: EdgeInsets.only(bottom: 50),
               child: CircleProgressBar(
                 value: 1,
                 strokeWidth: 3,
-                backgroundColor:  Colors.deepOrangeAccent,
+                backgroundColor: Colors.deepOrangeAccent,
                 foregroundColor: Colors.blue,
                 time: 2,
               ),
-            )
-            ,
-            Container(
-              width: 200,
-              height: 200,
-              child: Neumorphic(
-                style: NeumorphicStyle(
-                    shape: NeumorphicShape.flat,
-                    intensity: 1.0,
-                    boxShape: NeumorphicBoxShape.circle(),
-                    lightSource: LightSource.topLeft,
-                    depth: -2,
-                    color: Colors.greenAccent),
-              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,children: [
-              Container(
-                width: 80,
-                height: 80,
-                child: NeumorphicButton(
-                  onPressed: (){},
-                  style: NeumorphicStyle(
-                      shape: NeumorphicShape.flat,
-                      intensity: 1.0,
-                      boxShape: NeumorphicBoxShape.circle(),
-                      lightSource: LightSource.topLeft,
-                      depth: 5,
-                      color: Colors.greenAccent),
-                ),
-              ),Container(
-                width: 80,
-                height: 80,
-                child: NeumorphicButton(
-                  onPressed: (){},
-                  style: NeumorphicStyle(
-                      shape: NeumorphicShape.flat,
-                      intensity: 1.0,
-                      boxShape: NeumorphicBoxShape.circle(),
-                      lightSource: LightSource.topLeft,
-                      depth: 5,
-                      color: Colors.greenAccent),
-                ),
-              ),Container(
-                width: 80,
-                height: 80,
-                child: NeumorphicButton(
-                  onPressed: (){},
-                  style: NeumorphicStyle(
-                      shape: NeumorphicShape.flat,
-                      intensity: 1.0,
-                      boxShape: NeumorphicBoxShape.circle(),
-                      lightSource: LightSource.topLeft,
-                      depth: 5,
-                      color: Colors.greenAccent),
-                ),
-              )
-            ],),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width:100,
-                  height: 100,
+                  width: 80,
+                  height: 80,
+                  margin: EdgeInsets.only(right: 20),
+                  child: NeumorphicButton(
+                    onPressed: () {},
+                    style: NeumorphicStyle(
+                        shape: NeumorphicShape.flat,
+                        intensity: 1.0,
+                        boxShape: NeumorphicBoxShape.circle(),
+                        lightSource: LightSource.topLeft,
+                        depth: 5,
+                        color: Colors.greenAccent),
+                  ),
+                ),
+                Container(
+                  width: 80,
+                  height: 80,
+                  margin: EdgeInsets.only(right: 20),
+                  child: NeumorphicButton(
+                    onPressed: () {},
+                    style: NeumorphicStyle(
+                        shape: NeumorphicShape.flat,
+                        intensity: 1.0,
+                        boxShape: NeumorphicBoxShape.circle(),
+                        lightSource: LightSource.topLeft,
+                        depth: 5,
+                        color: Colors.greenAccent),
+                  ),
+                ),
+                Container(
+                  width: 80,
+                  height: 80,
+                  child: NeumorphicButton(
+                    onPressed: () {},
+                    style: NeumorphicStyle(
+                        shape: NeumorphicShape.flat,
+                        intensity: 1.0,
+                        boxShape: NeumorphicBoxShape.circle(),
+                        lightSource: LightSource.topLeft,
+                        depth: 5,
+                        color: Colors.greenAccent),
+                  ),
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 50,
+                  height: 90,
+                  margin: EdgeInsets.all(10),
+                  child: NeumorphicCheckbox(
+                      value: _pause,
+                      onChanged: (value) {
+                        setState(() {
+                          _pause = true;
+                          _play = false;
+                          _stop = false;
+                        });
+                      }),
+                ),
+                Container(
+                  width: 50,
+                  height: 90,
+                  margin: EdgeInsets.all(10),
+                  child: NeumorphicCheckbox(
+                      value: _play,
+                      onChanged: (value) {
+                        setState(() {
+                          _play = true;
+                          _pause = false;
+                          _stop = false;
+                        });
+                      }),
+                ),
+                Container(
+                  width: 50,
+                  height: 90,
+                  margin: EdgeInsets.all(10),
+                  child: NeumorphicCheckbox(
+                      value: _stop,
+                      onChanged: (value) {
+                        setState(() {
+                          _stop = true;
+                          _play = false;
+                          _pause = false;
+                        });
+                      }),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 300,
+                  height: 50,
+                  margin: EdgeInsets.only(top: 50),
                   child: NeumorphicToggle(
-                      selectedIndex:selected,
-                      onChanged: (value){
+                      selectedIndex: selected,
+                      onChanged: (value) {
                         setState(() {
                           selected = value;
                         });
                       },
                       children: [
-                    ToggleElement(), ToggleElement(),
-                  ], thumb: null),
+                        ToggleElement(),
+                        ToggleElement(),
+                      ],
+                      thumb: null),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

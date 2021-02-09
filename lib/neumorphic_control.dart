@@ -227,22 +227,22 @@ class _SetButtonState extends State<SetButton>
 
   void _start() {
     _paused = false;
-    var _timeStart;
+    var _convertedTime;
 
     switch (widget.workoutData.unitTime) {
       case '분':
-        _timeStart = widget.workoutData.time * 60;
+        _convertedTime = widget.workoutData.time * 60;
         break;
       case '시간':
-        _timeStart = widget.workoutData.time * 3600;
+        _convertedTime = widget.workoutData.time * 3600;
         break;
       default:
-        _timeStart = widget.workoutData.time;
+        _convertedTime = widget.workoutData.time;
         break;
     }
 
     _timer = Timer.periodic(Duration(seconds: 2), (timer) {
-      if (_time < _timeStart) {
+      if (_time < _convertedTime) {
         setState(() {
           _time++;
         });
@@ -330,17 +330,17 @@ class _SetButtonState extends State<SetButton>
   }
 
   void repsOrTime3() {
-    var _timeStart;
+    var _convertedTime;
     if (widget.workoutData.time != null) {
       switch (widget.workoutData.unitTime) {
         case '분':
-          _timeStart = widget.workoutData.time * 60;
+          _convertedTime = widget.workoutData.time * 60;
           break;
         case '시간':
-          _timeStart = widget.workoutData.time * 3600;
+          _convertedTime = widget.workoutData.time * 3600;
           break;
         default:
-          _timeStart = widget.workoutData.time;
+          _convertedTime = widget.workoutData.time;
           break;
       }
     }
@@ -352,7 +352,7 @@ class _SetButtonState extends State<SetButton>
         } else {
           _pressed = true;
           _pause();
-          _time = _timeStart;
+          _time = _convertedTime;
         }
       });
       _pressed
