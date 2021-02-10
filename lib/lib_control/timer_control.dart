@@ -4,59 +4,10 @@ import 'dart:async';
 import 'dart:math' as Math;
 
 import 'package:path/path.dart';
+import 'package:workout/workout_control.dart';
 
 void main() {
   runApp(TestWidget());
-}
-
-class WorkoutTime extends StatefulWidget {
-  @override
-  _WorkoutTimeState createState() => _WorkoutTimeState();
-}
-
-class _WorkoutTimeState extends State<WorkoutTime> {
-  Timer _timer;
-  num _progressTime = 0;
-  num _visualTime = 0;
-  bool _paused = true;
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      '$_progressTime',
-      style: TextStyle(
-        fontSize: 80,
-      ),
-    );
-  }
-
-  void _start() {
-    _paused = false;
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      setState(() {
-        _progressTime++;
-      });
-    });
-  }
-
-  void _pause() {
-    _paused = true;
-    _timer.cancel();
-  }
-
-  void _reset() {
-    setState(() {
-      _paused = true;
-      _progressTime = 0;
-      _timer.cancel();
-    });
-  }
 }
 
 class CircleProgressBar extends StatefulWidget {
@@ -65,6 +16,7 @@ class CircleProgressBar extends StatefulWidget {
   final num time;
   final double value;
   final double strokeWidth;
+  final Text timerText;
 
   const CircleProgressBar({
     Key key,
@@ -73,6 +25,7 @@ class CircleProgressBar extends StatefulWidget {
     @required this.foregroundColor,
     @required this.value,
     @required this.time,
+    @required this.timerText,
   }) : super(key: key);
 
   @override
@@ -118,7 +71,7 @@ class _CircleProgressBarState extends State<CircleProgressBar>
           animation: this.curve,
           child: Container(
             child: Neumorphic(
-              child: Center(child: WorkoutTime()),
+              child: Center(child: widget.timerText),
               style: NeumorphicStyle(
                   shape: NeumorphicShape.flat,
                   intensity: 1.0,
@@ -241,9 +194,54 @@ class TestWidget extends StatefulWidget {
 
 class _TestWidgetState extends State<TestWidget> {
   int selected = 0;
-  bool _pause = false;
+  bool _mode = false;
+  bool _paused = false;
   bool _play = false;
   bool _stop = true;
+  Text timerText;
+
+  Timer _timer;
+  num _progressTime = 0;
+  num _visualTime = 0;
+  num _stopWatchTime = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    timerText = Text(
+      '$_visualTime',
+      style: TextStyle(fontSize: 50),
+    );
+  }
+
+  @override
+  void setState(fn) {
+    timeCal();
+    if (_visualTime <= 10) {
+      timerText = Text(
+        '$_visualTime',
+        style: TextStyle(fontSize: 50),
+      );
+    } else if (_visualTime <= 60) {
+      timerText = Text(
+        '${_visualTime ~/ 10}' '${_visualTime % 10}',
+        style: TextStyle(fontSize: 50),
+      );
+    } else {
+      timerText = Text(
+        '${_visualTime ~/ 60}' +
+            ':' '${_visualTime % 60 ~/ 10}' '${_visualTime % 60 % 10}',
+        style: TextStyle(fontSize: 50),
+      );
+    }
+    super.setState(fn);
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -264,55 +262,15 @@ class _TestWidgetState extends State<TestWidget> {
                 backgroundColor: Colors.deepOrangeAccent,
                 foregroundColor: Colors.blue,
                 time: 2,
+                timerText: timerText,
               ),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  margin: EdgeInsets.only(right: 20),
-                  child: NeumorphicButton(
-                    onPressed: () {},
-                    style: NeumorphicStyle(
-                        shape: NeumorphicShape.flat,
-                        intensity: 1.0,
-                        boxShape: NeumorphicBoxShape.circle(),
-                        lightSource: LightSource.topLeft,
-                        depth: 5,
-                        color: Colors.greenAccent),
-                  ),
-                ),
-                Container(
-                  width: 80,
-                  height: 80,
-                  margin: EdgeInsets.only(right: 20),
-                  child: NeumorphicButton(
-                    onPressed: () {},
-                    style: NeumorphicStyle(
-                        shape: NeumorphicShape.flat,
-                        intensity: 1.0,
-                        boxShape: NeumorphicBoxShape.circle(),
-                        lightSource: LightSource.topLeft,
-                        depth: 5,
-                        color: Colors.greenAccent),
-                  ),
-                ),
-                Container(
-                  width: 80,
-                  height: 80,
-                  child: NeumorphicButton(
-                    onPressed: () {},
-                    style: NeumorphicStyle(
-                        shape: NeumorphicShape.flat,
-                        intensity: 1.0,
-                        boxShape: NeumorphicBoxShape.circle(),
-                        lightSource: LightSource.topLeft,
-                        depth: 5,
-                        color: Colors.greenAccent),
-                  ),
-                )
+                containerButton(60),
+                containerButton(30),
+                containerButton(10),
               ],
             ),
             Row(
@@ -323,10 +281,11 @@ class _TestWidgetState extends State<TestWidget> {
                   height: 90,
                   margin: EdgeInsets.all(10),
                   child: NeumorphicCheckbox(
-                      value: _pause,
+                      value: _paused,
                       onChanged: (value) {
+                        if (!_paused) _pause();
                         setState(() {
-                          _pause = true;
+                          _paused = true;
                           _play = false;
                           _stop = false;
                         });
@@ -339,9 +298,10 @@ class _TestWidgetState extends State<TestWidget> {
                   child: NeumorphicCheckbox(
                       value: _play,
                       onChanged: (value) {
+                        if (!_play) _start();
                         setState(() {
                           _play = true;
-                          _pause = false;
+                          _paused = false;
                           _stop = false;
                         });
                       }),
@@ -353,10 +313,11 @@ class _TestWidgetState extends State<TestWidget> {
                   child: NeumorphicCheckbox(
                       value: _stop,
                       onChanged: (value) {
+                        if (!_stop) _reset();
                         setState(() {
                           _stop = true;
                           _play = false;
-                          _pause = false;
+                          _paused = false;
                         });
                       }),
                 ),
@@ -374,6 +335,7 @@ class _TestWidgetState extends State<TestWidget> {
                       onChanged: (value) {
                         setState(() {
                           selected = value;
+                          _mode = !_mode;
                         });
                       },
                       children: [
@@ -388,5 +350,58 @@ class _TestWidgetState extends State<TestWidget> {
         ),
       ),
     );
+  }
+
+  Container containerButton(int time) {
+    return Container(
+      width: 80,
+      height: 80,
+      margin: EdgeInsets.only(right: 20),
+      child: NeumorphicButton(
+        onPressed: () {
+          if (_stopWatchTime == 0) {
+            _progressTime = 0;
+          }
+          _stopWatchTime += time;
+          setState(() {});
+        },
+        style: NeumorphicStyle(
+            shape: NeumorphicShape.flat,
+            intensity: 1.0,
+            boxShape: NeumorphicBoxShape.circle(),
+            lightSource: LightSource.topLeft,
+            depth: _mode ? 0 : 5,
+            color: Colors.greenAccent),
+      ),
+    );
+  }
+
+  void timeCal() {
+    if (_mode) {
+      _visualTime = _progressTime;
+    } else {
+      if (_stopWatchTime - _progressTime >= 0)
+        _visualTime = _stopWatchTime - _progressTime;
+    }
+  }
+
+  void _start() {
+    _paused = false;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _progressTime++;
+      setState(() {});
+    });
+  }
+
+  void _pause() {
+    _paused = true;
+    _timer?.cancel();
+  }
+
+  void _reset() {
+    _stop = true;
+    _progressTime = 0;
+    _stopWatchTime = 0;
+    _timer?.cancel();
   }
 }
