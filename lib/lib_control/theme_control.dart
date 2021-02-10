@@ -18,6 +18,7 @@ Color color11 = Color.fromARGB(255, 253, 130, 111);
 Color color12 = Colors.blueGrey;
 Color color13 = Color.fromARGB(255, 161, 253, 210);
 Color color14 = Color.fromARGB(255, 145, 227, 189);
+Color color15 = Color.fromARGB(255, 235, 245, 255);
 
 
 class ThemeContol {

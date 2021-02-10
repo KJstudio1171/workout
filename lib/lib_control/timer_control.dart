@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'dart:async';
 import 'dart:math' as Math;
+import 'theme_control.dart';
 
 import 'package:path/path.dart';
 import 'package:workout/workout_control.dart';
@@ -13,18 +14,18 @@ void main() {
 class CircleProgressBar extends StatefulWidget {
   final Color backgroundColor;
   final Color foregroundColor;
-  final num time;
   final double value;
   final double strokeWidth;
   final Text timerText;
+  final AnimationController controller;
 
   const CircleProgressBar({
     Key key,
-    this.backgroundColor,
-    @required this.strokeWidth,
+    @required this.controller,
     @required this.foregroundColor,
+    @required this.backgroundColor,
+    @required this.strokeWidth,
     @required this.value,
-    @required this.time,
     @required this.timerText,
   }) : super(key: key);
 
@@ -34,23 +35,12 @@ class CircleProgressBar extends StatefulWidget {
 
 class _CircleProgressBarState extends State<CircleProgressBar>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> curve;
   Tween<double> valueTween;
   Tween<Color> foregroundColorTween;
 
   @override
   void initState() {
     super.initState();
-    this._controller = AnimationController(
-      duration: Duration(seconds: this.widget.time),
-      vsync: this,
-    );
-    this.curve = CurvedAnimation(
-      parent: this._controller,
-      curve: Curves.linear,
-    );
-    this._controller.forward();
     this.valueTween = Tween<double>(begin: 0, end: this.widget.value);
     this.foregroundColorTween =
         ColorTween(begin: Colors.greenAccent, end: this.widget.foregroundColor);
@@ -58,7 +48,6 @@ class _CircleProgressBarState extends State<CircleProgressBar>
 
   @override
   void dispose() {
-    this._controller.dispose();
     super.dispose();
   }
 
@@ -68,7 +57,7 @@ class _CircleProgressBarState extends State<CircleProgressBar>
     return AspectRatio(
       aspectRatio: 1,
       child: AnimatedBuilder(
-          animation: this.curve,
+          animation: this.widget.controller,
           child: Container(
             child: Neumorphic(
               child: Center(child: widget.timerText),
@@ -77,13 +66,13 @@ class _CircleProgressBarState extends State<CircleProgressBar>
                   intensity: 1.0,
                   boxShape: NeumorphicBoxShape.circle(),
                   lightSource: LightSource.topLeft,
-                  depth: 100,
-                  color: Colors.greenAccent),
+                  depth: 10,
+                  color: Colors.white),
             ),
           ),
           builder: (context, child) {
             final foregroundColor =
-                this.foregroundColorTween?.evaluate(this.curve) ??
+                this.foregroundColorTween?.evaluate(this.widget.controller) ??
                     this.widget.foregroundColor;
 
             return CustomPaint(
@@ -91,7 +80,7 @@ class _CircleProgressBarState extends State<CircleProgressBar>
               foregroundPainter: CircleProgressBarPainter(
                 backgroundColor: backgroundColor,
                 foregroundColor: foregroundColor,
-                percentage: this.valueTween.evaluate(this.curve),
+                percentage: this.valueTween.evaluate(this.widget.controller),
                 strokeWidth: this.widget.strokeWidth,
               ),
             );
@@ -103,8 +92,9 @@ class _CircleProgressBarState extends State<CircleProgressBar>
   void didUpdateWidget(covariant CircleProgressBar oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (this.widget.value != oldWidget.value) {
-      double beginValue =
-          this.valueTween?.evaluate(this.curve) ?? oldWidget?.value ?? 0;
+      double beginValue = this.valueTween?.evaluate(this.widget.controller) ??
+          oldWidget?.value ??
+          0;
 
       // Update the value tween.
       this.valueTween = Tween<double>(
@@ -121,7 +111,7 @@ class _CircleProgressBarState extends State<CircleProgressBar>
         this.foregroundColorTween = null;
       }
 
-      this._controller
+      this.widget.controller
         ..value = 0
         ..forward();
     }
@@ -192,8 +182,7 @@ class TestWidget extends StatefulWidget {
   _TestWidgetState createState() => _TestWidgetState();
 }
 
-class _TestWidgetState extends State<TestWidget> {
-  int selected = 0;
+class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
   bool _mode = false;
   bool _paused = false;
   bool _play = false;
@@ -205,8 +194,15 @@ class _TestWidgetState extends State<TestWidget> {
   num _visualTime = 0;
   num _stopWatchTime = 0;
 
+  AnimationController controller;
+  num time = 2;
+
   @override
   void initState() {
+    this.controller = AnimationController(
+      duration: Duration(seconds: time),
+      vsync: this,
+    );
     super.initState();
     timerText = Text(
       '$_visualTime',
@@ -239,6 +235,7 @@ class _TestWidgetState extends State<TestWidget> {
 
   @override
   void dispose() {
+    this.controller.dispose();
     _timer?.cancel();
     super.dispose();
   }
@@ -257,11 +254,11 @@ class _TestWidgetState extends State<TestWidget> {
               height: 200,
               margin: EdgeInsets.only(bottom: 50),
               child: CircleProgressBar(
+                controller: this.controller,
                 value: 1,
                 strokeWidth: 3,
                 backgroundColor: Colors.deepOrangeAccent,
                 foregroundColor: Colors.blue,
-                time: 2,
                 timerText: timerText,
               ),
             ),
@@ -277,72 +274,155 @@ class _TestWidgetState extends State<TestWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 50,
-                  height: 90,
-                  margin: EdgeInsets.all(10),
-                  child: NeumorphicCheckbox(
-                      value: _paused,
-                      onChanged: (value) {
+                    width: 80,
+                    height: 80,
+                    margin: EdgeInsets.all(10),
+                    child: InkWell(
+                      onTap: () {
                         if (!_paused) _pause();
+                        this.controller.stop();
                         setState(() {
                           _paused = true;
                           _play = false;
                           _stop = false;
                         });
-                      }),
-                ),
+                      },
+                      child: _paused
+                          ? Neumorphic(
+                              child: Icon(Icons.pause),
+                              style: NeumorphicStyle(
+                                  intensity: 1, depth: -3, color: Colors.white),
+                            )
+                          : Neumorphic(
+                              child: Icon(Icons.pause),
+                              style: NeumorphicStyle(
+                                  intensity: 1, depth: 5, color: Colors.white),
+                            ),
+                    )),
                 Container(
-                  width: 50,
-                  height: 90,
-                  margin: EdgeInsets.all(10),
-                  child: NeumorphicCheckbox(
-                      value: _play,
-                      onChanged: (value) {
-                        if (!_play) _start();
+                    width: 80,
+                    height: 80,
+                    margin: EdgeInsets.all(10),
+                    child: InkWell(
+                      onTap: () {
+                        if (!_play) {
+                          _start();
+                        }
                         setState(() {
                           _play = true;
                           _paused = false;
                           _stop = false;
                         });
-                      }),
-                ),
+                      },
+                      child: _play
+                          ? Neumorphic(
+                              child: Icon(Icons.play_arrow_sharp),
+                              style: NeumorphicStyle(
+                                  intensity: 1, depth: -3, color: Colors.white),
+                            )
+                          : Neumorphic(
+                              child: Icon(Icons.play_arrow_sharp),
+                              style: NeumorphicStyle(
+                                  intensity: 1, depth: 5, color: Colors.white),
+                            ),
+                    )),
                 Container(
-                  width: 50,
-                  height: 90,
-                  margin: EdgeInsets.all(10),
-                  child: NeumorphicCheckbox(
-                      value: _stop,
-                      onChanged: (value) {
+                    width: 80,
+                    height: 80,
+                    margin: EdgeInsets.all(10),
+                    child: InkWell(
+                      onTap: () {
                         if (!_stop) _reset();
+                        this.controller.reset();
+                        this.controller.stop();
                         setState(() {
                           _stop = true;
                           _play = false;
                           _paused = false;
                         });
-                      }),
-                ),
+                      },
+                      child: _stop
+                          ? Neumorphic(
+                              child: Icon(Icons.stop),
+                              style: NeumorphicStyle(
+                                  intensity: 1, depth: -3, color: Colors.white),
+                            )
+                          : Neumorphic(
+                              child: Icon(Icons.stop),
+                              style: NeumorphicStyle(
+                                  intensity: 1, depth: 5, color: Colors.white),
+                            ),
+                    )),
               ],
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 300,
-                  height: 50,
-                  margin: EdgeInsets.only(top: 50),
-                  child: NeumorphicToggle(
-                      selectedIndex: selected,
-                      onChanged: (value) {
+                    width: 130,
+                    height: 50,
+                    margin: EdgeInsets.fromLTRB(10, 50, 10, 10),
+                    child: InkWell(
+                      onTap: () {
+                        _reset();
+                        _stop = true;
+                        _play = false;
+                        _paused = false;
+                        this.controller.stop();
+                        _stopWatchTime = 0;
+                        _progressTime = 0;
+                        this.controller.reset();
+                        this.controller.stop();
                         setState(() {
-                          selected = value;
-                          _mode = !_mode;
+                          _mode = false;
                         });
                       },
-                      children: [
-                        ToggleElement(),
-                        ToggleElement(),
-                      ],
-                      thumb: null),
+                      child: _mode
+                          ? Neumorphic(
+                              child: Icon(Icons.access_alarm),
+                              style: NeumorphicStyle(
+                                  intensity: 1, depth: 5, color: Colors.white))
+                          : Neumorphic(
+                              child: Icon(Icons.access_alarm),
+                              style: NeumorphicStyle(
+                                  intensity: 1, depth: -3, color: Colors.white),
+                            ),
+                    )),
+                Container(
+                  width: 130,
+                  height: 50,
+                  margin: EdgeInsets.fromLTRB(10, 50, 10, 10),
+                  child: InkWell(
+                    onTap: () {
+                      _reset();
+                      _stop = true;
+                      _play = false;
+                      _paused = false;
+                      this.controller.stop();
+                      _stopWatchTime = 0;
+                      _progressTime = 0;
+                      this.controller = AnimationController(
+                        duration: Duration(seconds: 1),
+                        vsync: this,
+                      )..addListener(() {
+                          this.controller.repeat();
+                        });
+                      setState(() {
+                        _mode = true;
+                      });
+                    },
+                    child: _mode
+                        ? Neumorphic(
+                            child: Icon(Icons.watch_later_outlined),
+                            style: NeumorphicStyle(
+                                intensity: 1, depth: -3, color: Colors.white),
+                          )
+                        : Neumorphic(
+                            child: Icon(Icons.watch_later_outlined),
+                            style: NeumorphicStyle(
+                                intensity: 1, depth: 5, color: Colors.white),
+                          ),
+                  ),
                 ),
               ],
             ),
@@ -356,22 +436,36 @@ class _TestWidgetState extends State<TestWidget> {
     return Container(
       width: 80,
       height: 80,
-      margin: EdgeInsets.only(right: 20),
+      margin: EdgeInsets.all(10),
       child: NeumorphicButton(
+        child: Center(
+          child: Text(
+            '+' + '$time' + '초',
+            style: TextStyle(fontSize: 15),
+          ),
+        ),
         onPressed: () {
-          if (_stopWatchTime == 0) {
-            _progressTime = 0;
+          if (!_mode) {
+            if (_stopWatchTime == 0) {
+              _progressTime = 0;
+            }
+            _stopWatchTime += time;
+            this.controller = AnimationController(
+              duration: Duration(seconds: _stopWatchTime),
+              vsync: this,
+            );
+            if (_play) this.controller.forward();
+            setState(() {});
           }
-          _stopWatchTime += time;
-          setState(() {});
         },
         style: NeumorphicStyle(
-            shape: NeumorphicShape.flat,
+            shape: NeumorphicShape.concave,
+            //border: NeumorphicBorder(width: 5),
             intensity: 1.0,
             boxShape: NeumorphicBoxShape.circle(),
             lightSource: LightSource.topLeft,
             depth: _mode ? 0 : 5,
-            color: Colors.greenAccent),
+            color: colorWhite),
       ),
     );
   }
@@ -386,9 +480,13 @@ class _TestWidgetState extends State<TestWidget> {
   }
 
   void _start() {
+    print('start');
     _paused = false;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       _progressTime++;
+      if (_mode == true || _stopWatchTime != 0) {
+        this.controller.forward();
+      }
       setState(() {});
     });
   }
