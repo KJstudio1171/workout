@@ -43,7 +43,7 @@ class _CircleProgressBarState extends State<CircleProgressBar>
     super.initState();
     this.valueTween = Tween<double>(begin: 0, end: this.widget.value);
     this.foregroundColorTween =
-        ColorTween(begin: Colors.greenAccent, end: this.widget.foregroundColor);
+        ColorTween(begin: color13, end: this.widget.foregroundColor);
   }
 
   @override
@@ -250,15 +250,15 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              width: 200,
-              height: 200,
+              width: 250,
+              height: 250,
               margin: EdgeInsets.only(bottom: 50),
               child: CircleProgressBar(
                 controller: this.controller,
                 value: 1,
-                strokeWidth: 3,
-                backgroundColor: Colors.deepOrangeAccent,
-                foregroundColor: Colors.blue,
+                strokeWidth: 5,
+                backgroundColor: color1,
+                foregroundColor: color7,
                 timerText: timerText,
               ),
             ),
@@ -291,11 +291,14 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                           ? Neumorphic(
                               child: Icon(Icons.pause),
                               style: NeumorphicStyle(
+                                border: NeumorphicBorder(width: 2,color: color14),
                                   intensity: 1, depth: -3, color: Colors.white),
                             )
                           : Neumorphic(
                               child: Icon(Icons.pause),
                               style: NeumorphicStyle(
+                                  shape: NeumorphicShape.convex,
+                                  border: NeumorphicBorder(width: 2,color: color1),
                                   intensity: 1, depth: 5, color: Colors.white),
                             ),
                     )),
@@ -318,11 +321,14 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                           ? Neumorphic(
                               child: Icon(Icons.play_arrow_sharp),
                               style: NeumorphicStyle(
+                                  border: NeumorphicBorder(width: 2,color: color11),
                                   intensity: 1, depth: -3, color: Colors.white),
                             )
                           : Neumorphic(
                               child: Icon(Icons.play_arrow_sharp),
                               style: NeumorphicStyle(
+                                  shape: NeumorphicShape.convex,
+                                  border: NeumorphicBorder(width: 2,color: color1),
                                   intensity: 1, depth: 5, color: Colors.white),
                             ),
                     )),
@@ -345,11 +351,14 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                           ? Neumorphic(
                               child: Icon(Icons.stop),
                               style: NeumorphicStyle(
+                                  border: NeumorphicBorder(width: 2,color: color3),
                                   intensity: 1, depth: -3, color: Colors.white),
                             )
                           : Neumorphic(
                               child: Icon(Icons.stop),
                               style: NeumorphicStyle(
+                                  shape: NeumorphicShape.convex,
+                                  border: NeumorphicBorder(width: 2,color: color1),
                                   intensity: 1, depth: 5, color: Colors.white),
                             ),
                     )),
@@ -381,10 +390,13 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                           ? Neumorphic(
                               child: Icon(Icons.access_alarm),
                               style: NeumorphicStyle(
+                                  shape: NeumorphicShape.convex,
+                                  border: NeumorphicBorder(width: 2,color: color1),
                                   intensity: 1, depth: 5, color: Colors.white))
                           : Neumorphic(
                               child: Icon(Icons.access_alarm),
                               style: NeumorphicStyle(
+                                  border: NeumorphicBorder(width: 2,color: color1),
                                   intensity: 1, depth: -3, color: Colors.white),
                             ),
                     )),
@@ -415,11 +427,14 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                         ? Neumorphic(
                             child: Icon(Icons.watch_later_outlined),
                             style: NeumorphicStyle(
+                                border: NeumorphicBorder(width: 2,color: color1),
                                 intensity: 1, depth: -3, color: Colors.white),
                           )
                         : Neumorphic(
                             child: Icon(Icons.watch_later_outlined),
                             style: NeumorphicStyle(
+                                shape: NeumorphicShape.convex,
+                                border: NeumorphicBorder(width: 2,color: color1),
                                 intensity: 1, depth: 5, color: Colors.white),
                           ),
                   ),
@@ -445,6 +460,7 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
           ),
         ),
         onPressed: () {
+          _progressTime = 0;
           if (!_mode) {
             if (_stopWatchTime == 0) {
               _progressTime = 0;
@@ -459,12 +475,13 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
           }
         },
         style: NeumorphicStyle(
-            shape: NeumorphicShape.concave,
+            border: NeumorphicBorder(width: 2,color: color1),
+            shape: _mode ?NeumorphicShape.flat:NeumorphicShape.convex,
             //border: NeumorphicBorder(width: 5),
             intensity: 1.0,
             boxShape: NeumorphicBoxShape.circle(),
             lightSource: LightSource.topLeft,
-            depth: _mode ? 0 : 5,
+            depth: _mode ? -3 : 5,
             color: colorWhite),
       ),
     );
