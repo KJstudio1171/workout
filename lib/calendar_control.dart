@@ -188,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       onCalendarCreated: _onCalendarCreated,
     );
   }
-//////////////////////////////////
+
   // More advanced TableCalendar configuration (using Builders & Styles)
   Widget _buildTableCalendarWithBuilders() {
     return TableCalendar(
