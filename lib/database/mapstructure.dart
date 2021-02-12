@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-var firestoreMap = {
+var fireStoreMap = {
   'routine_name': 'name',
   'wko_category': {
     'workout_name': [

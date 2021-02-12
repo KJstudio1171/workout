@@ -1,12 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:workout/lib_control/theme_control.dart';
 import 'package:get/get.dart';
-import 'package:workout/set_control.dart';
-import 'package:workout/database/firestore.dart';
+
+import 'package:workout/lib_control/theme_control.dart';
+import 'package:workout/daily_workout/set_control.dart';
+import 'package:workout/database/workout_firestore.dart';
 import 'package:workout/database/mapstructure.dart';
 
 List<Map<String, dynamic>> routineData = [];
@@ -111,7 +112,8 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
               onTap: () {
                 routineData.clear();
                 routineData.add({'routine_name': '오늘의 운동', 'wko_category': {}});
-                workoutSaveData.add({'routine_name': '오늘의 운동', 'wko_category': {}});
+                workoutSaveData
+                    .add({'routine_name': '오늘의 운동', 'wko_category': {}});
                 print(workoutSaveData.toString());
                 Get.back(result: routineData);
               },

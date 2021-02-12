@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'dart:async';
 import 'dart:math' as Math;
-import 'theme_control.dart';
 
-import 'package:path/path.dart';
-import 'package:workout/workout_control.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+
+import '../lib_control/theme_control.dart';
 
 void main() {
   runApp(TestWidget());
@@ -291,15 +290,21 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                           ? Neumorphic(
                               child: Icon(Icons.pause),
                               style: NeumorphicStyle(
-                                border: NeumorphicBorder(width: 2,color: color14),
-                                  intensity: 1, depth: -3, color: Colors.white),
+                                  border: NeumorphicBorder(
+                                      width: 2, color: color14),
+                                  intensity: 1,
+                                  depth: -3,
+                                  color: Colors.white),
                             )
                           : Neumorphic(
                               child: Icon(Icons.pause),
                               style: NeumorphicStyle(
                                   shape: NeumorphicShape.convex,
-                                  border: NeumorphicBorder(width: 2,color: color1),
-                                  intensity: 1, depth: 5, color: Colors.white),
+                                  border:
+                                      NeumorphicBorder(width: 2, color: color1),
+                                  intensity: 1,
+                                  depth: 5,
+                                  color: Colors.white),
                             ),
                     )),
                 Container(
@@ -321,15 +326,21 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                           ? Neumorphic(
                               child: Icon(Icons.play_arrow_sharp),
                               style: NeumorphicStyle(
-                                  border: NeumorphicBorder(width: 2,color: color11),
-                                  intensity: 1, depth: -3, color: Colors.white),
+                                  border: NeumorphicBorder(
+                                      width: 2, color: color11),
+                                  intensity: 1,
+                                  depth: -3,
+                                  color: Colors.white),
                             )
                           : Neumorphic(
                               child: Icon(Icons.play_arrow_sharp),
                               style: NeumorphicStyle(
                                   shape: NeumorphicShape.convex,
-                                  border: NeumorphicBorder(width: 2,color: color1),
-                                  intensity: 1, depth: 5, color: Colors.white),
+                                  border:
+                                      NeumorphicBorder(width: 2, color: color1),
+                                  intensity: 1,
+                                  depth: 5,
+                                  color: Colors.white),
                             ),
                     )),
                 Container(
@@ -351,15 +362,21 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                           ? Neumorphic(
                               child: Icon(Icons.stop),
                               style: NeumorphicStyle(
-                                  border: NeumorphicBorder(width: 2,color: color3),
-                                  intensity: 1, depth: -3, color: Colors.white),
+                                  border:
+                                      NeumorphicBorder(width: 2, color: color3),
+                                  intensity: 1,
+                                  depth: -3,
+                                  color: Colors.white),
                             )
                           : Neumorphic(
                               child: Icon(Icons.stop),
                               style: NeumorphicStyle(
                                   shape: NeumorphicShape.convex,
-                                  border: NeumorphicBorder(width: 2,color: color1),
-                                  intensity: 1, depth: 5, color: Colors.white),
+                                  border:
+                                      NeumorphicBorder(width: 2, color: color1),
+                                  intensity: 1,
+                                  depth: 5,
+                                  color: Colors.white),
                             ),
                     )),
               ],
@@ -391,13 +408,19 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                               child: Icon(Icons.access_alarm),
                               style: NeumorphicStyle(
                                   shape: NeumorphicShape.convex,
-                                  border: NeumorphicBorder(width: 2,color: color1),
-                                  intensity: 1, depth: 5, color: Colors.white))
+                                  border:
+                                      NeumorphicBorder(width: 2, color: color1),
+                                  intensity: 1,
+                                  depth: 5,
+                                  color: Colors.white))
                           : Neumorphic(
                               child: Icon(Icons.access_alarm),
                               style: NeumorphicStyle(
-                                  border: NeumorphicBorder(width: 2,color: color1),
-                                  intensity: 1, depth: -3, color: Colors.white),
+                                  border:
+                                      NeumorphicBorder(width: 2, color: color1),
+                                  intensity: 1,
+                                  depth: -3,
+                                  color: Colors.white),
                             ),
                     )),
                 Container(
@@ -427,15 +450,21 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
                         ? Neumorphic(
                             child: Icon(Icons.watch_later_outlined),
                             style: NeumorphicStyle(
-                                border: NeumorphicBorder(width: 2,color: color1),
-                                intensity: 1, depth: -3, color: Colors.white),
+                                border:
+                                    NeumorphicBorder(width: 2, color: color1),
+                                intensity: 1,
+                                depth: -3,
+                                color: Colors.white),
                           )
                         : Neumorphic(
                             child: Icon(Icons.watch_later_outlined),
                             style: NeumorphicStyle(
                                 shape: NeumorphicShape.convex,
-                                border: NeumorphicBorder(width: 2,color: color1),
-                                intensity: 1, depth: 5, color: Colors.white),
+                                border:
+                                    NeumorphicBorder(width: 2, color: color1),
+                                intensity: 1,
+                                depth: 5,
+                                color: Colors.white),
                           ),
                   ),
                 ),
@@ -475,8 +504,8 @@ class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
           }
         },
         style: NeumorphicStyle(
-            border: NeumorphicBorder(width: 2,color: color1),
-            shape: _mode ?NeumorphicShape.flat:NeumorphicShape.convex,
+            border: NeumorphicBorder(width: 2, color: color1),
+            shape: _mode ? NeumorphicShape.flat : NeumorphicShape.convex,
             //border: NeumorphicBorder(width: 5),
             intensity: 1.0,
             boxShape: NeumorphicBoxShape.circle(),

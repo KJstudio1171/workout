@@ -1,9 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:group_button/group_button.dart';
+import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+
 import 'package:workout/lib_control/theme_control.dart';
 
 List<dynamic> workoutList = [];
@@ -66,21 +68,21 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
         child: Neumorphic(
           style: _pressIcon
               ? NeumorphicStyle(
-            shape: NeumorphicShape.flat,
-            intensity: 1.0,
-            boxShape: NeumorphicBoxShape.circle(),
-            lightSource: LightSource.topLeft,
-            depth: -2,
-            color: color2,
-          )
+                  shape: NeumorphicShape.flat,
+                  intensity: 1.0,
+                  boxShape: NeumorphicBoxShape.circle(),
+                  lightSource: LightSource.topLeft,
+                  depth: -2,
+                  color: color2,
+                )
               : NeumorphicStyle(
-            shape: NeumorphicShape.flat,
-            intensity: 1.0,
-            boxShape: NeumorphicBoxShape.circle(),
-            lightSource: LightSource.topLeft,
-            depth: 0,
-            color: Colors.grey[200],
-          ),
+                  shape: NeumorphicShape.flat,
+                  intensity: 1.0,
+                  boxShape: NeumorphicBoxShape.circle(),
+                  lightSource: LightSource.topLeft,
+                  depth: 0,
+                  color: Colors.grey[200],
+                ),
           child: Icon(
             _pressIcon ? Icons.check : Icons.add,
             color: _pressIcon ? Colors.white : Colors.black,
@@ -95,7 +97,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: color1,
@@ -146,7 +148,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
 
   sizeCheck() async {
     var tx =
-    await fireStoreDoc(classification).get().then((value) => value.size);
+        await fireStoreDoc(classification).get().then((value) => value.size);
     if (tx == 0) {
       initWorkout();
     }
@@ -157,9 +159,10 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        leading: Icon(Icons.arrow_back_ios),
-        title: Text("오늘의 운동",
-          style: TextStyle(color: color8),),
+        title: Text(
+          "오늘의 운동",
+          style: TextStyle(color: color8),
+        ),
         actions: [
           Container(
             padding: EdgeInsets.all(8),
@@ -186,6 +189,69 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
       ),
       body: Column(
         children: [
+          Container(
+            padding: EdgeInsets.fromLTRB(5, 15, 5, 10),
+            height: 60,
+            child: TextField(
+              cursorColor: color1,
+              onChanged: (value) {
+                if (value.trim().isNotEmpty) {
+                  setState(() {
+                    stream = fireStoreDoc(classification)
+                        .where(wkoName, isGreaterThanOrEqualTo: value.trim())
+                        .where(wkoName,
+                            isLessThanOrEqualTo: value.trim() + '힣');
+                  });
+                } else {
+                  setState(() {
+                    stream = fireStoreDoc(classification).orderBy(wkoName);
+                  });
+                }
+              },
+              controller: editingCon,
+              decoration: InputDecoration(
+                fillColor: color1,
+                labelText: "운동 이름",
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(25.0))),
+              ),
+            ),
+          ),
+          ConstrainedBox(
+            constraints: new BoxConstraints(
+              minHeight: 0,
+              maxHeight: 50,
+            ),
+            child: ListView(
+              padding: EdgeInsets.only(left: 5),
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              children: [
+                GroupButton(
+                  isRadio: true,
+                  spacing: 5,
+                  buttons: cateButtonList,
+                  onSelected: (index, isSelected) {
+                    chooseList = index;
+                    if (chooseList != 0) {
+                      setState(() {
+                        stream = fireStoreDoc(classification).where(wkoCategory,
+                            isEqualTo: cateButtonList[chooseList]);
+                      });
+                    } else {
+                      setState(() {
+                        stream = fireStoreDoc(classification).orderBy(wkoName);
+                      });
+                    }
+                  },
+                  selectedColor: color1,
+                  unselectedShadow: [BoxShadow(color: Colors.transparent)],
+                  selectedButtons: null,
+                )
+              ],
+            ),
+          ),
           StreamBuilder<QuerySnapshot>(
             stream: stream.snapshots(),
             builder:
@@ -200,59 +266,57 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                     child: ListView(
                       shrinkWrap: true,
                       children:
-                      snapshot.data.docs.map((DocumentSnapshot document) {
+                          snapshot.data.docs.map((DocumentSnapshot document) {
                         Timestamp ts = document[wkoDatetime];
                         String dt = timestampToStrDateTime(ts);
-                        return ExpansionTile(
-                          children: [
-                            StreamBuilder<QuerySnapshot>(
-                              stream: stream.snapshots(),
-                              builder:
-                                  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                                if (snapshot.hasError) return Text("Error: ${snapshot.error}");
-                                switch (snapshot.connectionState) {
-                                  case ConnectionState.waiting:
-                                  case ConnectionState.none:
-                                    return Text("Loading...");
-                                  default:
-                                    return ListView(
-                                      shrinkWrap: true,
-                                      children:
-                                      snapshot.data.docs.map((DocumentSnapshot document) {
-                                        Timestamp ts = document[wkoDatetime];
-                                        String dt = timestampToStrDateTime(ts);
-                                        return Card(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(8),
-                                            height: 50,
-                                            child: Text(
-                                              document[wkoName],
-                                              style: TextStyle(
-                                                color: color12,
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                        return Card(
+                          elevation: 2,
+                          child: Row(
+                            children: [
+                              InkWell(
+                                // Read Document
+                                enableFeedback: false,
+                                onTap: () {
+                                  final String documentID = document.id;
+                                  readWorkout(documentID);
+                                  print('$documentID');
+                                },
+                                // Update or Delete Document
+                                onLongPress: () {
+                                  showUpdateOrDeleteDocDialog(document);
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  width: 350,
+                                  child: Column(
+                                    children: <Widget>[
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Text(
+                                            document[wkoName],
+                                            style: TextStyle(
+                                              color: color12,
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                        );
-                                      }).toList(),
-                                    );
-                                }
-                              },
-                            ),
-                          ],
-                          onExpansionChanged: (bool) {},
-                          title: Container(
-                            padding: const EdgeInsets.all(8),
-                            width: 350,
-                            child: Text(
-                              document[wkoName],
-                              style: TextStyle(
-                                color: color12,
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
+                                        ],
+                                      ),
+                                      Container(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          document[wkoCategory],
+                                          style: TextStyle(color: colorBlack54),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
+                              IconButtonNeumorphic(document),
+                            ],
                           ),
                         );
                       }).toList(),
@@ -263,11 +327,21 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
           ),
         ],
       ),
+      // Create Document
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: color2,
+        label: Text('                    선택하기                     '),
+        onPressed: () {
+          Get.back(result: workoutList);
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
   @override
   void dispose() {
+    workoutList.clear();
     super.dispose();
     _newNameCon.dispose();
     _newCateCon.dispose();
@@ -372,7 +446,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
 
   ///여기서부터 수정 함수들
   void createWorkout(String name, String category, {String memo = ''}) {
-    db.add({
+    fireStoreDoc(classification).add({
       wkoName: name,
       wkoCategory: category,
       wkoMemo: memo,
@@ -382,7 +456,10 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
 
   // 문서 조회 (Read)
   void readWorkout(String documentID) {
-    db.doc(documentID).get().then((DocumentSnapshot doc) {
+    fireStoreDoc(classification)
+        .doc(documentID)
+        .get()
+        .then((DocumentSnapshot doc) {
       showReadDocSnackBar(doc);
     });
   }
@@ -390,7 +467,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   // 문서 갱신 (Update)
   void updateWorkout(String docID, String name, String category,
       {String memo = ''}) {
-    db.doc(docID).update({
+    fireStoreDoc(classification).doc(docID).update({
       wkoName: name,
       wkoCategory: category,
       wkoMemo: memo,
@@ -399,7 +476,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
 
   // 문서 삭제 (Delete)
   void deleteWorkout(String docID) {
-    db.doc(docID).delete();
+    fireStoreDoc(classification).doc(docID).delete();
   }
 
   void showCreateDoc() {
@@ -467,13 +544,11 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
           duration: Duration(seconds: 3),
           content: Text(
               "$wkoName: ${doc.data()[wkoName]}\n$wkoCategory: ${doc.data()[wkoCategory]}"
-                  "\n$wkoMemo: ${doc.data()[wkoMemo]}"),
+              "\n$wkoMemo: ${doc.data()[wkoMemo]}"),
           action: SnackBarAction(
             label: "완료",
             textColor: colorWhite,
-            onPressed: () {
-
-            },
+            onPressed: () {},
           ),
         ),
       );

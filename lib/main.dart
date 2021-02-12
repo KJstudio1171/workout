@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'package:workout/database/mapstructure.dart';
+
 import 'lib_control/ui_size_control.dart';
-import 'date_control.dart';
-import 'workout_control.dart';
 import 'lib_control/theme_control.dart';
-import 'database/searchlist.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'test.dart';
-import 'set_control.dart';
+
+import 'package:workout/daily_workout/date_control.dart';
+import 'package:workout/daily_workout/workout_control.dart';
+import 'package:workout/daily_workout/set_control.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -171,7 +171,6 @@ class TestWidget extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       routes: {
         '/M': (context) => MainPage(),
-        '/L': (context) => SearchWorkoutPage(),
         '/I': (context) => Info(),
         //rootnavigator false 페이지 유지가능 Navigator.of(context, rootNavigator: false).pushNamed("/route");
         // Get.to(page,{argument,transition})

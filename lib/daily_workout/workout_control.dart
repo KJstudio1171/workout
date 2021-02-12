@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
-import 'package:workout/lib_control/theme_control.dart';
-import 'package:workout/neumorphic_control.dart';
 import 'package:get/get.dart';
+
+import 'package:workout/lib_control/theme_control.dart';
+import 'package:workout/daily_workout/neumorphic_control.dart';
 import 'package:workout/database/routine_firestore.dart';
-import 'package:workout/database/firestore.dart';
+import 'package:workout/database/workout_firestore.dart';
 import 'package:workout/database/mapstructure.dart';
-import 'package:workout/date_control.dart';
+import 'package:workout/daily_workout/date_control.dart';
 
 class WorkOutSection extends StatefulWidget {
   @override
@@ -48,7 +49,8 @@ class _WorkOutSectionState extends State<WorkOutSection> {
         ),
         Expanded(
           child: ListView.builder(
-            physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            physics:
+                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
             padding: EdgeInsets.all(0),
             scrollDirection: Axis.vertical,
             shrinkWrap: true,
@@ -197,7 +199,8 @@ class _WorkoutListState extends State<WorkoutList> {
 
   setSetter(WorkoutData workoutData) {
     this.setData = workoutData;
-    WorkoutSaveData.addRawData(widget.routineName, widget.workoutName, this.setData);
+    WorkoutSaveData.addRawData(
+        widget.routineName, widget.workoutName, this.setData);
   }
 
   addList() {
@@ -207,8 +210,8 @@ class _WorkoutListState extends State<WorkoutList> {
     for (int i = 0; i < this.setData.set; i++) {
       setData.saveReps.add(0);
       setData.saveTime.add(0);
-      _list.add(SetButton(this.setData,i));
-      _list2.add(DeleteSetButton(this.setData,i));
+      _list.add(SetButton(this.setData, i));
+      _list2.add(DeleteSetButton(this.setData, i));
     }
     setState(() {
       this._setList = _list;
@@ -225,7 +228,8 @@ class _WorkoutListState extends State<WorkoutList> {
   void initState() {
     widget.fireStoreWorkoutData.forEach((element) {
       WorkoutData workoutData = WorkoutData();
-      WorkoutSaveData.addRawData(widget.routineName, widget.workoutName, workoutData);
+      WorkoutSaveData.addRawData(
+          widget.routineName, widget.workoutName, workoutData);
       for (int i = 0; i < int.parse(element['set']); i++) {
         workoutData.saveReps.add(0);
         workoutData.saveTime.add(0);
@@ -235,8 +239,8 @@ class _WorkoutListState extends State<WorkoutList> {
         workoutData.time = num.tryParse(element['time']) ?? null;
         workoutData.unitWeight = element['unit_weight'];
         workoutData.unitTime = element['unit_time'];
-        _setList.add(SetButton(workoutData,i));
-        _deleteSetList.add(DeleteSetButton(workoutData,i));
+        _setList.add(SetButton(workoutData, i));
+        _deleteSetList.add(DeleteSetButton(workoutData, i));
       }
     });
     _setList.add(PlusButton(setSetter, addList));
@@ -270,8 +274,12 @@ class _WorkoutListState extends State<WorkoutList> {
                   for (int i = 0; i < _deleteSetList.length; i++) {
                     if (_deleteSetList[i].getPressed == true) {
                       _delete.add(i);
-                      _deleteSetList[i].workoutData.saveReps[_deleteSetList[i].index]=0;
-                      _deleteSetList[i].workoutData.saveTime[_deleteSetList[i].index]=0;
+                      _deleteSetList[i]
+                          .workoutData
+                          .saveReps[_deleteSetList[i].index] = 0;
+                      _deleteSetList[i]
+                          .workoutData
+                          .saveTime[_deleteSetList[i].index] = 0;
                     }
                   }
                   for (int i = _delete.length - 1; 0 <= i; i--) {

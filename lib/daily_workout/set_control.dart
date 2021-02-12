@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
-import 'lib_control/theme_control.dart';
+
+import '../lib_control/theme_control.dart';
 
 enum Weight { TRUE, FALSE }
 enum WorkoutType { REPS, TIME }
@@ -12,7 +13,7 @@ class Info extends StatefulWidget {
 }
 
 class _InfoState extends State<Info> {
-  List<String> result=[];
+  List<String> result = [];
   var workoutType = WorkoutType.REPS;
   bool _value = false;
   bool _reps = true;
@@ -29,6 +30,7 @@ class _InfoState extends State<Info> {
       _value = value;
     });
   }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -39,12 +41,13 @@ class _InfoState extends State<Info> {
     _controllerReps.dispose();
     _controllerSet.dispose();
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _controllerSet.text='1';
-    _controllerReps.text='1';
+    _controllerSet.text = '1';
+    _controllerReps.text = '1';
   }
 
   @override
@@ -66,7 +69,7 @@ class _InfoState extends State<Info> {
                 controller: _controllerSet,
                 textAlign: TextAlign.end,
                 keyboardType: TextInputType.number,
-                style: TextStyle(color: color5,fontSize: 20),
+                style: TextStyle(color: color5, fontSize: 20),
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 ],
@@ -98,7 +101,7 @@ class _InfoState extends State<Info> {
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: color1, width: 3.0)),
                 disabledBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: color9)),
+                    OutlineInputBorder(borderSide: BorderSide(color: color9)),
                 focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: color7, width: 3.0)),
                 labelText: '중량',
@@ -158,7 +161,7 @@ class _InfoState extends State<Info> {
                   enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: color1, width: 3.0)),
                   disabledBorder:
-                  OutlineInputBorder(borderSide: BorderSide(color: color9)),
+                      OutlineInputBorder(borderSide: BorderSide(color: color9)),
                   focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: color7, width: 3.0)),
                   labelText: '반복',
@@ -217,7 +220,7 @@ class _InfoState extends State<Info> {
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: color1, width: 3.0)),
                 disabledBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: color9)),
+                    OutlineInputBorder(borderSide: BorderSide(color: color9)),
                 focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: color7, width: 3.0)),
                 labelText: '시간',
@@ -231,24 +234,26 @@ class _InfoState extends State<Info> {
                 groupValue: workoutType,
                 onChanged: (value) {
                   setState(() {
-                    _controllerReps.text='';
+                    _controllerReps.text = '';
                     _time = true;
                     _reps = false;
                     workoutType = value;
                   });
                 }),
           ),
-          RaisedButton(onPressed: () {
-            result.add(_controllerSet.text);
-            result.add(_controllerWeight.text);
-            result.add(_controllerReps.text);
-            result.add(_controllerTime.text);
-            result.add(_unitWeight);
-            result.add(_unitTime);
-            Get.back(result: result);
-          },
+          RaisedButton(
+            onPressed: () {
+              result.add(_controllerSet.text);
+              result.add(_controllerWeight.text);
+              result.add(_controllerReps.text);
+              result.add(_controllerTime.text);
+              result.add(_unitWeight);
+              result.add(_unitTime);
+              Get.back(result: result);
+            },
             child: Text('추가'),
-          color: color1,),
+            color: color1,
+          ),
         ],
       ),
     );

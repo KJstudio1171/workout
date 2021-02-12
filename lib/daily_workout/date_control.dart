@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import 'lib_control/ui_size_control.dart';
+import '../lib_control/ui_size_control.dart';
 
 class DateCard extends StatelessWidget {
   DateCard(this._date);
+
   String _date;
 
   @override
@@ -76,9 +76,3 @@ class _DateSectionState extends State<DateSection> {
     return widget;
   }
 }
-
-
-
-
-
-
