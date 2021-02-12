@@ -1,11 +1,60 @@
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 
-import '../lib_control/ui_size_control.dart';
+class DateSection extends StatefulWidget {
+  DateSection(this.dateTime);
+  DateTime dateTime;
+  @override
+  _DateSectionState createState() => _DateSectionState();
+}
+
+class _DateSectionState extends State<DateSection> {
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          padding: EdgeInsets.only(left: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text("${widget.dateTime.year}년 ${widget.dateTime.month}월 ${widget.dateTime.day}일"),
+              Text(
+                "오늘의 운동",
+                textScaleFactor: 2,
+              ),
+            ],
+          ),
+          //padding: ,
+        ),
+        /*ConstrainedBox(
+          constraints: new BoxConstraints(
+            minHeight: 0,
+            maxHeight: 80,
+          ),
+          child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                return DateCard(
+                    "${dateTime.add(Duration(days: index - 10)).day}");
+              },
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
+              itemCount: 50),
+        )*/
+      ],
+    );
+  }
+}
 
 class DateCard extends StatelessWidget {
   DateCard(this._date);
 
-  String _date;
+  final String _date;
 
   @override
   Widget build(BuildContext context) {
@@ -27,52 +76,5 @@ class DateCard extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class DateSection extends StatefulWidget {
-  @override
-  _DateSectionState createState() => _DateSectionState();
-}
-
-class _DateSectionState extends State<DateSection> {
-  @override
-  Widget build(BuildContext context) {
-    Widget widget = Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: EdgeInsets.only(left: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("xxxx년 x월"),
-              Text(
-                "오늘의 운동",
-                textScaleFactor: 2,
-              ),
-            ],
-          ),
-          //padding: ,
-        ),
-        ConstrainedBox(
-          constraints: new BoxConstraints(
-            minHeight: 0,
-            maxHeight: 80,
-          ),
-          child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                return DateCard("$index");
-              },
-              separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(),
-              itemCount: 20),
-        )
-      ],
-    );
-    return widget;
   }
 }

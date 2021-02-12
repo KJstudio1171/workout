@@ -11,6 +11,8 @@ import 'package:workout/database/mapstructure.dart';
 import 'package:workout/daily_workout/date_control.dart';
 
 class WorkOutSection extends StatefulWidget {
+  WorkOutSection(this.dateTime);
+  DateTime dateTime;
   @override
   _WorkOutSectionState createState() => _WorkOutSectionState();
 }
@@ -29,7 +31,7 @@ class _WorkOutSectionState extends State<WorkOutSection> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        DateSection(),
+        DateSection(widget.dateTime),
         InkWell(
           enableFeedback: true,
           child: ListTile(
