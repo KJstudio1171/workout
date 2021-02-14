@@ -46,7 +46,8 @@ class WorkoutSaveData {
   static List rawData = [];
 
   static Map resultData = {
-    '루틴': Set(),
+    'routine': Set(),
+    'date':''
   };
 
   static addRawData(
@@ -86,17 +87,25 @@ class WorkoutSaveData {
     });
   }
 
-  static rawDataPostProcessing() {
+  static rawDataPostProcessing(DateTime dateTime) {
     print(rawData);
     rawData.forEach((element) {
-      resultData['루틴'].add(element[0]);
+      resultData['routine'].add(element[0]);
       if (!resultData.containsKey(element[1])) {
         resultData.addAll({element[1]: []});
       }
       if (element[2].visualData != null)
         resultData[element[1]].add(element[2].visualData);
     });
+    resultData['date']=[dateTime.year,dateTime.month,dateTime.day];
     print(resultData);
+  }
+
+  static rawResultDataReset() {
+    rawData = [];
+    resultData = {
+      'routine': Set(),
+    };
   }
 }
 

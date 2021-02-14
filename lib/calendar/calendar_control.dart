@@ -127,16 +127,17 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          // Switch out 2 lines below to play with TableCalendar's settings
-          //-----------------------
-          _buildTableCalendar(),
-          const SizedBox(height: 20.0),
-          Expanded(child: _buildEventList()),
-        ],
+      body: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            // Switch out 2 lines below to play with TableCalendar's settings
+            //-----------------------
+            _buildTableCalendar(),
+            const SizedBox(height: 20.0),
+            Expanded(child: _buildEventList()),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
           onTap: (index) {
@@ -152,14 +153,17 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
             BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
             BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
           ]),
-      floatingActionButton: FloatingActionButton.extended(
-        label: Text('            오늘의 기록보기            '),
-        onPressed: () {
-          _calendarController.setSelectedDay(
-            DateTime(today.year, today.month, today.day),
-            runCallback: true,
-          );
-        },
+      floatingActionButton: Container(
+        height: 48,
+        child: FloatingActionButton.extended(
+          label: Text('            오늘의 기록보기            '),
+          onPressed: () {
+            _calendarController.setSelectedDay(
+              DateTime(today.year, today.month, today.day),
+              runCallback: true,
+            );
+          },
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
@@ -168,6 +172,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   // Simple TableCalendar configuration (using Styles)
   Widget _buildTableCalendar() {
     return TableCalendar(
+      locale: 'ko_KR', /////언어설정
       calendarController: _calendarController,
       events: _events,
       holidays: _holidays,

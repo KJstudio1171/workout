@@ -5,86 +5,8 @@ import 'package:get/get.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
 import 'package:workout/daily_workout/neumorphic_control.dart';
-import 'package:workout/database/routine_firestore.dart';
 import 'package:workout/database/workout_firestore.dart';
-import 'package:workout/database/mapstructure.dart';
-import 'package:workout/daily_workout/date_control.dart';
-
-class WorkOutSection extends StatefulWidget {
-  WorkOutSection(this.dateTime);
-  DateTime dateTime;
-  @override
-  _WorkOutSectionState createState() => _WorkOutSectionState();
-}
-
-class _WorkOutSectionState extends State<WorkOutSection> {
-  List<Widget> activeRoutineList = [];
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    activeRoutineList.clear();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        DateSection(widget.dateTime),
-        InkWell(
-          enableFeedback: true,
-          child: ListTile(
-            title: Text('루틴추가하기'),
-            leading: Icon(Icons.add),
-          ),
-          onTap: () async {
-            List result = await Get.to(FireStoreSelectedRoutine());
-            List<Widget> _list = activeRoutineList;
-            result.forEach((element) {
-              _list.add(RoutineList(element));
-            });
-            setState(() {
-              activeRoutineList = _list;
-            });
-          },
-        ),
-        Expanded(
-          child: ListView.builder(
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-            padding: EdgeInsets.all(0),
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return Dismissible(
-                key: UniqueKey(),
-                child: activeRoutineList[index],
-                onDismissed: (DismissDirection direction) {
-                  setState(() {
-                    activeRoutineList.removeAt(index);
-                  });
-                },
-                secondaryBackground: Container(
-                  child: Center(
-                    child: Text(
-                      '삭제',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  color: color11,
-                ),
-                background: Container(),
-                direction: DismissDirection.endToStart,
-              );
-            },
-            itemCount: activeRoutineList.length,
-          ),
-        ),
-      ],
-    );
-  }
-}
+import 'package:workout/database/map_structure.dart';
 
 class RoutineList extends StatefulWidget {
   RoutineList(this.routineData);

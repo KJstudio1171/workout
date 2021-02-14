@@ -11,6 +11,11 @@ import 'package:workout/database/workout_firestore.dart';
 import 'package:workout/database/map_structure.dart';
 
 List<Map<String, dynamic>> routineData = [];
+Map<String,dynamic> calendarMap = {
+  'routine':{'테스트','다이나믹'},
+  'date':[2021,2,23],
+};
+
 int chooseList = 0;
 
 void main() async {
@@ -51,6 +56,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   final String identification = 'test_id00';
 
   // 필드명
+  final String resultData = 'resultData';
   final String routine = 'routine';
   final String routineName = 'routine_name';
   final String wkoCategory = 'wko_category';
@@ -82,25 +88,6 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
           "오늘의 운동",
           style: TextStyle(color: color8),
         ),
-        actions: [
-          Container(
-            padding: EdgeInsets.all(10),
-            child: Center(
-              child: InkWell(
-                onTap: () {
-                  showCreateDoc();
-                },
-                enableFeedback: true,
-                child: Row(
-                  children: [
-                    Icon(Icons.add),
-                    Text('루틴 추가하기'),
-                  ],
-                ),
-              ),
-            ),
-          )
-        ],
       ),
       body: Column(
         children: [
@@ -109,17 +96,10 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
             child: ListTile(
               title: Text('루틴없이 운동하기'),
               trailing: Icon(Icons.arrow_forward_ios_sharp),
-              onTap: () {
-                routineData.clear();
-                routineData.add({'routine_name': '오늘의 운동', 'wko_category': {}});
-                /*workoutSaveData
-                    .add({'routine_name': '오늘의 운동', 'wko_category': {}});
-                print(workoutSaveData.toString());*/
-                Get.back(result: routineData);
-              },
+              onTap: () {},
             ),
           ),
-          StreamBuilder<QuerySnapshot>(
+          /*StreamBuilder<QuerySnapshot>(
             stream: db.snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -134,7 +114,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                       physics: ScrollPhysics(),
                       shrinkWrap: true,
                       children:
-                          snapshot.data.docs.map((DocumentSnapshot document) {
+                      snapshot.data.docs.map((DocumentSnapshot document) {
                         Map structure = document['wko_category'];
                         List wkoCategory = [];
                         structure.forEach((key, value) {
@@ -179,7 +159,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                                       wkoSetList, index),
                                                 ),
                                                 onDismissed: (DismissDirection
-                                                    direction) {
+                                                direction) {
                                                   deleteSet(
                                                       document, wkoName, index);
                                                 },
@@ -195,7 +175,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                                 ),
                                                 background: Container(),
                                                 direction:
-                                                    DismissDirection.endToStart,
+                                                DismissDirection.endToStart,
                                               );
                                             },
                                             itemCount: wkoSetList.length,
@@ -204,7 +184,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                               enableFeedback: true,
                                               onTap: () async {
                                                 List result =
-                                                    await Get.to(Info());
+                                                await Get.to(Info());
                                                 createSet(
                                                     document, wkoName, result);
                                                 print(result.toString());
@@ -225,7 +205,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                           child: Text(
                                             '삭제',
                                             style:
-                                                TextStyle(color: Colors.white),
+                                            TextStyle(color: Colors.white),
                                           ),
                                         ),
                                         color: color11,
@@ -238,9 +218,9 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                   enableFeedback: true,
                                   onTap: () async {
                                     Map<String, dynamic> map =
-                                        document[this.wkoCategory];
+                                    document[this.wkoCategory];
                                     List result =
-                                        await Get.to(FireStoreSelectWorkout());
+                                    await Get.to(FireStoreSelectWorkout());
                                     result.forEach((e) {
                                       // print(map.toString());
                                       map[e] = [];
@@ -275,19 +255,14 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                   );
               }
             },
-          ),
+          ),*/
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: color2,
         label: Text('                    선택하기                     '),
         onPressed: () {
-          /*routineData.forEach((element) {
-            workoutSaveData.add(element);
-          });
-          print("asdasdasdasdasdas");
-          print(workoutSaveData.toString());*/
-          Get.back(result: routineData);
+          createCalendar(calendarMap);
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -343,35 +318,16 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   CollectionReference routineDoc() {
     return FirebaseFirestore.instance
         .collection(identification)
-        .doc(routine)
-        .collection(routine);
+        .doc(resultData)
+        .collection(resultData);
   }
 
   void initWorkout() {}
 
   ///여기서부터 수정 함수들
-
-  void createRoutine(String routineName) {
-    routineDoc().add({this.routineName: routineName, this.wkoCategory: {}});
-  }
-
-  void createWorkout(DocumentSnapshot document, Map map) {
-    routineDoc().doc(document.id).update({wkoCategory: map});
-  }
-
-  void createSet(DocumentSnapshot document, String wkoName, List result) {
-    Map<String, dynamic> map = document[wkoCategory];
-    List list = document[wkoCategory][wkoName];
-    list.add({
-      set: result[0],
-      weight: result[1],
-      reps: result[2],
-      time: result[3],
-      unitWeight: result[4],
-      unitTime: result[5]
-    });
-    map.addAll({wkoName: list});
-    routineDoc().doc(document.id).update({wkoCategory: map});
+  void createCalendar(Map map) {
+    map[this.routine]=map[this.routine].toList();
+    routineDoc().add(map);
   }
 
   void deleteRoutine(String docID) {
@@ -422,7 +378,6 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
               child: Text("등록"),
               onPressed: () {
                 if (_newRoutineCon.text != null) {
-                  createRoutine(_newRoutineCon.text);
                 }
                 _newRoutineCon.clear();
                 Navigator.pop(context);
@@ -464,7 +419,7 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
             } else {
               print(routineData.toString());
               routineData.removeWhere((element) =>
-                  element['routine_name'] ==
+              element['routine_name'] ==
                   widget._document.data()['routine_name']);
             }
           });
@@ -472,21 +427,21 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
         child: Neumorphic(
           style: _pressIcon
               ? NeumorphicStyle(
-                  shape: NeumorphicShape.flat,
-                  intensity: 1.0,
-                  boxShape: NeumorphicBoxShape.circle(),
-                  lightSource: LightSource.topLeft,
-                  depth: -2,
-                  color: color2,
-                )
+            shape: NeumorphicShape.flat,
+            intensity: 1.0,
+            boxShape: NeumorphicBoxShape.circle(),
+            lightSource: LightSource.topLeft,
+            depth: -2,
+            color: color2,
+          )
               : NeumorphicStyle(
-                  shape: NeumorphicShape.flat,
-                  intensity: 1.0,
-                  boxShape: NeumorphicBoxShape.circle(),
-                  lightSource: LightSource.topLeft,
-                  depth: 0,
-                  color: Colors.grey[200],
-                ),
+            shape: NeumorphicShape.flat,
+            intensity: 1.0,
+            boxShape: NeumorphicBoxShape.circle(),
+            lightSource: LightSource.topLeft,
+            depth: 0,
+            color: Colors.grey[200],
+          ),
           child: Icon(
             _pressIcon ? Icons.check : Icons.add,
             color: _pressIcon ? Colors.white : Colors.black,
@@ -496,149 +451,3 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
     );
   }
 }
-
-/*
-  void showCreateDoc() {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("새로운 운동을 등록하세요!"),
-          content: Container(
-            height: 200,
-            child: Column(
-              children: <Widget>[
-                TextField(
-                  autofocus: true,
-                  decoration: InputDecoration(labelText: "운동 이름"),
-                  controller: _newNameCon,
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: "운동 부위"),
-                  controller: _newCateCon,
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: "메모"),
-                  controller: _newMemoCon,
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("취소"),
-              onPressed: () {
-                _newNameCon.clear();
-                _newCateCon.clear();
-                _newMemoCon.clear();
-                Navigator.pop(context);
-              },
-            ),
-            FlatButton(
-              child: Text("등록"),
-              onPressed: () {
-                if (_newCateCon.text.isNotEmpty &&
-                    _newNameCon.text.isNotEmpty) {
-                  createWorkout(_newNameCon.text, _newCateCon.text);
-                }
-                _newNameCon.clear();
-                _newCateCon.clear();
-                _newMemoCon.clear();
-                Navigator.pop(context);
-              },
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  void showReadDocSnackBar(DocumentSnapshot doc) {
-    _scaffoldKey.currentState
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          backgroundColor: color11,
-          duration: Duration(seconds: 3),
-          content: Text(
-              "$wkoName: ${doc.data()[wkoName]}\n$wkoCategory: ${doc.data()[wkoCategory]}"
-                  "\n$wkoMemo: ${doc.data()[wkoMemo]}"),
-          action: SnackBarAction(
-            label: "완료",
-            textColor: colorWhite,
-            onPressed: () {
-
-            },
-          ),
-        ),
-      );
-  }
-
-  void showUpdateOrDeleteDocDialog(DocumentSnapshot doc) {
-    _undNameCon.text = doc[wkoName];
-    _undCateCon.text = doc[wkoCategory];
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("운동을 수정하실 건가요?"),
-          content: Container(
-            height: 200,
-            child: Column(
-              children: <Widget>[
-                TextField(
-                  decoration: InputDecoration(labelText: wkoName),
-                  controller: _undNameCon,
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: wkoCategory),
-                  controller: _undCateCon,
-                ),
-                TextField(
-                  decoration: InputDecoration(labelText: wkoMemo),
-                  controller: _undMemoCon,
-                ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: Text("취소"),
-              onPressed: () {
-                _undNameCon.clear();
-                _undCateCon.clear();
-                _undMemoCon.clear();
-                Navigator.pop(context);
-              },
-            ),
-            FlatButton(
-              child: Text("수정"),
-              onPressed: () {
-                if (_undNameCon.text.isNotEmpty &&
-                    _undCateCon.text.isNotEmpty) {
-                  updateWorkout(doc.id, _undNameCon.text, _undCateCon.text,
-                      memo: _undMemoCon.text);
-                }
-                Navigator.pop(context);
-              },
-            ),
-            FlatButton(
-              child: Text("삭제"),
-              onPressed: () {
-                deleteWorkout(doc.id);
-                Navigator.pop(context);
-              },
-            )
-          ],
-        );
-      },
-    );
-  }
-
-  String timestampToStrDateTime(Timestamp ts) {
-    return DateTime.fromMicrosecondsSinceEpoch(ts.microsecondsSinceEpoch)
-        .toString();
-  }
-*/

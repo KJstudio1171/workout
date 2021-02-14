@@ -6,8 +6,380 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 import '../lib_control/theme_control.dart';
 
-void main() {
-  runApp(TestWidget());
+class TimerDialog extends StatefulWidget {
+  @override
+  _TimerDialogState createState() => _TimerDialogState();
+}
+
+class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin {
+  bool _mode = false;
+  bool _paused = false;
+  bool _play = false;
+  bool _stop = true;
+  Text timerText;
+
+  Timer _timer;
+  num _progressTime = 0;
+  num _visualTime = 0;
+  num _stopWatchTime = 0;
+
+  AnimationController controller;
+  num time = 2;
+
+  @override
+  void initState() {
+    this.controller = AnimationController(
+      duration: Duration(seconds: time),
+      vsync: this,
+    );
+    super.initState();
+    timerText = Text(
+      '$_visualTime',
+      style: TextStyle(fontSize: 50),
+    );
+  }
+
+  @override
+  void setState(fn) {
+    timeCal();
+    if (_visualTime <= 10) {
+      timerText = Text(
+        '$_visualTime',
+        style: TextStyle(fontSize: 50),
+      );
+    } else if (_visualTime <= 60) {
+      timerText = Text(
+        '${_visualTime ~/ 10}' '${_visualTime % 10}',
+        style: TextStyle(fontSize: 50),
+      );
+    } else {
+      timerText = Text(
+        '${_visualTime ~/ 60}' +
+            ':' '${_visualTime % 60 ~/ 10}' '${_visualTime % 60 % 10}',
+        style: TextStyle(fontSize: 50),
+      );
+    }
+    super.setState(fn);
+  }
+
+  @override
+  void dispose() {
+    this.controller.dispose();
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: color1,
+          title: Text('타이머'),
+        ),
+        backgroundColor: color16,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 250,
+              height: 250,
+              margin: EdgeInsets.only(bottom: 50),
+              child: CircleProgressBar(
+                controller: this.controller,
+                value: 1,
+                strokeWidth: 5,
+                backgroundColor: color1,
+                foregroundColor: color7,
+                timerText: timerText,
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                containerButton(60),
+                containerButton(30),
+                containerButton(10),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                    width: 80,
+                    height: 80,
+                    margin: EdgeInsets.all(10),
+                    child: InkWell(
+                      onTap: () {
+                        if (!_paused) _pause();
+                        this.controller.stop();
+                        setState(() {
+                          _paused = true;
+                          _play = false;
+                          _stop = false;
+                        });
+                      },
+                      child: _paused
+                          ? Neumorphic(
+                        child: Icon(Icons.pause),
+                        style: NeumorphicStyle(
+                            border: NeumorphicBorder(
+                                width: 2, color: color14),
+                            intensity: 1,
+                            depth: -3,
+                            color: color16),
+                      )
+                          : Neumorphic(
+                        child: Icon(Icons.pause),
+                        style: NeumorphicStyle(
+                            shape: NeumorphicShape.convex,
+                            border:
+                            NeumorphicBorder(width: 2, color: color1),
+                            intensity: 1,
+                            depth: 5,
+                            color: color16),
+                      ),
+                    )),
+                Container(
+                    width: 80,
+                    height: 80,
+                    margin: EdgeInsets.all(10),
+                    child: InkWell(
+                      onTap: () {
+                        if (!_play) {
+                          _start();
+                        }
+                        setState(() {
+                          _play = true;
+                          _paused = false;
+                          _stop = false;
+                        });
+                      },
+                      child: _play
+                          ? Neumorphic(
+                        child: Icon(Icons.play_arrow_sharp),
+                        style: NeumorphicStyle(
+                            border: NeumorphicBorder(
+                                width: 2, color: color11),
+                            intensity: 1,
+                            depth: -3,
+                            color: color16),
+                      )
+                          : Neumorphic(
+                        child: Icon(Icons.play_arrow_sharp),
+                        style: NeumorphicStyle(
+                            shape: NeumorphicShape.convex,
+                            border:
+                            NeumorphicBorder(width: 2, color: color1),
+                            intensity: 1,
+                            depth: 5,
+                            color: color16),
+                      ),
+                    )),
+                Container(
+                    width: 80,
+                    height: 80,
+                    margin: EdgeInsets.all(10),
+                    child: InkWell(
+                      onTap: () {
+                        if (!_stop) _reset();
+                        this.controller.reset();
+                        this.controller.stop();
+                        setState(() {
+                          _stop = true;
+                          _play = false;
+                          _paused = false;
+                        });
+                      },
+                      child: _stop
+                          ? Neumorphic(
+                        child: Icon(Icons.stop),
+                        style: NeumorphicStyle(
+                            border:
+                            NeumorphicBorder(width: 2, color: color3),
+                            intensity: 1,
+                            depth: -3,
+                            color: color16),
+                      )
+                          : Neumorphic(
+                        child: Icon(Icons.stop),
+                        style: NeumorphicStyle(
+                            shape: NeumorphicShape.convex,
+                            border:
+                            NeumorphicBorder(width: 2, color: color1),
+                            intensity: 1,
+                            depth: 5,
+                            color: color16),
+                      ),
+                    )),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                    width: 130,
+                    height: 50,
+                    margin: EdgeInsets.fromLTRB(10, 50, 10, 10),
+                    child: InkWell(
+                      onTap: () {
+                        _reset();
+                        _stop = true;
+                        _play = false;
+                        _paused = false;
+                        this.controller.stop();
+                        _stopWatchTime = 0;
+                        _progressTime = 0;
+                        this.controller.reset();
+                        this.controller.stop();
+                        setState(() {
+                          _mode = false;
+                        });
+                      },
+                      child: _mode
+                          ? Neumorphic(
+                          child: Icon(Icons.access_alarm),
+                          style: NeumorphicStyle(
+                              shape: NeumorphicShape.convex,
+                              border:
+                              NeumorphicBorder(width: 2, color: color1),
+                              intensity: 1,
+                              depth: 5,
+                              color: color16))
+                          : Neumorphic(
+                        child: Icon(Icons.access_alarm),
+                        style: NeumorphicStyle(
+                            border:
+                            NeumorphicBorder(width: 2, color: color1),
+                            intensity: 1,
+                            depth: -3,
+                            color: color16),
+                      ),
+                    )),
+                Container(
+                  width: 130,
+                  height: 50,
+                  margin: EdgeInsets.fromLTRB(10, 50, 10, 10),
+                  child: InkWell(
+                    onTap: () {
+                      _reset();
+                      _stop = true;
+                      _play = false;
+                      _paused = false;
+                      this.controller.stop();
+                      _stopWatchTime = 0;
+                      _progressTime = 0;
+                      this.controller = AnimationController(
+                        duration: Duration(seconds: 1),
+                        vsync: this,
+                      )..addListener(() {
+                        this.controller.repeat();
+                      });
+                      setState(() {
+                        _mode = true;
+                      });
+                    },
+                    child: _mode
+                        ? Neumorphic(
+                      child: Icon(Icons.watch_later_outlined),
+                      style: NeumorphicStyle(
+                          border:
+                          NeumorphicBorder(width: 2, color: color1),
+                          intensity: 1,
+                          depth: -3,
+                          color: color16),
+                    )
+                        : Neumorphic(
+                      child: Icon(Icons.watch_later_outlined),
+                      style: NeumorphicStyle(
+                          shape: NeumorphicShape.convex,
+                          border:
+                          NeumorphicBorder(width: 2, color: color1),
+                          intensity: 1,
+                          depth: 5,
+                          color: color16),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+    );
+  }
+
+  Container containerButton(int time) {
+    return Container(
+      width: 80,
+      height: 80,
+      margin: EdgeInsets.all(10),
+      child: NeumorphicButton(
+        child: Center(
+          child: Text(
+            '+' + '$time' + '초',
+            style: TextStyle(fontSize: 15),
+          ),
+        ),
+        onPressed: () {
+          _progressTime = 0;
+          if (!_mode) {
+            if (_stopWatchTime == 0) {
+              _progressTime = 0;
+            }
+            _stopWatchTime += time;
+            this.controller = AnimationController(
+              duration: Duration(seconds: _stopWatchTime),
+              vsync: this,
+            );
+            if (_play) this.controller.forward();
+            setState(() {});
+          }
+        },
+        style: NeumorphicStyle(
+            border: NeumorphicBorder(width: 2, color: color1),
+            shape: _mode ? NeumorphicShape.flat : NeumorphicShape.convex,
+            //border: NeumorphicBorder(width: 5),
+            intensity: 1.0,
+            boxShape: NeumorphicBoxShape.circle(),
+            lightSource: LightSource.topLeft,
+            depth: _mode ? -3 : 5,
+            color: color16),
+      ),
+    );
+  }
+
+  void timeCal() {
+    if (_mode) {
+      _visualTime = _progressTime;
+    } else {
+      if (_stopWatchTime - _progressTime >= 0)
+        _visualTime = _stopWatchTime - _progressTime;
+    }
+  }
+
+  void _start() {
+    print('start');
+    _paused = false;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _progressTime++;
+      if (_mode == true || _stopWatchTime != 0) {
+        this.controller.forward();
+      }
+      setState(() {});
+    });
+  }
+
+  void _pause() {
+    _paused = true;
+    _timer?.cancel();
+  }
+
+  void _reset() {
+    _stop = true;
+    _progressTime = 0;
+    _stopWatchTime = 0;
+    _timer?.cancel();
+  }
 }
 
 class CircleProgressBar extends StatefulWidget {
@@ -66,7 +438,7 @@ class _CircleProgressBarState extends State<CircleProgressBar>
                   boxShape: NeumorphicBoxShape.circle(),
                   lightSource: LightSource.topLeft,
                   depth: 10,
-                  color: Colors.white),
+                  color: color16),
             ),
           ),
           builder: (context, child) {
@@ -176,376 +548,4 @@ class CircleProgressBarPainter extends CustomPainter {
   }
 }
 
-class TestWidget extends StatefulWidget {
-  @override
-  _TestWidgetState createState() => _TestWidgetState();
-}
 
-class _TestWidgetState extends State<TestWidget> with TickerProviderStateMixin {
-  bool _mode = false;
-  bool _paused = false;
-  bool _play = false;
-  bool _stop = true;
-  Text timerText;
-
-  Timer _timer;
-  num _progressTime = 0;
-  num _visualTime = 0;
-  num _stopWatchTime = 0;
-
-  AnimationController controller;
-  num time = 2;
-
-  @override
-  void initState() {
-    this.controller = AnimationController(
-      duration: Duration(seconds: time),
-      vsync: this,
-    );
-    super.initState();
-    timerText = Text(
-      '$_visualTime',
-      style: TextStyle(fontSize: 50),
-    );
-  }
-
-  @override
-  void setState(fn) {
-    timeCal();
-    if (_visualTime <= 10) {
-      timerText = Text(
-        '$_visualTime',
-        style: TextStyle(fontSize: 50),
-      );
-    } else if (_visualTime <= 60) {
-      timerText = Text(
-        '${_visualTime ~/ 10}' '${_visualTime % 10}',
-        style: TextStyle(fontSize: 50),
-      );
-    } else {
-      timerText = Text(
-        '${_visualTime ~/ 60}' +
-            ':' '${_visualTime % 60 ~/ 10}' '${_visualTime % 60 % 10}',
-        style: TextStyle(fontSize: 50),
-      );
-    }
-    super.setState(fn);
-  }
-
-  @override
-  void dispose() {
-    this.controller.dispose();
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 250,
-              height: 250,
-              margin: EdgeInsets.only(bottom: 50),
-              child: CircleProgressBar(
-                controller: this.controller,
-                value: 1,
-                strokeWidth: 5,
-                backgroundColor: color1,
-                foregroundColor: color7,
-                timerText: timerText,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                containerButton(60),
-                containerButton(30),
-                containerButton(10),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    width: 80,
-                    height: 80,
-                    margin: EdgeInsets.all(10),
-                    child: InkWell(
-                      onTap: () {
-                        if (!_paused) _pause();
-                        this.controller.stop();
-                        setState(() {
-                          _paused = true;
-                          _play = false;
-                          _stop = false;
-                        });
-                      },
-                      child: _paused
-                          ? Neumorphic(
-                              child: Icon(Icons.pause),
-                              style: NeumorphicStyle(
-                                  border: NeumorphicBorder(
-                                      width: 2, color: color14),
-                                  intensity: 1,
-                                  depth: -3,
-                                  color: Colors.white),
-                            )
-                          : Neumorphic(
-                              child: Icon(Icons.pause),
-                              style: NeumorphicStyle(
-                                  shape: NeumorphicShape.convex,
-                                  border:
-                                      NeumorphicBorder(width: 2, color: color1),
-                                  intensity: 1,
-                                  depth: 5,
-                                  color: Colors.white),
-                            ),
-                    )),
-                Container(
-                    width: 80,
-                    height: 80,
-                    margin: EdgeInsets.all(10),
-                    child: InkWell(
-                      onTap: () {
-                        if (!_play) {
-                          _start();
-                        }
-                        setState(() {
-                          _play = true;
-                          _paused = false;
-                          _stop = false;
-                        });
-                      },
-                      child: _play
-                          ? Neumorphic(
-                              child: Icon(Icons.play_arrow_sharp),
-                              style: NeumorphicStyle(
-                                  border: NeumorphicBorder(
-                                      width: 2, color: color11),
-                                  intensity: 1,
-                                  depth: -3,
-                                  color: Colors.white),
-                            )
-                          : Neumorphic(
-                              child: Icon(Icons.play_arrow_sharp),
-                              style: NeumorphicStyle(
-                                  shape: NeumorphicShape.convex,
-                                  border:
-                                      NeumorphicBorder(width: 2, color: color1),
-                                  intensity: 1,
-                                  depth: 5,
-                                  color: Colors.white),
-                            ),
-                    )),
-                Container(
-                    width: 80,
-                    height: 80,
-                    margin: EdgeInsets.all(10),
-                    child: InkWell(
-                      onTap: () {
-                        if (!_stop) _reset();
-                        this.controller.reset();
-                        this.controller.stop();
-                        setState(() {
-                          _stop = true;
-                          _play = false;
-                          _paused = false;
-                        });
-                      },
-                      child: _stop
-                          ? Neumorphic(
-                              child: Icon(Icons.stop),
-                              style: NeumorphicStyle(
-                                  border:
-                                      NeumorphicBorder(width: 2, color: color3),
-                                  intensity: 1,
-                                  depth: -3,
-                                  color: Colors.white),
-                            )
-                          : Neumorphic(
-                              child: Icon(Icons.stop),
-                              style: NeumorphicStyle(
-                                  shape: NeumorphicShape.convex,
-                                  border:
-                                      NeumorphicBorder(width: 2, color: color1),
-                                  intensity: 1,
-                                  depth: 5,
-                                  color: Colors.white),
-                            ),
-                    )),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    width: 130,
-                    height: 50,
-                    margin: EdgeInsets.fromLTRB(10, 50, 10, 10),
-                    child: InkWell(
-                      onTap: () {
-                        _reset();
-                        _stop = true;
-                        _play = false;
-                        _paused = false;
-                        this.controller.stop();
-                        _stopWatchTime = 0;
-                        _progressTime = 0;
-                        this.controller.reset();
-                        this.controller.stop();
-                        setState(() {
-                          _mode = false;
-                        });
-                      },
-                      child: _mode
-                          ? Neumorphic(
-                              child: Icon(Icons.access_alarm),
-                              style: NeumorphicStyle(
-                                  shape: NeumorphicShape.convex,
-                                  border:
-                                      NeumorphicBorder(width: 2, color: color1),
-                                  intensity: 1,
-                                  depth: 5,
-                                  color: Colors.white))
-                          : Neumorphic(
-                              child: Icon(Icons.access_alarm),
-                              style: NeumorphicStyle(
-                                  border:
-                                      NeumorphicBorder(width: 2, color: color1),
-                                  intensity: 1,
-                                  depth: -3,
-                                  color: Colors.white),
-                            ),
-                    )),
-                Container(
-                  width: 130,
-                  height: 50,
-                  margin: EdgeInsets.fromLTRB(10, 50, 10, 10),
-                  child: InkWell(
-                    onTap: () {
-                      _reset();
-                      _stop = true;
-                      _play = false;
-                      _paused = false;
-                      this.controller.stop();
-                      _stopWatchTime = 0;
-                      _progressTime = 0;
-                      this.controller = AnimationController(
-                        duration: Duration(seconds: 1),
-                        vsync: this,
-                      )..addListener(() {
-                          this.controller.repeat();
-                        });
-                      setState(() {
-                        _mode = true;
-                      });
-                    },
-                    child: _mode
-                        ? Neumorphic(
-                            child: Icon(Icons.watch_later_outlined),
-                            style: NeumorphicStyle(
-                                border:
-                                    NeumorphicBorder(width: 2, color: color1),
-                                intensity: 1,
-                                depth: -3,
-                                color: Colors.white),
-                          )
-                        : Neumorphic(
-                            child: Icon(Icons.watch_later_outlined),
-                            style: NeumorphicStyle(
-                                shape: NeumorphicShape.convex,
-                                border:
-                                    NeumorphicBorder(width: 2, color: color1),
-                                intensity: 1,
-                                depth: 5,
-                                color: Colors.white),
-                          ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Container containerButton(int time) {
-    return Container(
-      width: 80,
-      height: 80,
-      margin: EdgeInsets.all(10),
-      child: NeumorphicButton(
-        child: Center(
-          child: Text(
-            '+' + '$time' + '초',
-            style: TextStyle(fontSize: 15),
-          ),
-        ),
-        onPressed: () {
-          _progressTime = 0;
-          if (!_mode) {
-            if (_stopWatchTime == 0) {
-              _progressTime = 0;
-            }
-            _stopWatchTime += time;
-            this.controller = AnimationController(
-              duration: Duration(seconds: _stopWatchTime),
-              vsync: this,
-            );
-            if (_play) this.controller.forward();
-            setState(() {});
-          }
-        },
-        style: NeumorphicStyle(
-            border: NeumorphicBorder(width: 2, color: color1),
-            shape: _mode ? NeumorphicShape.flat : NeumorphicShape.convex,
-            //border: NeumorphicBorder(width: 5),
-            intensity: 1.0,
-            boxShape: NeumorphicBoxShape.circle(),
-            lightSource: LightSource.topLeft,
-            depth: _mode ? -3 : 5,
-            color: colorWhite),
-      ),
-    );
-  }
-
-  void timeCal() {
-    if (_mode) {
-      _visualTime = _progressTime;
-    } else {
-      if (_stopWatchTime - _progressTime >= 0)
-        _visualTime = _stopWatchTime - _progressTime;
-    }
-  }
-
-  void _start() {
-    print('start');
-    _paused = false;
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      _progressTime++;
-      if (_mode == true || _stopWatchTime != 0) {
-        this.controller.forward();
-      }
-      setState(() {});
-    });
-  }
-
-  void _pause() {
-    _paused = true;
-    _timer?.cancel();
-  }
-
-  void _reset() {
-    _stop = true;
-    _progressTime = 0;
-    _stopWatchTime = 0;
-    _timer?.cancel();
-  }
-}
