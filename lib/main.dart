@@ -16,9 +16,8 @@ import 'package:workout/calendar/calendar_control.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  initializeDateFormatting().then((dynamic) =>
-      runApp(TestWidget()
-        /*ChangeNotifierProvider(
+  initializeDateFormatting().then((dynamic) => runApp(TestWidget()
+      /*ChangeNotifierProvider(
           create: (context) => SimpleState(),
           child: StateLoginDemo(),*/
       ));
@@ -33,7 +32,15 @@ class TestWidget extends StatelessWidget {
       title: 'MainPage',
       theme: ThemeContol.firstDesign,
       debugShowCheckedModeBanner: false,
-      home: MainPage(),
+      initialRoute: '/h',
+      getPages: [
+        GetPage(
+          name: '/c',
+          page: () => MyHomePage(title: 'Table Calendar Demo'),
+        ),
+        GetPage(name: '/h', page: () => MainPage()),
+        GetPage(name: '/s', page: () => MainPage()),
+      ],
       //rootnavigator false 페이지 유지가능 Navigator.of(context, rootNavigator: false).pushNamed("/route");
       // Get.to(page,{argument,transition})
       //Get.argument
@@ -60,15 +67,6 @@ class _MainPageState extends State<MainPage> {
   List<Widget> selectedWidget;
 
   @override
-  void initState() {
-    selectedWidget = [
-      MyHomePage(title: 'Table Calendar Demo'),
-      WorkOutSection(dateTime),
-    ];
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -82,7 +80,10 @@ class _MainPageState extends State<MainPage> {
                   color: Color.fromARGB(255, 80, 97, 125),
                 ),
               ),
-              Icon(Icons.arrow_drop_down_sharp, color: Colors.blueGrey,),
+              Icon(
+                Icons.arrow_drop_down_sharp,
+                color: Colors.blueGrey,
+              ),
             ],
           ),
           onTap: () {
@@ -97,10 +98,6 @@ class _MainPageState extends State<MainPage> {
             selected.then((selected) {
               setState(() {
                 dateTime = selected;
-                selectedWidget = [
-                  MyHomePage(title: 'Table Calendar Demo'),
-                  WorkOutSection(dateTime),
-                ];
               });
             });
           },
@@ -121,14 +118,13 @@ class _MainPageState extends State<MainPage> {
           ),
         ],
       ),
-      body: selectedWidget[_index],
+      body: WorkOutSection(dateTime),
       bottomNavigationBar: BottomNavigationBar(
           onTap: (index) {
-            setState(() {
-              _index = index;
-            });
+            if (index == 0) Get.toNamed('/c');
+            if (index == 2) Get.toNamed('/s');
           },
-          currentIndex: _index,
+          currentIndex: 1,
           items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
@@ -140,8 +136,8 @@ class _MainPageState extends State<MainPage> {
       floatingActionButton: FloatingActionButton.extended(
         label: Text('                    저장하기                     '),
         onPressed: () {
-          WorkoutSaveData.initData();
-          WorkoutSaveData.dataVisualizing();
+          WorkoutSaveData.rawDataPreProcessing();
+          WorkoutSaveData.rawDataPostProcessing();
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

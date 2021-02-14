@@ -37,6 +37,7 @@ dependencies:
   flutter_neumorphic: ^3.0.4+1
   group_button: ^1.1.0
   shared_preferences: ^0.5.12+4
+  flutter_swiper : ^1.1.6
 
 
 dev_dependencies:

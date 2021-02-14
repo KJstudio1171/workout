@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-var fireStoreMap = {
+/*var fireStoreMap = {
   'routine_name': 'name',
   'wko_category': {
     'workout_name': [
@@ -14,21 +14,9 @@ var fireStoreMap = {
       },
     ]
   }
-};
+};*/
 
-List<Map> workoutSaveData = [];
-
-class InfoMap {
-  InfoMap();
-
-  String routineName;
-  String workoutName;
-
-  set routineNameSet(String routineName) =>
-      this.routineName = routineName ?? '';
-
-  String get routineNameGet => this.routineName;
-}
+// List<Map> workoutSaveData = [];
 
 class WorkoutData {
   int set = 0;
@@ -55,20 +43,18 @@ class WorkoutData {
 }
 
 class WorkoutSaveData {
-  static List saveData = [];
+  static List rawData = [];
 
-  static Map result = {
+  static Map resultData = {
     '루틴': Set(),
   };
-
-  static List rawData = [];
 
   static addRawData(
       String routineName, String workoutName, WorkoutData workoutData) {
     rawData.add([routineName, workoutName, workoutData]);
   }
 
-  static initData() {
+  static rawDataPreProcessing() {
     rawData.forEach((element) {
       WorkoutData workoutData = element[2];
       workoutData.reps == 0 || workoutData.reps == null
@@ -100,17 +86,17 @@ class WorkoutSaveData {
     });
   }
 
-  static dataVisualizing() {
+  static rawDataPostProcessing() {
     print(rawData);
     rawData.forEach((element) {
-      result['루틴'].add(element[0]);
-      if (!result.containsKey(element[1])) {
-        result.addAll({element[1]: []});
+      resultData['루틴'].add(element[0]);
+      if (!resultData.containsKey(element[1])) {
+        resultData.addAll({element[1]: []});
       }
       if (element[2].visualData != null)
-        result[element[1]].add(element[2].visualData);
+        resultData[element[1]].add(element[2].visualData);
     });
-    print(result);
+    print(resultData);
   }
 }
 
@@ -131,10 +117,6 @@ class WorkoutParse {
 
   Map workoutData = {};
   Map map = {};
-
-  saveData() {
-    WorkoutSaveData.saveData.add(this.workoutData);
-  }
 
   initRoutine() {
     if (this.workoutData[routineName] == null) {

@@ -112,9 +112,9 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
               onTap: () {
                 routineData.clear();
                 routineData.add({'routine_name': '오늘의 운동', 'wko_category': {}});
-                workoutSaveData
+                /*workoutSaveData
                     .add({'routine_name': '오늘의 운동', 'wko_category': {}});
-                print(workoutSaveData.toString());
+                print(workoutSaveData.toString());*/
                 Get.back(result: routineData);
               },
             ),
@@ -282,11 +282,11 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
         backgroundColor: color2,
         label: Text('                    선택하기                     '),
         onPressed: () {
-          routineData.forEach((element) {
+          /*routineData.forEach((element) {
             workoutSaveData.add(element);
           });
           print("asdasdasdasdasdas");
-          print(workoutSaveData.toString());
+          print(workoutSaveData.toString());*/
           Get.back(result: routineData);
         },
       ),

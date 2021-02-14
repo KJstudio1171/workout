@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 void main() => runApp(new MyApp());
 
@@ -10,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       color: Colors.blue,
-      home: new Splash(),
+      home: new Intro(),
     );
   }
 }
@@ -31,7 +33,7 @@ class SplashState extends State<Splash> {
     } else {
       await prefs.setBool('seen', true);
       Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (context) => new IntroScreen()));
+          new MaterialPageRoute(builder: (context) => new Intro()));
     }
   }
 
@@ -40,6 +42,28 @@ class SplashState extends State<Splash> {
     return new Scaffold(
       body: new Center(
         child: new Text('Loading...'),
+      ),
+    );
+  }
+}
+
+class Intro extends StatefulWidget {
+  @override
+  _IntroState createState() => _IntroState();
+}
+
+class _IntroState extends State<Intro> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Swiper(
+        itemBuilder: (BuildContext context, int index) {
+          return Text('$index');
+        },
+        itemCount: 3,
+        pagination: SwiperPagination(),
+        control: SwiperControl(color: Colors.pinkAccent),
       ),
     );
   }
@@ -54,20 +78,6 @@ class Home extends StatelessWidget {
       ),
       body: new Center(
         child: new Text('This is the second page'),
-      ),
-    );
-  }
-}
-
-class IntroScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('IntroScreen'),
-      ),
-      body: new Center(
-        child: new Text('This is the IntroScreen'),
       ),
     );
   }

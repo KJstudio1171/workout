@@ -3,14 +3,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:get/get.dart';
 
 // Example holidays
 final Map<DateTime, List> _holidays = {
-  DateTime(2020, 1, 1): ['New Year\'s Day'],
+  /*DateTime(2020, 1, 1): ['New Year\'s Day'],
   DateTime(2020, 1, 6): ['Epiphany'],
   DateTime(2020, 2, 14): ['Valentine\'s Day'],
   DateTime(2020, 4, 21): ['Easter Sunday'],
-  DateTime(2020, 4, 22): ['Easter Monday'],
+  DateTime(2020, 4, 22): ['Easter Monday'],*/
 };
 
 class MyHomePage extends StatefulWidget {
@@ -27,6 +28,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   List _selectedEvents;
   AnimationController _animationController;
   CalendarController _calendarController;
+  final today = DateTime.now();
 
   @override
   void initState() {
@@ -124,17 +126,42 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        // Switch out 2 lines below to play with TableCalendar's settings
-        //-----------------------
-        _buildTableCalendar(),
-        const SizedBox(height: 8.0),
-        _buildButtons(),
-        const SizedBox(height: 8.0),
-        Expanded(child: _buildEventList()),
-      ],
+    return Scaffold(
+      appBar: AppBar(),
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          // Switch out 2 lines below to play with TableCalendar's settings
+          //-----------------------
+          _buildTableCalendar(),
+          const SizedBox(height: 20.0),
+          Expanded(child: _buildEventList()),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+          onTap: (index) {
+            if (index == 1) Get.back();
+            if (index == 2) Get.offNamed('/s');
+          },
+          currentIndex: 0,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: '',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+          ]),
+      floatingActionButton: FloatingActionButton.extended(
+        label: Text('            오늘의 기록보기            '),
+        onPressed: () {
+          _calendarController.setSelectedDay(
+            DateTime(today.year, today.month, today.day),
+            runCallback: true,
+          );
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -162,6 +189,11 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       onDaySelected: _onDaySelected,
       onVisibleDaysChanged: _onVisibleDaysChanged,
       onCalendarCreated: _onCalendarCreated,
+      initialCalendarFormat: CalendarFormat.month,
+      availableCalendarFormats: const {
+        CalendarFormat.month: 'Month',
+        CalendarFormat.week: 'Week',
+      },
     );
   }
 
@@ -287,57 +319,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
       Icons.add_box,
       size: 20.0,
       color: Colors.blueGrey[800],
-    );
-  }
-
-  Widget _buildButtons() {
-    final dateTime = _events.keys.elementAt(_events.length - 2);
-
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            RaisedButton(
-              child: Text('Month'),
-              onPressed: () {
-                setState(() {
-                  _calendarController.setCalendarFormat(CalendarFormat.month);
-                });
-              },
-            ),
-            RaisedButton(
-              child: Text('2 weeks'),
-              onPressed: () {
-                setState(() {
-                  _calendarController
-                      .setCalendarFormat(CalendarFormat.twoWeeks);
-                });
-              },
-            ),
-            RaisedButton(
-              child: Text('Week'),
-              onPressed: () {
-                setState(() {
-                  _calendarController.setCalendarFormat(CalendarFormat.week);
-                });
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 8.0),
-        RaisedButton(
-          child: Text(
-              'Set day ${dateTime.day}-${dateTime.month}-${dateTime.year}'),
-          onPressed: () {
-            _calendarController.setSelectedDay(
-              DateTime(dateTime.year, dateTime.month, dateTime.day),
-              runCallback: true,
-            );
-          },
-        ),
-      ],
     );
   }
 
