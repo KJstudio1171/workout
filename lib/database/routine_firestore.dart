@@ -82,6 +82,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
           "오늘의 운동",
           style: TextStyle(color: color8),
         ),
+        backgroundColor: color1,
         actions: [
           Container(
             padding: EdgeInsets.all(10),
@@ -279,7 +280,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: color2,
+        backgroundColor: color7,
         label: Text('                    선택하기                     '),
         onPressed: () {
           /*routineData.forEach((element) {
@@ -477,7 +478,7 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
                   boxShape: NeumorphicBoxShape.circle(),
                   lightSource: LightSource.topLeft,
                   depth: -2,
-                  color: color2,
+                  color: color7,
                 )
               : NeumorphicStyle(
                   shape: NeumorphicShape.flat,
@@ -489,7 +490,7 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
                 ),
           child: Icon(
             _pressIcon ? Icons.check : Icons.add,
-            color: _pressIcon ? Colors.white : Colors.black,
+            color: _pressIcon ? color15 : color2,
           ),
         ),
       ),

@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 /*var fireStoreMap = {
   'routine_name': 'name',
@@ -44,10 +46,9 @@ class WorkoutData {
 
 class WorkoutSaveData {
   static List rawData = [];
-
+  static List resultDate = [];
   static Map resultData = {
     'routine': Set(),
-    'date':''
   };
 
   static addRawData(
@@ -97,7 +98,7 @@ class WorkoutSaveData {
       if (element[2].visualData != null)
         resultData[element[1]].add(element[2].visualData);
     });
-    resultData['date']=[dateTime.year,dateTime.month,dateTime.day];
+    resultDate = [dateTime.year, dateTime.month, dateTime.day];
     print(resultData);
   }
 
@@ -183,5 +184,64 @@ class WorkoutParse {
     list[4] = setData.unitWeight;
     list[5] = setData.unitTime;
     this.workoutData[this.wkoCategory][workoutName].remove(list);
+  }
+}
+
+class ResultDataFireStore {
+  final String identification = 'test_id00';
+
+  // 필드명
+  final String resultData = 'resultData';
+  final String routine = 'routine';
+  final String workoutData = 'workout_data';
+  final String date = 'date';
+
+  resultDoc() {
+    return FirebaseFirestore.instance
+        .collection(identification)
+        .doc(resultData)
+        .collection(resultData);
+  }
+
+  initCalendar(List list) async{
+    await resultDoc().get().then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        list.add(doc.data());
+      });
+    });
+  }
+
+  Map calendarDataToEvents(List list) {
+    Map<DateTime,List<dynamic>> map = {};
+    list.forEach((element) {
+      map.addAll({
+        DateTime(element[date][0], element[date][1], element[date][2]):
+            [element[workoutData]]
+      });
+    });
+    return map;
+  }
+
+  deleteRoutine(int year, int month, int day) async{
+    String documentID;
+    await resultDoc()
+        .where(date, isEqualTo: [year, month, day])
+        .get()
+        .then((value) => value.docs.forEach((element) {
+              documentID = element.reference.id;
+            }));
+    resultDoc().doc(documentID).delete();
+  }
+
+  createCalendar(List list, Map map) async {
+    map[this.routine] = map[this.routine]?.toList();
+    await FirebaseFirestore.instance
+        .collection(identification)
+        .doc(resultData)
+        .collection(resultData)
+        .add({
+      date: list,
+      this.workoutData: map,
+    });
   }
 }

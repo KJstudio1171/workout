@@ -22,15 +22,6 @@ List<String> cateButtonList = [
 ];
 int chooseList = 0;
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
-  /*ChangeNotifierProvider(
-          create: (context) => SimpleState(),
-          child: StateLoginDemo(),*/
-}
-
 class IconButtonNeumorphic extends StatefulWidget {
   IconButtonNeumorphic(this._document);
 
@@ -93,20 +84,6 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
   }
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: color1,
-      ),
-      home: FireStoreSelectWorkout(),
-    );
-  }
-}
-
 class FireStoreSelectWorkout extends StatefulWidget {
   final String wkoName = "운동 이름";
 
@@ -142,13 +119,13 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
     // TODO: implement initState
     super.initState();
     sizeCheck();
-    db = fireStoreDoc(classification);
-    stream = fireStoreDoc(classification).orderBy(wkoName);
+    db = fireStoreDoc();
+    stream = fireStoreDoc().orderBy(wkoName);
   }
 
   sizeCheck() async {
     var tx =
-        await fireStoreDoc(classification).get().then((value) => value.size);
+        await fireStoreDoc().get().then((value) => value.size);
     if (tx == 0) {
       initWorkout();
     }
@@ -159,6 +136,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        backgroundColor: color1,
         title: Text(
           "오늘의 운동",
           style: TextStyle(color: color8),
@@ -174,12 +152,12 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                 children: [
                   Icon(
                     Icons.add,
-                    color: color10,
+                    color: color2,
                     size: 15,
                   ),
                   Text(
                     '운동을 추가하세요',
-                    style: TextStyle(color: color10, fontSize: 14),
+                    style: TextStyle(color: color2, fontSize: 14),
                   ),
                 ],
               ),
@@ -197,14 +175,14 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
               onChanged: (value) {
                 if (value.trim().isNotEmpty) {
                   setState(() {
-                    stream = fireStoreDoc(classification)
+                    stream = fireStoreDoc()
                         .where(wkoName, isGreaterThanOrEqualTo: value.trim())
                         .where(wkoName,
                             isLessThanOrEqualTo: value.trim() + '힣');
                   });
                 } else {
                   setState(() {
-                    stream = fireStoreDoc(classification).orderBy(wkoName);
+                    stream = fireStoreDoc().orderBy(wkoName);
                   });
                 }
               },
@@ -236,12 +214,12 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                     chooseList = index;
                     if (chooseList != 0) {
                       setState(() {
-                        stream = fireStoreDoc(classification).where(wkoCategory,
+                        stream = fireStoreDoc().where(wkoCategory,
                             isEqualTo: cateButtonList[chooseList]);
                       });
                     } else {
                       setState(() {
-                        stream = fireStoreDoc(classification).orderBy(wkoName);
+                        stream = fireStoreDoc().orderBy(wkoName);
                       });
                     }
                   },
@@ -352,11 +330,11 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
     editingCon.dispose();
   }
 
-  CollectionReference fireStoreDoc(String classification) {
+  CollectionReference fireStoreDoc() {
     return FirebaseFirestore.instance
-        .collection(identification)
-        .doc(classification)
-        .collection(classification);
+        .collection(this.identification)
+        .doc(this.classification)
+        .collection(this.classification);
   }
 
   void initWorkout() {
@@ -446,7 +424,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
 
   ///여기서부터 수정 함수들
   void createWorkout(String name, String category, {String memo = ''}) {
-    fireStoreDoc(classification).add({
+    fireStoreDoc().add({
       wkoName: name,
       wkoCategory: category,
       wkoMemo: memo,
@@ -456,7 +434,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
 
   // 문서 조회 (Read)
   void readWorkout(String documentID) {
-    fireStoreDoc(classification)
+    fireStoreDoc()
         .doc(documentID)
         .get()
         .then((DocumentSnapshot doc) {
@@ -467,7 +445,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   // 문서 갱신 (Update)
   void updateWorkout(String docID, String name, String category,
       {String memo = ''}) {
-    fireStoreDoc(classification).doc(docID).update({
+    fireStoreDoc().doc(docID).update({
       wkoName: name,
       wkoCategory: category,
       wkoMemo: memo,
@@ -476,7 +454,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
 
   // 문서 삭제 (Delete)
   void deleteWorkout(String docID) {
-    fireStoreDoc(classification).doc(docID).delete();
+    fireStoreDoc().doc(docID).delete();
   }
 
   void showCreateDoc() {

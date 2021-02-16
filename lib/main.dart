@@ -7,6 +7,7 @@ import 'lib_control/theme_control.dart';
 
 import 'package:workout/calendar/calendar_control.dart';
 import 'package:workout/daily_workout/MainPage.dart';
+import 'package:workout/settings/settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +32,7 @@ class TestWidget extends StatelessWidget {
       getPages: [
         GetPage(
           name: '/c',
-          page: () => MyHomePage(
+          page: () => CalendarPage(
             title: 'Table Calendar Demo',
           ),
           transition: Transition.noTransition,
@@ -43,7 +44,7 @@ class TestWidget extends StatelessWidget {
         ),
         GetPage(
           name: '/s',
-          page: () => MainPage(),
+          page: () => Settings(),
           transition: Transition.noTransition,
         ),
       ],

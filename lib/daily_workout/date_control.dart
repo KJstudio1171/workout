@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-
-
 class DateSection extends StatefulWidget {
   DateSection(this.dateTime);
+
   DateTime dateTime;
+
   @override
   _DateSectionState createState() => _DateSectionState();
 }
 
 class _DateSectionState extends State<DateSection> {
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -23,7 +22,8 @@ class _DateSectionState extends State<DateSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("${widget.dateTime.year}년 ${widget.dateTime.month}월 ${widget.dateTime.day}일"),
+              Text(
+                  "${widget.dateTime.year}년 ${widget.dateTime.month}월 ${widget.dateTime.day}일"),
               Text(
                 "오늘의 운동",
                 textScaleFactor: 2,

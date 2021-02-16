@@ -76,7 +76,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
           backgroundColor: color1,
           title: Text('타이머'),
         ),
-        backgroundColor: color16,
+        backgroundColor: color15,
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,10 +124,10 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                         child: Icon(Icons.pause),
                         style: NeumorphicStyle(
                             border: NeumorphicBorder(
-                                width: 2, color: color14),
+                                width: 2, color: color13),
                             intensity: 1,
                             depth: -3,
-                            color: color16),
+                            color: color15),
                       )
                           : Neumorphic(
                         child: Icon(Icons.pause),
@@ -137,7 +137,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                             NeumorphicBorder(width: 2, color: color1),
                             intensity: 1,
                             depth: 5,
-                            color: color16),
+                            color: color15),
                       ),
                     )),
                 Container(
@@ -163,7 +163,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                                 width: 2, color: color11),
                             intensity: 1,
                             depth: -3,
-                            color: color16),
+                            color: color15),
                       )
                           : Neumorphic(
                         child: Icon(Icons.play_arrow_sharp),
@@ -173,7 +173,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                             NeumorphicBorder(width: 2, color: color1),
                             intensity: 1,
                             depth: 5,
-                            color: color16),
+                            color: color15),
                       ),
                     )),
                 Container(
@@ -199,7 +199,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                             NeumorphicBorder(width: 2, color: color3),
                             intensity: 1,
                             depth: -3,
-                            color: color16),
+                            color: color15),
                       )
                           : Neumorphic(
                         child: Icon(Icons.stop),
@@ -209,7 +209,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                             NeumorphicBorder(width: 2, color: color1),
                             intensity: 1,
                             depth: 5,
-                            color: color16),
+                            color: color15),
                       ),
                     )),
               ],
@@ -245,7 +245,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                               NeumorphicBorder(width: 2, color: color1),
                               intensity: 1,
                               depth: 5,
-                              color: color16))
+                              color: color15))
                           : Neumorphic(
                         child: Icon(Icons.access_alarm),
                         style: NeumorphicStyle(
@@ -253,7 +253,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                             NeumorphicBorder(width: 2, color: color1),
                             intensity: 1,
                             depth: -3,
-                            color: color16),
+                            color: color15),
                       ),
                     )),
                 Container(
@@ -287,7 +287,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                           NeumorphicBorder(width: 2, color: color1),
                           intensity: 1,
                           depth: -3,
-                          color: color16),
+                          color: color15),
                     )
                         : Neumorphic(
                       child: Icon(Icons.watch_later_outlined),
@@ -297,7 +297,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                           NeumorphicBorder(width: 2, color: color1),
                           intensity: 1,
                           depth: 5,
-                          color: color16),
+                          color: color15),
                     ),
                   ),
                 ),
@@ -343,7 +343,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
             boxShape: NeumorphicBoxShape.circle(),
             lightSource: LightSource.topLeft,
             depth: _mode ? -3 : 5,
-            color: color16),
+            color: color15),
       ),
     );
   }
@@ -438,7 +438,7 @@ class _CircleProgressBarState extends State<CircleProgressBar>
                   boxShape: NeumorphicBoxShape.circle(),
                   lightSource: LightSource.topLeft,
                   depth: 10,
-                  color: color16),
+                  color: color15),
             ),
           ),
           builder: (context, child) {

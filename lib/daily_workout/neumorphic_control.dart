@@ -181,6 +181,13 @@ class _SetButtonState extends State<SetButton>
   List<int> saveReps;
   List<num> saveTime;
 
+  String textUnitWeight;
+  String textUnitTime;
+  int textSet;
+  int textReps;
+  num textWeight;
+  num textTime;
+
   AnimationController _controller;
   DecorationTween _animation = DecorationTween(
     begin: BoxDecoration(
@@ -228,7 +235,9 @@ class _SetButtonState extends State<SetButton>
   }
 
   void _start() {
-    _paused = false;
+    setState(() {
+      _paused = false;
+    });
     var _convertedTime;
 
     switch (widget.workoutData.unitTime) {
@@ -243,49 +252,51 @@ class _SetButtonState extends State<SetButton>
         break;
     }
 
-    _timer = Timer.periodic(Duration(seconds: 2), (timer) {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_time < _convertedTime) {
         setState(() {
-          _time++;
+          _time = _time + 1;
         });
       } else {
         setState(() {
           _paused = true;
           _pressed = true;
-          saveTime[widget.index] = widget.workoutData.time;
         });
+        saveTime[widget.index] = widget.workoutData.time;
         _timer.cancel();
       }
     });
   }
 
   void _pause() {
-    _paused = true;
+    setState(() {
+      _paused = true;
+    });
     _timer.cancel();
   }
 
   void _reset() {
     setState(() {
       _paused = true;
-      _timer.cancel();
       _time = 0;
     });
+    _timer.cancel();
   }
 
   void repsOrTime1() {
     if (widget.workoutData.reps == null || widget.workoutData.reps == 0) {
-      setState(() {
-        if (_pressed == true) {
-          _reset();
+      if (_pressed == true) {
+        _reset();
+        setState(() {
           _pressed = false;
+        });
+      } else {
+        if (_paused) {
+          _start();
         } else {
-          if (_paused) {
-            _start();
-          } else {
-            _pause();
-          }
+          _pause();
         }
-      });
+      }
       _pressed
           ? saveTime[widget.index] = widget.workoutData.time
           : saveTime[widget.index] = 0;
@@ -306,15 +317,17 @@ class _SetButtonState extends State<SetButton>
 
   void repsOrTime2() {
     if (widget.workoutData.reps == null || widget.workoutData.reps == 0) {
-      setState(() {
-        if (_pressed == true) {
-          _start();
+      if (_pressed == true) {
+        _start();
+        setState(() {
           _pressed = false;
-        } else {
+        });
+      } else {
+        _pause();
+        setState(() {
           _pressed = true;
-          _pause();
-        }
-      });
+        });
+      }
       _pressed ? saveTime[widget.index] = _time : saveTime[widget.index] = 0;
     } else {
       setState(() {
@@ -347,16 +360,18 @@ class _SetButtonState extends State<SetButton>
       }
     }
     if (widget.workoutData.reps == null || widget.workoutData.reps == 0) {
-      setState(() {
-        if (_pressed == true) {
-          _start();
+      if (_pressed == true) {
+        _start();
+        setState(() {
           _pressed = false;
-        } else {
+        });
+      } else {
+        setState(() {
           _pressed = true;
-          _pause();
           _time = _convertedTime;
-        }
-      });
+        });
+        _pause();
+      }
       _pressed
           ? saveTime[widget.index] = widget.workoutData.time
           : saveTime[widget.index] = 0;
@@ -413,9 +428,9 @@ class _SetButtonState extends State<SetButton>
   Widget weightText() {
     if (widget.workoutData.weight != null && widget.workoutData.weight != 0) {
       return Text(
-          '$widget.setData.weight}' + '${widget.workoutData.unitWeight}');
+          '${widget.workoutData.weight}' + '${widget.workoutData.unitWeight}');
     } else {
-      return Text('');
+      return const Text('');
     }
   }
 

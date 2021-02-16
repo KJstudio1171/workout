@@ -1,9 +1,19 @@
-//  Copyright (c) 2019 Aleksander Woźniak
-//  Licensed under Apache License v2.0
-
 import 'package:flutter/material.dart';
+
 import 'package:table_calendar/table_calendar.dart';
 import 'package:get/get.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+import 'package:workout/lib_control/theme_control.dart';
+import 'package:workout/database/map_structure.dart';
+
+List<int> list = [2020, 2, 23];
+
+Map<String, dynamic> calendarMap = {
+  'routine': {'테스트', '다이나믹'},
+  '팔씨름': ['9회'],
+};
 
 // Example holidays
 final Map<DateTime, List> _holidays = {
@@ -14,28 +24,32 @@ final Map<DateTime, List> _holidays = {
   DateTime(2020, 4, 22): ['Easter Monday'],*/
 };
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+class CalendarPage extends StatefulWidget {
+  CalendarPage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _CalendarPageState createState() => _CalendarPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
+class _CalendarPageState extends State<CalendarPage>
+    with TickerProviderStateMixin {
   Map<DateTime, List> _events;
-  List _selectedEvents;
+  List _selectedEvents = [];
+  List storedData = [];
+  Map event = {};
   AnimationController _animationController;
   CalendarController _calendarController;
+  ResultDataFireStore resultDataFireStore = ResultDataFireStore();
+
   final today = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    final _selectedDay = DateTime.now();
-
-    _events = {
+    initCalendar();
+    /*_events = {
       _selectedDay.subtract(Duration(days: 30)): [
         'Event A0',
         'Event B0',
@@ -87,9 +101,7 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
         'Event B14',
         'Event C14'
       ],
-    };
-
-    _selectedEvents = _events[_selectedDay] ?? [];
+    };*/
     _calendarController = CalendarController();
 
     _animationController = AnimationController(
@@ -98,6 +110,15 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
     );
 
     _animationController.forward();
+  }
+
+  initCalendar() async {
+    await resultDataFireStore.initCalendar(storedData);
+    event = resultDataFireStore.calendarDataToEvents(storedData);
+    setState(() {
+      _events = event;
+    });
+    _selectedEvents = _events[DateTime.now()] ?? [];
   }
 
   @override
@@ -147,11 +168,36 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
           currentIndex: 0,
           items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(
+                Icons.calendar_today_outlined,
+                color: color2,
+              ),
+              activeIcon: Icon(
+                Icons.calendar_today_outlined,
+                color: color7,
+              ),
               label: '',
             ),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.mode_edit,
+                  color: color2,
+                ),
+                activeIcon: Icon(
+                  Icons.mode_edit,
+                  color: color7,
+                ),
+                label: ''),
+            BottomNavigationBarItem(
+                icon: Icon(
+                  Icons.inbox,
+                  color: color2,
+                ),
+                activeIcon: Icon(
+                  Icons.inbox,
+                  color: color7,
+                ),
+                label: ''),
           ]),
       floatingActionButton: Container(
         height: 48,
@@ -172,7 +218,8 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   // Simple TableCalendar configuration (using Styles)
   Widget _buildTableCalendar() {
     return TableCalendar(
-      locale: 'ko_KR', /////언어설정
+      locale: 'ko_KR',
+      /////언어설정
       calendarController: _calendarController,
       events: _events,
       holidays: _holidays,
@@ -328,7 +375,27 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
   }
 
   Widget _buildEventList() {
-    return ListView(
+    List<Widget> list = [];
+    if (_selectedEvents.length > 0) {
+      list.add(Container(
+        child: ListTile(
+          title: Text('루틴 목록'),
+          trailing: Text('${_selectedEvents[0]['routine']}'),
+        ),
+      ));
+      _selectedEvents[0].forEach((key, value) {
+        if (key != 'routine')
+          list.add(Container(
+            child: ListTile(
+              title: Text('$key'),
+              trailing: Text('$value'),
+            ),
+          ));
+      });
+    }
+    return ListView(children: list);
+
+    /*return ListView(
       children: _selectedEvents
           .map((event) => Container(
                 decoration: BoxDecoration(
@@ -343,6 +410,6 @@ class _MyHomePageState extends State<MyHomePage> with TickerProviderStateMixin {
                 ),
               ))
           .toList(),
-    );
+    );*/
   }
 }
