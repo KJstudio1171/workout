@@ -80,7 +80,11 @@ class _MainPageState extends State<MainPage> {
                 firstDate: DateTime(2015),
                 lastDate: DateTime(2025),
                 builder: (BuildContext context, Widget child) {
-                  return Theme(data: ThemeData.light(), child: child);
+                  return Theme(
+                      data: ThemeData.light().copyWith(
+                          colorScheme:
+                              ColorScheme.light().copyWith(primary: color1)),
+                      child: child);
                 });
             selected.then((selected) {
               setState(() {
@@ -137,6 +141,8 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
           onTap: (index) {
             if (index == 0) Get.toNamed('/c');
             if (index == 2) Get.toNamed('/s');
@@ -302,12 +308,16 @@ class _FloatingButtonsState extends State<FloatingButtons>
             onConfirm: () async {
               await WorkoutSaveData.rawDataPreProcessing();
               await WorkoutSaveData.rawDataPostProcessing(widget.dateTime);
-              await resultDataFireStore.deleteRoutine(
-                  WorkoutSaveData.resultDate[0],
-                  WorkoutSaveData.resultDate[1],
-                  WorkoutSaveData.resultDate[2]);
-              await resultDataFireStore.createCalendar(
-                  WorkoutSaveData.resultDate, WorkoutSaveData.resultData);
+              if (WorkoutSaveData.resultDate.isEmpty) {
+              } else {
+                await resultDataFireStore.deleteRoutine(
+                    WorkoutSaveData.resultDate[0],
+                    WorkoutSaveData.resultDate[1],
+                    WorkoutSaveData.resultDate[2]);
+                await resultDataFireStore.createCalendar(
+                    WorkoutSaveData.resultDate, WorkoutSaveData.resultData);
+              }
+              await WorkoutSaveData.rawResultDataReset();
               if (Get.currentRoute == '/h') {
                 Get.off(MainPage());
               } else {

@@ -38,6 +38,7 @@ dependencies:
   group_button: ^1.1.0
   shared_preferences: ^0.5.12+4
   flutter_swiper : ^1.1.6
+  url_launcher: ^5.7.10
 
 
 dev_dependencies:

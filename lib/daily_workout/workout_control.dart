@@ -31,7 +31,13 @@ class _RoutineListState extends State<RoutineList> {
       ),
       onTap: () async {
         List result = await Get.to(FireStoreSelectWorkout());
-        List<Widget> _list = activeWorkoutList;
+        List<Widget> _list;
+        if (activeWorkoutList.isEmpty) {
+          activeWorkoutList.add(inkWell());
+          _list = activeWorkoutList;
+        } else {
+          _list = activeWorkoutList;
+        }
         _list.removeLast();
         result.forEach((element) {
           _list.add(WorkoutList(routineName, element, listData));
@@ -65,7 +71,10 @@ class _RoutineListState extends State<RoutineList> {
   @override
   Widget build(BuildContext context) {
     return ExpansionTile(
-      title: Text(routineName),
+      title: Text(
+        routineName,
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+      ),
       onExpansionChanged: (bool) {},
       maintainState: true,
       children: [
@@ -113,6 +122,7 @@ class WorkoutList extends StatefulWidget {
 
 class _WorkoutListState extends State<WorkoutList> {
   bool delete = false;
+  bool expansion = true;
 
   List<Widget> _activeSetList = [];
   List<Widget> _setList = [];
@@ -190,58 +200,64 @@ class _WorkoutListState extends State<WorkoutList> {
           fontSize: 17,
         ),
       ),
-      trailing: delete
-          ? InkWell(
-              enableFeedback: false,
-              onTap: () {
-                setState(() {
-                  for (int i = 0; i < _deleteSetList.length; i++) {
-                    if (_deleteSetList[i].getPressed == true) {
-                      _delete.add(i);
-                      _deleteSetList[i]
-                          .workoutData
-                          .saveReps[_deleteSetList[i].index] = 0;
-                      _deleteSetList[i]
-                          .workoutData
-                          .saveTime[_deleteSetList[i].index] = 0;
-                    }
-                  }
-                  for (int i = _delete.length - 1; 0 <= i; i--) {
-                    _deleteSetList.removeAt(_delete[i]);
-                    _setList.removeAt(_delete[i]);
-                  }
-                  _delete.clear();
-                  _activeSetList = _setList;
-                  delete = false;
-                });
-              },
-              child: Text(
-                '확인',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                ),
-              ),
-            )
-          : InkWell(
-              enableFeedback: false,
-              onTap: () {
-                setState(() {
-                  if (_setList.length != 1) {
-                    delete = true;
-                    _activeSetList = _deleteSetList;
-                  }
-                });
-              },
-              child: Text(
-                'set 삭제',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                ),
-              ),
-            ),
-      onExpansionChanged: (bool) {},
+      trailing: expansion
+          ? delete
+              ? InkWell(
+                  enableFeedback: false,
+                  onTap: () {
+                    setState(() {
+                      for (int i = 0; i < _deleteSetList.length; i++) {
+                        if (_deleteSetList[i].getPressed == true) {
+                          _delete.add(i);
+                          _deleteSetList[i]
+                              .workoutData
+                              .saveReps[_deleteSetList[i].index] = 0;
+                          _deleteSetList[i]
+                              .workoutData
+                              .saveTime[_deleteSetList[i].index] = 0;
+                        }
+                      }
+                      for (int i = _delete.length - 1; 0 <= i; i--) {
+                        _deleteSetList.removeAt(_delete[i]);
+                        _setList.removeAt(_delete[i]);
+                      }
+                      _delete.clear();
+                      _activeSetList = _setList;
+                      delete = false;
+                    });
+                  },
+                  child: Text(
+                    '확인',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                )
+              : InkWell(
+                  enableFeedback: false,
+                  onTap: () {
+                    setState(() {
+                      if (_setList.length != 1) {
+                        delete = true;
+                        _activeSetList = _deleteSetList;
+                      }
+                    });
+                  },
+                  child: Text(
+                    'set 삭제',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                )
+          : Icon(Icons.keyboard_arrow_down_outlined),
+      onExpansionChanged: (bool) {
+        setState(() {
+          expansion = !expansion;
+        });
+      },
       maintainState: true,
       children: [
         GridView.builder(

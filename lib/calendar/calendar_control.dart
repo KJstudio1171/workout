@@ -148,23 +148,30 @@ class _CalendarPageState extends State<CalendarPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            // Switch out 2 lines below to play with TableCalendar's settings
-            //-----------------------
-            _buildTableCalendar(),
-            const SizedBox(height: 20.0),
-            Expanded(child: _buildEventList()),
-          ],
-        ),
+      appBar: AppBar(
+        leading: Text(''),
+        backgroundColor: color1,
+      ),
+      body: Column(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          SizedBox(
+            height: 20,
+          ),
+          // Switch out 2 lines below to play with TableCalendar's settings
+          //-----------------------
+          _buildTableCalendar(),
+          const SizedBox(height: 20.0),
+          Expanded(child: _buildEventList()),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
           onTap: (index) {
             if (index == 1) Get.back();
             if (index == 2) Get.offNamed('/s');
           },
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
           currentIndex: 0,
           items: [
             BottomNavigationBarItem(
@@ -202,7 +209,10 @@ class _CalendarPageState extends State<CalendarPage>
       floatingActionButton: Container(
         height: 48,
         child: FloatingActionButton.extended(
-          label: Text('            오늘의 기록보기            '),
+          label: Text(
+            '          오늘의 기록          ',
+            style: TextStyle(fontSize: 16),
+          ),
           onPressed: () {
             _calendarController.setSelectedDay(
               DateTime(today.year, today.month, today.day),
@@ -225,16 +235,16 @@ class _CalendarPageState extends State<CalendarPage>
       holidays: _holidays,
       startingDayOfWeek: StartingDayOfWeek.monday,
       calendarStyle: CalendarStyle(
-        selectedColor: Colors.deepOrange[400],
-        todayColor: Colors.deepOrange[200],
-        markersColor: Colors.brown[700],
+        selectedColor: color7,
+        todayColor: color9,
+        markersColor: color5,
         outsideDaysVisible: false,
       ),
       headerStyle: HeaderStyle(
         formatButtonTextStyle:
             TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
         formatButtonDecoration: BoxDecoration(
-          color: Colors.deepOrange[400],
+          color: color6,
           borderRadius: BorderRadius.circular(16.0),
         ),
       ),
@@ -376,7 +386,8 @@ class _CalendarPageState extends State<CalendarPage>
 
   Widget _buildEventList() {
     List<Widget> list = [];
-    if (_selectedEvents.length > 0) {
+    if (_selectedEvents.length > 0 &&
+        _selectedEvents[0]['routine'].isNotEmpty) {
       list.add(Container(
         child: ListTile(
           title: Text('루틴 목록'),
@@ -384,7 +395,7 @@ class _CalendarPageState extends State<CalendarPage>
         ),
       ));
       _selectedEvents[0].forEach((key, value) {
-        if (key != 'routine')
+        if (key != 'routine' && value.isNotEmpty)
           list.add(Container(
             child: ListTile(
               title: Text('$key'),

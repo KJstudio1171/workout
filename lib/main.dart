@@ -26,7 +26,7 @@ class TestWidget extends StatelessWidget {
     //double width = MediaQuery.of(context).size.width;
     return GetMaterialApp(
       title: 'MainPage',
-      theme: ThemeContol.firstDesign,
+      theme: ThemeControl.firstDesign,
       debugShowCheckedModeBanner: false,
       initialRoute: '/h',
       getPages: [

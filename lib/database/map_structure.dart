@@ -59,46 +59,49 @@ class WorkoutSaveData {
   static rawDataPreProcessing() {
     rawData.forEach((element) {
       WorkoutData workoutData = element[2];
-      workoutData.reps == 0 || workoutData.reps == null
-          ? workoutData.saveTime.forEach((element) {
-              workoutData.sumTime += element;
-            })
-          : workoutData.saveReps.forEach((element) {
-              workoutData.sumReps += element;
-            });
-      if (workoutData.sumReps != 0 || workoutData.sumTime != 0) {
-        if (workoutData.reps == 0 || workoutData.reps == null) {
-          workoutData.weight == 0 || workoutData.weight == null
-              ? workoutData.visualData =
-                  '${workoutData.sumTime}' + '${workoutData.unitTime}'
-              : workoutData.visualData = '${workoutData.weight}' +
-                  '${workoutData.unitWeight}' +
-                  '${workoutData.sumTime}' +
-                  '${workoutData.unitTime}';
-        } else {
-          workoutData.weight == 0 || workoutData.weight == null
-              ? workoutData.visualData = '${workoutData.sumReps}' + '회'
-              : workoutData.visualData = '${workoutData.weight}' +
-                  '${workoutData.unitWeight}' +
-                  '${workoutData.sumReps}' +
-                  '회';
+        workoutData.reps == 0 || workoutData.reps == null
+            ? workoutData.saveTime.forEach((element) {
+          workoutData.sumTime += element;
+        })
+            : workoutData.saveReps.forEach((element) {
+          workoutData.sumReps += element;
+        });
+        if (workoutData.sumReps != 0 || workoutData.sumTime != 0) {
+          if (workoutData.reps == 0 || workoutData.reps == null) {
+            workoutData.weight == 0 || workoutData.weight == null
+                ? workoutData.visualData =
+                '${workoutData.sumTime}' + '${workoutData.unitTime}'
+                : workoutData.visualData = '${workoutData.weight}' +
+                '${workoutData.unitWeight}' +
+                '${workoutData.sumTime}' +
+                '${workoutData.unitTime}';
+          } else {
+            workoutData.weight == 0 || workoutData.weight == null
+                ? workoutData.visualData = '${workoutData.sumReps}' + '회'
+                : workoutData.visualData = '${workoutData.weight}' +
+                '${workoutData.unitWeight}' +
+                '${workoutData.sumReps}' +
+                '회';
+          }
         }
-        print(workoutData.visualData);
-      }
     });
   }
 
   static rawDataPostProcessing(DateTime dateTime) {
     print(rawData);
     rawData.forEach((element) {
-      resultData['routine'].add(element[0]);
-      if (!resultData.containsKey(element[1])) {
-        resultData.addAll({element[1]: []});
+      if(element[2].visualData!=null){
+        resultData['routine'].add(element[0]);
+        if (!resultData.containsKey(element[1])) {
+          resultData.addAll({element[1]: []});
+        }
+        if (element[2].visualData != null)
+          resultData[element[1]].add(element[2].visualData);
       }
-      if (element[2].visualData != null)
-        resultData[element[1]].add(element[2].visualData);
     });
-    resultDate = [dateTime.year, dateTime.month, dateTime.day];
+    if(resultData['routine'].isNotEmpty){
+      resultDate = [dateTime.year, dateTime.month, dateTime.day];
+    }
     print(resultData);
   }
 

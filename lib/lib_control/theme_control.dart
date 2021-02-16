@@ -20,7 +20,7 @@ const Color color13 = Color.fromARGB(255, 145, 227, 189);
 const Color color14 = Color.fromARGB(255, 235, 245, 255);
 const Color color15 = Color.fromARGB(255, 240, 240, 245);
 
-class ThemeContol {
+class ThemeControl {
   static final ThemeData firstDesign = ThemeData(
     primaryIconTheme: IconThemeData(color: color2),
     iconTheme: IconThemeData(color: color2),
@@ -39,13 +39,14 @@ class ThemeContol {
       button: TextStyle(),
       overline: TextStyle(),
     ).apply(
-      bodyColor: color2, displayColor: color2,
-      //fontFamily: 'cafe24oneprettynight',
-      //fontFamily: 'cafe24simplehae',
-      fontFamily: 'cafe24ssurroundair'
-      //fontFamily: 'nanumgothic',
-      //fontFamily: 'nanumgothicbold',
-    ),
+        bodyColor: color2,
+        displayColor: color2,
+        //fontFamily: 'cafe24oneprettynight',
+        //fontFamily: 'cafe24simplehae',
+        fontFamily: 'cafe24ssurroundair'
+        //fontFamily: 'nanumgothic',
+        //fontFamily: 'nanumgothicbold',
+        ),
     accentTextTheme: TextTheme(
       headline1: TextStyle(),
       headline2: TextStyle(),
@@ -60,7 +61,8 @@ class ThemeContol {
       caption: TextStyle(),
       button: TextStyle(),
       overline: TextStyle(),
-    ).apply(bodyColor: color2, displayColor: color2),
+    ).apply(bodyColor: color2, displayColor: color2,
+        fontFamily: 'cafe24ssurroundair'),
     primaryTextTheme: TextTheme(
       headline1: TextStyle(),
       headline2: TextStyle(),
@@ -75,7 +77,8 @@ class ThemeContol {
       caption: TextStyle(),
       button: TextStyle(),
       overline: TextStyle(),
-    ).apply(bodyColor: color2, displayColor: color2),
+    ).apply(bodyColor: color2, displayColor: color2,
+        fontFamily: 'cafe24ssurroundair'),
     floatingActionButtonTheme:
         FloatingActionButtonThemeData(backgroundColor: color1),
     accentColor: color1,

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
 
@@ -64,7 +65,7 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
                   boxShape: NeumorphicBoxShape.circle(),
                   lightSource: LightSource.topLeft,
                   depth: -2,
-                  color: color2,
+                  color: color7,
                 )
               : NeumorphicStyle(
                   shape: NeumorphicShape.flat,
@@ -103,14 +104,17 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   final String wkoCategory = "운동 부위";
   final String wkoDatetime = "datetime";
   final String wkoMemo = '메모';
+  final String wkoUrl = 'URL';
   AsyncSnapshot snapshots;
   var db, stream;
 
   TextEditingController _newNameCon = TextEditingController();
   TextEditingController _newCateCon = TextEditingController();
+  TextEditingController _newUrlCon = TextEditingController();
   TextEditingController _newMemoCon = TextEditingController();
   TextEditingController _undNameCon = TextEditingController();
   TextEditingController _undCateCon = TextEditingController();
+  TextEditingController _undUrlCon = TextEditingController();
   TextEditingController _undMemoCon = TextEditingController();
   TextEditingController editingCon = TextEditingController();
 
@@ -124,8 +128,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   }
 
   sizeCheck() async {
-    var tx =
-        await fireStoreDoc().get().then((value) => value.size);
+    var tx = await fireStoreDoc().get().then((value) => value.size);
     if (tx == 0) {
       initWorkout();
     }
@@ -152,12 +155,12 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                 children: [
                   Icon(
                     Icons.add,
-                    color: color2,
-                    size: 15,
+                    color: color8,
+                    size: 19,
                   ),
                   Text(
                     '운동을 추가하세요',
-                    style: TextStyle(color: color2, fontSize: 14),
+                    style: TextStyle(color: color8, fontSize: 15),
                   ),
                 ],
               ),
@@ -307,10 +310,14 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
       ),
       // Create Document
       floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: color2,
+        backgroundColor: color7,
         label: Text('                    선택하기                     '),
         onPressed: () {
-          Get.back(result: workoutList);
+          if (workoutList.isEmpty) {
+            Get.defaultDialog(title: '운동없음', middleText: '운동을 선택해주세요.');
+          } else {
+            Get.back(result: workoutList);
+          }
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -417,16 +424,19 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
     };
     workMap.forEach((key, value) {
       value.forEach((element) {
-        createWorkout(element, key);
+        createWorkout(element, key,
+            url: 'https://www.youtube.com/results?search_query=$element');
       });
     });
   }
 
   ///여기서부터 수정 함수들
-  void createWorkout(String name, String category, {String memo = ''}) {
+  void createWorkout(String name, String category,
+      {String url = '', String memo = ''}) {
     fireStoreDoc().add({
       wkoName: name,
       wkoCategory: category,
+      wkoUrl: url,
       wkoMemo: memo,
       wkoDatetime: Timestamp.now(),
     });
@@ -434,20 +444,18 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
 
   // 문서 조회 (Read)
   void readWorkout(String documentID) {
-    fireStoreDoc()
-        .doc(documentID)
-        .get()
-        .then((DocumentSnapshot doc) {
+    fireStoreDoc().doc(documentID).get().then((DocumentSnapshot doc) {
       showReadDocSnackBar(doc);
     });
   }
 
   // 문서 갱신 (Update)
   void updateWorkout(String docID, String name, String category,
-      {String memo = ''}) {
+      {String url = '', String memo = ''}) {
     fireStoreDoc().doc(docID).update({
       wkoName: name,
       wkoCategory: category,
+      wkoUrl: url,
       wkoMemo: memo,
     });
   }
@@ -465,7 +473,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
         return AlertDialog(
           title: Text("새로운 운동을 등록하세요!"),
           content: Container(
-            height: 200,
+            height: 250,
             child: Column(
               children: <Widget>[
                 TextField(
@@ -476,6 +484,10 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                 TextField(
                   decoration: InputDecoration(labelText: "운동 부위"),
                   controller: _newCateCon,
+                ),
+                TextField(
+                  decoration: InputDecoration(labelText: "URL"),
+                  controller: _newUrlCon,
                 ),
                 TextField(
                   decoration: InputDecoration(labelText: "메모"),
@@ -514,7 +526,61 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   }
 
   void showReadDocSnackBar(DocumentSnapshot doc) {
-    _scaffoldKey.currentState
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) {
+        String url = Uri.encodeFull(doc.data()[wkoUrl]);
+        return AlertDialog(
+          title: Text(
+            '${doc.data()[wkoName]}',
+          ),
+          content: Container(
+            height: 200,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text('$wkoCategory: ${doc.data()[wkoCategory]}'),
+                  Text('$wkoUrl:'),
+                  InkWell(
+                    enableFeedback: false,
+                    onTap: () async {
+                      await launch(url,
+                          forceWebView: true, forceSafariVC: true);
+                    },
+                    child: Text(
+                      "${doc.data()[wkoUrl] ?? '없음'}",
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          decoration: TextDecoration.underline),
+                    ),
+                  ),
+                  Text("$wkoMemo: ${doc.data()[wkoMemo] ?? '없음'}"),
+                ],
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+                showUpdateOrDeleteDocDialog(doc);
+              },
+              child: Text("수정"),
+            ),
+            FlatButton(
+              child: Text("확인"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+    /*_scaffoldKey.currentState
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
@@ -529,12 +595,14 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
             onPressed: () {},
           ),
         ),
-      );
+      );*/
   }
 
   void showUpdateOrDeleteDocDialog(DocumentSnapshot doc) {
     _undNameCon.text = doc[wkoName];
     _undCateCon.text = doc[wkoCategory];
+    _undUrlCon.text = doc[wkoUrl];
+    _undMemoCon.text = doc[wkoMemo];
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -542,7 +610,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
         return AlertDialog(
           title: Text("운동을 수정하실 건가요?"),
           content: Container(
-            height: 200,
+            height: 250,
             child: Column(
               children: <Widget>[
                 TextField(
@@ -552,6 +620,10 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                 TextField(
                   decoration: InputDecoration(labelText: wkoCategory),
                   controller: _undCateCon,
+                ),
+                TextField(
+                  decoration: InputDecoration(labelText: wkoUrl),
+                  controller: _undUrlCon,
                 ),
                 TextField(
                   decoration: InputDecoration(labelText: wkoMemo),

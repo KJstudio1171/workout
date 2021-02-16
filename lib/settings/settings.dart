@@ -36,6 +36,8 @@ class Settings extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
           onTap: (index) {
             if (index == 0) Get.offNamed('/c');
             if (index == 1) Get.back();

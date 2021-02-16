@@ -108,7 +108,10 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
           InkWell(
             enableFeedback: true,
             child: ListTile(
-              title: Text('루틴없이 운동하기'),
+              title: Text(
+                '루틴없이 운동하기',
+                style: TextStyle(fontSize: 16,),
+              ),
               trailing: Icon(Icons.arrow_forward_ios_sharp),
               onTap: () {
                 routineData.clear();
@@ -283,12 +286,16 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
         backgroundColor: color7,
         label: Text('                    선택하기                     '),
         onPressed: () {
+          if (routineData.isEmpty || routineData == null) {
+            Get.defaultDialog(title: '루틴없음', middleText: '루틴을 선택해주세요.');
+          } else {
+            Get.back(result: routineData);
+          }
           /*routineData.forEach((element) {
             workoutSaveData.add(element);
           });
           print("asdasdasdasdasdas");
           print(workoutSaveData.toString());*/
-          Get.back(result: routineData);
         },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,

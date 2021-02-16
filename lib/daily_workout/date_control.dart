@@ -22,12 +22,14 @@ class _DateSectionState extends State<DateSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              SizedBox(height: 8,),
               Text(
                   "${widget.dateTime.year}년 ${widget.dateTime.month}월 ${widget.dateTime.day}일"),
               Text(
                 "오늘의 운동",
                 textScaleFactor: 2,
               ),
+              SizedBox(height: 1,),
             ],
           ),
           //padding: ,
