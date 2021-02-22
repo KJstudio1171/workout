@@ -6,7 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
-import 'package:workout/database/map_structure.dart';
+import 'package:workout/database/maindata_control.dart';
+import 'package:workout/calendar/graph.dart';
 
 List<int> list = [2020, 2, 23];
 
@@ -150,6 +151,21 @@ class _CalendarPageState extends State<CalendarPage>
     return Scaffold(
       appBar: AppBar(
         leading: Text(''),
+        actions: [
+          InkWell(
+            enableFeedback: false,
+            child: Icon(
+              Icons.bar_chart,
+              color: color8,
+            ),
+            onTap: (){
+              Get.to(CalendarChart(_events),fullscreenDialog: true);
+            },
+          ),
+          Container(
+            width: 20,
+          )
+        ],
         backgroundColor: color1,
       ),
       body: Column(
@@ -388,15 +404,27 @@ class _CalendarPageState extends State<CalendarPage>
     List<Widget> list = [];
     if (_selectedEvents.length > 0 &&
         _selectedEvents[0]['routine'].isNotEmpty) {
-      list.add(Container(
+      list.add(Card(
         child: ListTile(
-          title: Text('루틴 목록'),
+          title: Text(
+            '루틴 목록',
+            style: TextStyle(color: color10),
+          ),
           trailing: Text('${_selectedEvents[0]['routine']}'),
         ),
       ));
+      list.add(Card(
+        child: ListTile(
+          title: Text(
+            '운동 부위',
+            style: TextStyle(color: color12),
+          ),
+          trailing: Text('${_selectedEvents[0]['category']}'),
+        ),
+      ));
       _selectedEvents[0].forEach((key, value) {
-        if (key != 'routine' && value.isNotEmpty)
-          list.add(Container(
+        if (key != 'routine' && value.isNotEmpty &&key != 'category')
+          list.add(Card(
             child: ListTile(
               title: Text('$key'),
               trailing: Text('$value'),

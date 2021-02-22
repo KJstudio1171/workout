@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:workout/lib_control/theme_control.dart';
 
 class Settings extends StatelessWidget {
@@ -18,8 +20,20 @@ class Settings extends StatelessWidget {
           ListTile(
             title: Text('공지사항'),
           ),
-          ListTile(
-            title: Text('문의하기'),
+          InkWell(
+            onTap: (){
+              final Uri emailScheme = Uri(
+                scheme: 'mailto',
+                path: 'eddyfunfun@gmail.com',
+                queryParameters: {
+                  'subject':'문의사항&건의사항'
+                }
+              );
+              launch(emailScheme.toString());
+            },
+            child: ListTile(
+              title: Text('문의하기'),
+            ),
           ),
           ListTile(
             title: Text('개발자에게 커피한잔'),
@@ -32,6 +46,7 @@ class Settings extends StatelessWidget {
           ),
           ListTile(
             title: Text('버전정보'),
+            trailing: Text('1.0.0'),
           ),
         ],
       ),

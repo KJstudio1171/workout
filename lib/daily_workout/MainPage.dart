@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:workout/daily_workout/workout_control.dart';
 import 'package:workout/daily_workout/date_control.dart';
 import 'package:workout/lib_control/theme_control.dart';
-import 'package:workout/database/map_structure.dart';
+import 'package:workout/database/maindata_control.dart';
 import 'package:workout/database/routine_firestore.dart';
 import 'package:workout/timer/timer_control.dart';
 

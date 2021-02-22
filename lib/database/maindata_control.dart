@@ -49,11 +49,12 @@ class WorkoutSaveData {
   static List resultDate = [];
   static Map resultData = {
     'routine': Set(),
+    'category':Set(),
   };
 
   static addRawData(
-      String routineName, String workoutName, WorkoutData workoutData) {
-    rawData.add([routineName, workoutName, workoutData]);
+      String routineName, String workoutName, WorkoutData workoutData,wkoCategory) {
+    rawData.add([routineName, workoutName, workoutData,wkoCategory]);
   }
 
   static rawDataPreProcessing() {
@@ -92,6 +93,7 @@ class WorkoutSaveData {
     rawData.forEach((element) {
       if(element[2].visualData!=null){
         resultData['routine'].add(element[0]);
+        resultData['category'].add(element[3]);
         if (!resultData.containsKey(element[1])) {
           resultData.addAll({element[1]: []});
         }
@@ -109,6 +111,7 @@ class WorkoutSaveData {
     rawData = [];
     resultData = {
       'routine': Set(),
+      'category':Set(),
     };
   }
 }
@@ -238,6 +241,7 @@ class ResultDataFireStore {
 
   createCalendar(List list, Map map) async {
     map[this.routine] = map[this.routine]?.toList();
+    map['category'] = map['category']?.toList();
     await FirebaseFirestore.instance
         .collection(identification)
         .doc(resultData)

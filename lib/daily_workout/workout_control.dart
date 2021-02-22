@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:workout/lib_control/theme_control.dart';
 import 'package:workout/daily_workout/neumorphic_control.dart';
 import 'package:workout/database/workout_firestore.dart';
-import 'package:workout/database/map_structure.dart';
+import 'package:workout/database/maindata_control.dart';
 
 class RoutineList extends StatefulWidget {
   RoutineList(this.routineData);
@@ -40,7 +40,7 @@ class _RoutineListState extends State<RoutineList> {
         }
         _list.removeLast();
         result.forEach((element) {
-          _list.add(WorkoutList(routineName, element, listData));
+          _list.add(WorkoutList(routineName, element[0], listData, element[1]));
         });
         _list.add(inkWell());
         setState(() {
@@ -60,8 +60,8 @@ class _RoutineListState extends State<RoutineList> {
   @override
   void initState() {
     routineName = widget.routineData['routine_name'];
-    widget.routineData['wko_category'].forEach((key, value) {
-      activeWorkoutList.add(WorkoutList(routineName, key, value));
+    widget.routineData['wko_names'].forEach((key, value) {
+      activeWorkoutList.add(WorkoutList(routineName, key, value['set_info'],value['category']));
     });
     activeWorkoutList.add(inkWell());
     // TODO: implement initState
@@ -110,10 +110,11 @@ class _RoutineListState extends State<RoutineList> {
 }
 
 class WorkoutList extends StatefulWidget {
-  WorkoutList(this.routineName, this.workoutName, this.fireStoreWorkoutData);
+  WorkoutList(this.routineName, this.workoutName, this.fireStoreWorkoutData, this.workoutCategory);
 
   final String routineName;
   final String workoutName;
+  final String workoutCategory;
   final List fireStoreWorkoutData;
 
   @override
@@ -134,7 +135,7 @@ class _WorkoutListState extends State<WorkoutList> {
   setSetter(WorkoutData workoutData) {
     this.setData = workoutData;
     WorkoutSaveData.addRawData(
-        widget.routineName, widget.workoutName, this.setData);
+        widget.routineName, widget.workoutName, this.setData ,  widget.workoutCategory);
   }
 
   addList() {
@@ -163,7 +164,7 @@ class _WorkoutListState extends State<WorkoutList> {
     widget.fireStoreWorkoutData.forEach((element) {
       WorkoutData workoutData = WorkoutData();
       WorkoutSaveData.addRawData(
-          widget.routineName, widget.workoutName, workoutData);
+          widget.routineName, widget.workoutName, workoutData,widget.workoutCategory);
       for (int i = 0; i < int.parse(element['set']); i++) {
         workoutData.saveReps.add(0);
         workoutData.saveTime.add(0);

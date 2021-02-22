@@ -7,7 +7,7 @@ const Color colorBlack54 = Colors.black54;
 const Color color1 = Color.fromARGB(255, 161, 196, 253);
 const Color color2 = Color.fromARGB(255, 80, 97, 125);
 const Color color3 = Color.fromARGB(255, 121, 147, 189);
-const Color color4 = Color.fromARGB(255, 253, 198, 161);
+const Color color4 = Color.fromARGB(255, 255, 235, 168);
 const Color color5 = Color.fromARGB(255, 189, 148, 121);
 const Color color6 = Color.fromARGB(255, 255, 218, 153);
 const Color color7 = Color.fromARGB(255, 120, 170, 249);
@@ -19,6 +19,8 @@ const Color color12 = Colors.blueGrey;
 const Color color13 = Color.fromARGB(255, 145, 227, 189);
 const Color color14 = Color.fromARGB(255, 235, 245, 255);
 const Color color15 = Color.fromARGB(255, 240, 240, 245);
+const Color color16 = Color.fromARGB(255, 254, 202, 255);
+const Color color17 = Color.fromARGB(255, 254, 164, 131);
 
 class ThemeControl {
   static final ThemeData firstDesign = ThemeData(

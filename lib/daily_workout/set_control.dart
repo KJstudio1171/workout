@@ -7,12 +7,12 @@ import '../lib_control/theme_control.dart';
 enum Weight { TRUE, FALSE }
 enum WorkoutType { REPS, TIME }
 
-class Info extends StatefulWidget {
+class SetInfo extends StatefulWidget {
   @override
-  _InfoState createState() => _InfoState();
+  _SetInfoState createState() => _SetInfoState();
 }
 
-class _InfoState extends State<Info> {
+class _SetInfoState extends State<SetInfo> {
   List<String> result = [];
   var workoutType = WorkoutType.REPS;
   bool _value = false;
@@ -54,7 +54,8 @@ class _InfoState extends State<Info> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('푸쉬업'),
+        title: Text('SET 추가'),
+        backgroundColor: color1,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,

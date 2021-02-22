@@ -39,6 +39,7 @@ dependencies:
   shared_preferences: ^0.5.12+4
   flutter_swiper : ^1.1.6
   url_launcher: ^5.7.10
+  fl_chart: ^0.12.3
 
 
 dev_dependencies:

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:get/get.dart';
 
-import 'package:workout/database/map_structure.dart';
+import 'package:workout/database/maindata_control.dart';
 import 'package:workout/lib_control/theme_control.dart';
 
 import 'set_control.dart';
@@ -33,7 +33,7 @@ class _PlusButtonState extends State<PlusButton> {
             enableFeedback: true,
             borderRadius: BorderRadius.circular(50),
             onTap: () async {
-              result = await Get.to(Info());
+              result = await Get.to(SetInfo());
               setData.set = int.tryParse(result[0]);
               setData.weight = num.tryParse(result[1]);
               setData.reps = int.tryParse(result[2]);

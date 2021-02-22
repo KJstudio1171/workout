@@ -19,9 +19,11 @@ List<String> cateButtonList = [
   '이두',
   '삼두',
   '복부',
-  '다리'
+  '다리',
+  '기타'
 ];
 int chooseList = 0;
+String undCateCon = '이두';
 
 class IconButtonNeumorphic extends StatefulWidget {
   IconButtonNeumorphic(this._document);
@@ -34,6 +36,17 @@ class IconButtonNeumorphic extends StatefulWidget {
 
 class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
   bool _pressIcon = false;
+
+  final String wkoName = "운동 이름";
+  final String wkoCategory = "운동 부위";
+
+  List<String> workoutData = [];
+
+  @override
+  void initState() {
+    workoutData = [widget._document[wkoName],widget._document[wkoCategory]];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +62,12 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
             _pressIcon = !_pressIcon;
             if (_pressIcon) {
               workoutList
-                  .add(widget._document[FireStoreSelectWorkout().wkoName]);
-              print('$workoutList');
+                  .add(workoutData);
+              print(workoutList);
             } else {
               workoutList
-                  .remove(widget._document[FireStoreSelectWorkout().wkoName]);
+                  .remove(workoutData);
+              print(workoutList);
             }
           });
         },
@@ -86,7 +100,6 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
 }
 
 class FireStoreSelectWorkout extends StatefulWidget {
-  final String wkoName = "운동 이름";
 
   @override
   _FireStoreSelectWorkoutState createState() => _FireStoreSelectWorkoutState();
@@ -141,7 +154,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
       appBar: AppBar(
         backgroundColor: color1,
         title: Text(
-          "오늘의 운동",
+          "운동 목록",
           style: TextStyle(color: color8),
         ),
         actions: [
@@ -264,7 +277,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                                 },
                                 // Update or Delete Document
                                 onLongPress: () {
-                                  showUpdateOrDeleteDocDialog(document);
+                                  showUpdateOrDeleteDoc(document);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.all(8),
@@ -445,7 +458,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   // 문서 조회 (Read)
   void readWorkout(String documentID) {
     fireStoreDoc().doc(documentID).get().then((DocumentSnapshot doc) {
-      showReadDocSnackBar(doc);
+      showReadDoc(doc);
     });
   }
 
@@ -525,7 +538,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
     );
   }
 
-  void showReadDocSnackBar(DocumentSnapshot doc) {
+  void showReadDoc(DocumentSnapshot doc) {
     showDialog(
       barrierDismissible: false,
       context: context,
@@ -534,6 +547,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
         return AlertDialog(
           title: Text(
             '${doc.data()[wkoName]}',
+            style: TextStyle(color: color10),
           ),
           content: Container(
             height: 200,
@@ -542,8 +556,23 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('$wkoCategory: ${doc.data()[wkoCategory]}'),
-                  Text('$wkoUrl:'),
+                  Text.rich(TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '$wkoCategory: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        )
+                      ),
+                      TextSpan(
+                        text: '${doc.data()[wkoCategory]}'
+                      ),
+                    ]
+                  )),
+                  SizedBox(height: 20,),
+                  Text('$wkoUrl:',style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),),
                   InkWell(
                     enableFeedback: false,
                     onTap: () async {
@@ -557,7 +586,12 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                           decoration: TextDecoration.underline),
                     ),
                   ),
-                  Text("$wkoMemo: ${doc.data()[wkoMemo] ?? '없음'}"),
+                  SizedBox(height: 20,),
+                  Text('$wkoMemo: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      )),
+                  Text('${doc.data()[wkoMemo] ?? '없음'}'),
                 ],
               ),
             ),
@@ -566,7 +600,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
             FlatButton(
               onPressed: () {
                 Navigator.pop(context);
-                showUpdateOrDeleteDocDialog(doc);
+                showUpdateOrDeleteDoc(doc);
               },
               child: Text("수정"),
             ),
@@ -598,7 +632,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
       );*/
   }
 
-  void showUpdateOrDeleteDocDialog(DocumentSnapshot doc) {
+  void showUpdateOrDeleteDoc(DocumentSnapshot doc) {
     _undNameCon.text = doc[wkoName];
     _undCateCon.text = doc[wkoCategory];
     _undUrlCon.text = doc[wkoUrl];

@@ -8,7 +8,7 @@ import 'package:get/get.dart';
 import 'package:workout/lib_control/theme_control.dart';
 import 'package:workout/daily_workout/set_control.dart';
 import 'package:workout/database/workout_firestore.dart';
-import 'package:workout/database/map_structure.dart';
+import 'package:workout/database/maindata_control.dart';
 
 List<Map<String, dynamic>> routineData = [];
 int chooseList = 0;
@@ -53,7 +53,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   // 필드명
   final String routine = 'routine';
   final String routineName = 'routine_name';
-  final String wkoCategory = 'wko_category';
+  final String wkoNames = 'wko_names';
   final String set = "set";
   final String weight = 'weight';
   final String reps = 'reps';
@@ -79,7 +79,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
-          "오늘의 운동",
+          "루틴 목록",
           style: TextStyle(color: color8),
         ),
         backgroundColor: color1,
@@ -110,12 +110,15 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
             child: ListTile(
               title: Text(
                 '루틴없이 운동하기',
-                style: TextStyle(fontSize: 16,),
+                style: TextStyle(
+                  fontSize: 16,
+                ),
               ),
               trailing: Icon(Icons.arrow_forward_ios_sharp),
               onTap: () {
                 routineData.clear();
-                routineData.add({'routine_name': '오늘의 운동', 'wko_category': {}});
+                routineData
+                    .add({this.routineName: '오늘의 운동', this.wkoNames: {}});
                 /*workoutSaveData
                     .add({'routine_name': '오늘의 운동', 'wko_category': {}});
                 print(workoutSaveData.toString());*/
@@ -139,7 +142,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                       shrinkWrap: true,
                       children:
                           snapshot.data.docs.map((DocumentSnapshot document) {
-                        Map structure = document['wko_category'];
+                        Map structure = document[this.wkoNames];
                         List wkoCategory = [];
                         structure.forEach((key, value) {
                           wkoCategory.add(key.toString());
@@ -148,7 +151,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                           child: ExpansionTile(
                             maintainState: true,
                             title: Text(
-                              document['routine_name'],
+                              document[this.routineName],
                               style: TextStyle(
                                 color: color12,
                                 fontSize: 17,
@@ -164,7 +167,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     String wkoName = wkoCategory[index];
-                                    List wkoSetList = structure[wkoName];
+                                    List wkoSetList = structure[wkoName]['set_info'];
                                     return Dismissible(
                                       child: ExpansionTile(
                                         maintainState: true,
@@ -173,8 +176,6 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                           ListView.builder(
                                             physics: ScrollPhysics(),
                                             shrinkWrap: true,
-                                            padding: EdgeInsets.fromLTRB(
-                                                20, 5, 20, 20),
                                             itemBuilder: (context, index) {
                                               return Dismissible(
                                                 key: UniqueKey(),
@@ -208,7 +209,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                               enableFeedback: true,
                                               onTap: () async {
                                                 List result =
-                                                    await Get.to(Info());
+                                                    await Get.to(SetInfo());
                                                 createSet(
                                                     document, wkoName, result);
                                                 print(result.toString());
@@ -242,12 +243,15 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                   enableFeedback: true,
                                   onTap: () async {
                                     Map<String, dynamic> map =
-                                        document[this.wkoCategory];
+                                        document[this.wkoNames];
                                     List result =
                                         await Get.to(FireStoreSelectWorkout());
                                     result.forEach((e) {
                                       // print(map.toString());
-                                      map[e] = [];
+                                      map.addAll({
+                                        e[0]: {'category': e[1], 'set_info': []}
+                                      });
+                                      //map[e[0]] = [];
                                       print(map.toString());
                                     });
                                     createWorkout(document, map);
@@ -360,16 +364,17 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   ///여기서부터 수정 함수들
 
   void createRoutine(String routineName) {
-    routineDoc().add({this.routineName: routineName, this.wkoCategory: {}});
+    routineDoc().add({this.routineName: routineName, this.wkoNames: {}});
   }
 
-  void createWorkout(DocumentSnapshot document, Map map) {
-    routineDoc().doc(document.id).update({wkoCategory: map});
+  void createWorkout(DocumentSnapshot document, Map map) async {
+    await routineDoc().doc(document.id).update({wkoNames: map});
   }
 
   void createSet(DocumentSnapshot document, String wkoName, List result) {
-    Map<String, dynamic> map = document[wkoCategory];
-    List list = document[wkoCategory][wkoName];
+    Map<String, dynamic> data = document[wkoNames];
+    Map<String,dynamic> wkoData = document[wkoNames][wkoName];
+    List list = document[wkoNames][wkoName]['set_info'];
     list.add({
       set: result[0],
       weight: result[1],
@@ -378,8 +383,9 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
       unitWeight: result[4],
       unitTime: result[5]
     });
-    map.addAll({wkoName: list});
-    routineDoc().doc(document.id).update({wkoCategory: map});
+    wkoData['set_info']=list;
+    data[wkoName]=wkoData;
+    routineDoc().doc(document.id).update({wkoNames: data});
   }
 
   void deleteRoutine(String docID) {
@@ -387,20 +393,22 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   }
 
   void deleteWorkout(DocumentSnapshot document, String wkoName) {
-    Map<String, dynamic> map = document[wkoCategory];
+    Map<String, dynamic> map = document[wkoNames];
     if (map.containsKey(wkoName)) {
       map.remove(wkoName);
-      routineDoc().doc(document.id).update({wkoCategory: map});
+      routineDoc().doc(document.id).update({wkoNames: map});
     }
   }
 
   void deleteSet(DocumentSnapshot document, String wkoName, int index) {
-    Map<String, dynamic> map = document[wkoCategory];
-    List list = document[wkoCategory][wkoName];
-    list.removeAt(index);
-    map.remove(wkoName);
-    map.addAll({wkoName: list});
-    routineDoc().doc(document.id).update({wkoCategory: map});
+    Map<String, dynamic> data = document[wkoNames];
+    Map<String,dynamic> wkoData = document[wkoNames][wkoName];
+    List listNames = document[wkoNames][wkoName]['set_info'];
+    listNames.removeAt(index);
+    data.remove(wkoName);
+    wkoData['set_info']=listNames;
+    data[wkoName]=wkoData;
+    routineDoc().doc(document.id).update({wkoNames: data});
   }
 
   void showCreateDoc() {
@@ -470,7 +478,6 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
             if (_pressIcon) {
               routineData.add(widget._document.data());
             } else {
-              print(routineData.toString());
               routineData.removeWhere((element) =>
                   element['routine_name'] ==
                   widget._document.data()['routine_name']);
