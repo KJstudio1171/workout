@@ -577,7 +577,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                     enableFeedback: false,
                     onTap: () async {
                       await launch(url,
-                          forceWebView: true, forceSafariVC: true);
+                          forceWebView: false, forceSafariVC: false);
                     },
                     child: Text(
                       "${doc.data()[wkoUrl] ?? '없음'}",

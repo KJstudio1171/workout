@@ -71,7 +71,6 @@ class TestWidget extends StatelessWidget {
                     InkWell(
                         onTap: () {
                           signInWithGoogle();
-                          Get.off(MainPage());
                         },
                         child: Image.asset('images/google.png')),
                   ],

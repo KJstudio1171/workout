@@ -131,6 +131,7 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        const SizedBox(height: 50,),
         ListTile(
           title: Center(child: Text('운동 부위별 비율 차트',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),)),
         ),
@@ -233,7 +234,7 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
         title: '$key''\n''${(value/sumValues*100).toStringAsFixed(2)} %',
         radius: radius,
         titleStyle: TextStyle(
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             color: colors[i+1] ?? color1),
         titlePositionPercentageOffset: 0.55,
