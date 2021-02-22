@@ -40,6 +40,7 @@ dependencies:
   flutter_swiper : ^1.1.6
   url_launcher: ^5.7.10
   fl_chart: ^0.12.3
+  in_app_purchase: ^0.3.5+1
 
 
 dev_dependencies:
@@ -56,6 +57,9 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  assets:
+    - images/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-import 'lib_control/theme_control.dart';
-
+import 'package:workout/lib_control/theme_control.dart';
 import 'package:workout/calendar/calendar_control.dart';
 import 'package:workout/daily_workout/MainPage.dart';
 import 'package:workout/settings/settings.dart';
@@ -28,7 +29,6 @@ class TestWidget extends StatelessWidget {
       title: 'MainPage',
       theme: ThemeControl.firstDesign,
       debugShowCheckedModeBanner: false,
-      initialRoute: '/h',
       getPages: [
         GetPage(
           name: '/c',
@@ -59,8 +59,57 @@ class TestWidget extends StatelessWidget {
       // GetPage(
       // name:,
       // page:()=>]
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
+          if (snapshot.data == null) {
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                        onTap: () {
+                          signInWithGoogle();
+                          Get.off(MainPage());
+                        },
+                        child: Image.asset('images/google.png')),
+                  ],
+                ),
+              ),
+            );
+          } else {
+            print(FirebaseAuth.instance.currentUser.uid);
+            return MainPage();
+            /*return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("${snapshot.data.displayName}님 환영합니다."),
+                    FlatButton(
+                      color: Colors.grey.withOpacity(0.3),
+                      onPressed: () {
+                        FirebaseAuth.instance.signOut();
+                      },
+                      child: Text("로그아웃"),
+                    ),
+                  ],
+                ),
+              );*/
+          }
+        },
+      ),
     );
   }
+
+  Future<UserCredential> signInWithGoogle() async {
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 }
-
-

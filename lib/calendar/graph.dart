@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
+
 import 'package:fl_chart/fl_chart.dart';
+import 'package:group_button/group_button.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
+
 
 class CalendarChart extends StatelessWidget {
   CalendarChart(this.event);
@@ -72,7 +75,9 @@ class CalendarChart extends StatelessWidget {
     print(graphMonth);
     print(graphWeek);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        backgroundColor: color1,
+      ),
       body: PieChartWorkout(graphAll, graphYear, graphMonth, graphWeek),
     );
   }
@@ -94,6 +99,8 @@ class PieChartWorkout extends StatefulWidget {
 class _PieChartWorkoutState extends State<PieChartWorkout> {
   int index = 0;
   int touchedIndex;
+  List<Map> mapList = [];
+  Map modeChanger;
   List colors = [
     color1,
     color2,
@@ -106,20 +113,40 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
     color9,
     color10
   ];
+  List<String> mode = ['일주일','한달','일년','전체'];
 
   @override
   void initState() {
     index = widget.graphAll.length;
+    mapList.add(widget.graphWeek);
+    mapList.add(widget.graphMonth);
+    mapList.add(widget.graphYear);
+    mapList.add(widget.graphAll);
+    modeChanger = mapList[0];
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        ListTile(title: Text('운동 부위별 비율 차트')),
-
+        ListTile(
+          title: Center(child: Text('운동 부위별 비율 차트',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),)),
+        ),
+        GroupButton(
+          isRadio: true,
+          spacing: 5,
+          buttons: mode,
+          onSelected: (index, isSelected) {
+            setState(() {
+              modeChanger = mapList[index];
+            });
+          },
+          selectedColor: color1,
+          unselectedShadow: [BoxShadow(color: Colors.transparent)],
+          selectedButtons: null,
+        ),
         AspectRatio(
           aspectRatio: 1.3,
           child: Card(
@@ -132,7 +159,7 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: textBox(widget.graphAll),
+                  children: textBox(modeChanger),
                 ),
                 const SizedBox(
                   height: 18,
@@ -159,7 +186,7 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
                           ),
                           sectionsSpace: 1,
                           centerSpaceRadius: 0,
-                          sections: showingSections(widget.graphAll)),
+                          sections: showingSections(modeChanger)),
                     ),
                   ),
                 ),
@@ -203,7 +230,7 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
         color: colors[i] ?? color1
           ..withOpacity(opacity),
         value: value.toDouble(),
-        title: '$key''\n''${value/sumValues*100}%',
+        title: '$key''\n''${(value/sumValues*100).toStringAsFixed(2)} %',
         radius: radius,
         titleStyle: TextStyle(
             fontSize: 18,
