@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
 import 'package:workout/calendar/calendar_control.dart';
@@ -62,23 +63,49 @@ class TestWidget extends StatelessWidget {
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-          if (snapshot.data == null) {
+          if (snapshot.data != null) {
             return Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    InkWell(
-                        onTap: () {
-                          signInWithGoogle();
-                        },
-                        child: Image.asset('images/google.png')),
-                  ],
+              body: SafeArea(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 100,
+                      ),
+                      Text(
+                        '하루운동',
+                        style: TextStyle(
+                            color: color1,
+                            fontFamily: 'godo',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 50),
+                      ),
+                      const SizedBox(height: 300,),
+                      InkWell(
+                          onTap: () {
+                            signInWithFacebook();
+                          },
+                          child: Image.asset(
+                            'images/facebook.png',
+                            width: 200,
+                          )),
+                      const SizedBox(height: 20,),
+                      InkWell(
+                          onTap: () {
+                            signInWithGoogle();
+                          },
+                          child: Image.asset(
+                            'images/google.png',
+                            width: 205,
+                          )),
+                    ],
+                  ),
                 ),
               ),
             );
           } else {
-            print(FirebaseAuth.instance.currentUser.uid);
+            //print(FirebaseAuth.instance.currentUser.uid);
             return MainPage();
             /*return Center(
                 child: Column(
@@ -111,4 +138,22 @@ class TestWidget extends StatelessWidget {
     );
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
+  Future<UserCredential> signInWithFacebook() async {
+    try {
+      final AccessToken accessToken = await FacebookAuth.instance.login();
+
+      // Create a credential from the access token
+      final FacebookAuthCredential credential = FacebookAuthProvider.credential(
+        accessToken.token,
+      );
+      // Once signed in, return the UserCredential
+      return await FirebaseAuth.instance.signInWithCredential(credential);
+    } on FacebookAuthException catch (e) {
+      // handle the FacebookAuthException
+    } on FirebaseAuthException catch (e) {
+      // handle the FirebaseAuthException
+    } finally {}
+    return null;
+  }
+
 }

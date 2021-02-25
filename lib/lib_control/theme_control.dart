@@ -43,11 +43,7 @@ class ThemeControl {
     ).apply(
         bodyColor: color2,
         displayColor: color2,
-        //fontFamily: 'cafe24oneprettynight',
-        //fontFamily: 'cafe24simplehae',
         fontFamily: 'cafe24ssurroundair'
-        //fontFamily: 'nanumgothic',
-        //fontFamily: 'nanumgothicbold',
         ),
     accentTextTheme: TextTheme(
       headline1: TextStyle(),
