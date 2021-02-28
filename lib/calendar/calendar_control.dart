@@ -45,6 +45,7 @@ class _CalendarPageState extends State<CalendarPage>
   ResultDataFireStore resultDataFireStore = ResultDataFireStore();
 
   final today = DateTime.now();
+  DateTime selectDate = DateTime.now();
 
   @override
   void initState() {
@@ -118,8 +119,9 @@ class _CalendarPageState extends State<CalendarPage>
     event = resultDataFireStore.calendarDataToEvents(storedData);
     setState(() {
       _events = event;
+      _selectedEvents =
+          _events[DateTime(today.year, today.month, today.day)] ?? [];
     });
-    _selectedEvents = _events[DateTime.now()] ?? [];
   }
 
   @override
@@ -132,6 +134,7 @@ class _CalendarPageState extends State<CalendarPage>
   void _onDaySelected(DateTime day, List events, List holidays) {
     print('CALLBACK: _onDaySelected');
     setState(() {
+      selectDate = DateTime(day.year, day.month, day.day);
       _selectedEvents = events;
     });
   }
@@ -158,8 +161,8 @@ class _CalendarPageState extends State<CalendarPage>
               Icons.bar_chart,
               color: color8,
             ),
-            onTap: (){
-              Get.to(CalendarChart(_events),fullscreenDialog: true);
+            onTap: () {
+              Get.to(CalendarChart(_events), fullscreenDialog: true);
             },
           ),
           Container(
@@ -222,12 +225,12 @@ class _CalendarPageState extends State<CalendarPage>
                 ),
                 label: ''),
           ]),
-      floatingActionButton: Container(
+      /*floatingActionButton: Container(
         height: 48,
         child: FloatingActionButton.extended(
           label: Text(
             '          오늘의 기록          ',
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 16,fontFamily: 'godo'),
           ),
           onPressed: () {
             _calendarController.setSelectedDay(
@@ -236,8 +239,8 @@ class _CalendarPageState extends State<CalendarPage>
             );
           },
         ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      ),*/
+      //floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -251,16 +254,16 @@ class _CalendarPageState extends State<CalendarPage>
       holidays: _holidays,
       startingDayOfWeek: StartingDayOfWeek.monday,
       calendarStyle: CalendarStyle(
-        selectedColor: color7,
+        selectedColor: color6,
         todayColor: color9,
-        markersColor: color5,
+        markersColor: color7,
         outsideDaysVisible: false,
       ),
       headerStyle: HeaderStyle(
         formatButtonTextStyle:
             TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
         formatButtonDecoration: BoxDecoration(
-          color: color6,
+          color: color5,
           borderRadius: BorderRadius.circular(16.0),
         ),
       ),
@@ -423,7 +426,7 @@ class _CalendarPageState extends State<CalendarPage>
         ),
       ));
       _selectedEvents[0].forEach((key, value) {
-        if (key != 'routine' && value.isNotEmpty &&key != 'category')
+        if (key != 'routine' && value.isNotEmpty && key != 'category')
           list.add(Card(
             child: ListTile(
               title: Text('$key'),
@@ -431,6 +434,24 @@ class _CalendarPageState extends State<CalendarPage>
             ),
           ));
       });
+      list.add(Center(
+        child: RaisedButton(
+          child: Text(
+            '삭제',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold
+            ),
+          ),
+          color: color11,
+          disabledColor: color2,
+          onPressed: () async {
+            await resultDataFireStore.deleteRoutine(
+                selectDate.year, selectDate.month, selectDate.day);
+            Get.off(CalendarPage());
+          },
+        ),
+      ));
     }
     return ListView(children: list);
 

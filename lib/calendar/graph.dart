@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:group_button/group_button.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
-
 
 class CalendarChart extends StatelessWidget {
   CalendarChart(this.event);
@@ -27,56 +25,45 @@ class CalendarChart extends StatelessWidget {
       if (lastWeek.isBefore(key)) {
         value[0]['category'].forEach((e) {
           if (!graphWeek.containsKey(e)) {
+            print(key);
             graphWeek.addAll({e: 1});
-            graphMonth.addAll({e: 1});
-            graphYear.addAll({e: 1});
-            graphAll.addAll({e: 1});
           } else {
             graphWeek[e] += 1;
-            graphMonth[e] += 1;
-            graphYear[e] += 1;
-            graphAll[e] += 1;
-          }
-        });
-      } else if (lastMonth.isBefore(key)) {
-        value[0]['category'].forEach((e) {
-          if (!graphMonth.containsKey(e)) {
-            graphMonth.addAll({e: 1});
-            graphYear.addAll({e: 1});
-            graphAll.addAll({e: 1});
-          } else {
-            graphMonth[e] += 1;
-            graphYear[e] += 1;
-            graphAll[e] += 1;
-          }
-        });
-      } else if (lastYear.isBefore(key)) {
-        value[0]['category'].forEach((e) {
-          if (!graphYear.containsKey(e)) {
-            graphYear.addAll({e: 1});
-            graphAll.addAll({e: 1});
-          } else {
-            graphYear[e] += 1;
-            graphAll[e] += 1;
-          }
-        });
-      } else {
-        value[0]['category'].forEach((e) {
-          if (!graphAll.containsKey(e)) {
-            graphAll.addAll({e: 1});
-          } else {
-            graphAll[e] += 1;
           }
         });
       }
+      if (lastMonth.isBefore(key)) {
+        value[0]['category'].forEach((e) {
+          if (!graphMonth.containsKey(e.toString())) {
+            graphMonth.addAll({e: 1});
+          } else {
+            graphMonth[e] += 1;
+          }
+        });
+      }
+      if (lastYear.isBefore(key)) {
+        value[0]['category'].forEach((e) {
+          if (!graphYear.containsKey(e.toString())) {
+            graphYear.addAll({e: 1});
+          } else {
+            graphYear[e] += 1;
+          }
+        });
+      }
+      value[0]['category'].forEach((e) {
+        if (!graphAll.containsKey(e.toString())) {
+          graphAll.addAll({e: 1});
+        } else {
+          graphAll[e] += 1;
+        }
+      });
+
+      print(graphAll);
     });
-    print(graphAll);
-    print(graphYear);
-    print(graphMonth);
-    print(graphWeek);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: color1,
+        title: Text('차트'),
       ),
       body: PieChartWorkout(graphAll, graphYear, graphMonth, graphWeek),
     );
@@ -113,7 +100,7 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
     color9,
     color10
   ];
-  List<String> mode = ['일주일','한달','일년','전체'];
+  List<String> mode = ['일주일', '한달', '일년', '전체'];
 
   @override
   void initState() {
@@ -131,9 +118,15 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const SizedBox(height: 50,),
+        const SizedBox(
+          height: 25,
+        ),
         ListTile(
-          title: Center(child: Text('운동 부위별 비율 차트',style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),)),
+          title: Center(
+              child: Text(
+            '운동 부위별 비율 차트',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          )),
         ),
         GroupButton(
           isRadio: true,
@@ -149,7 +142,7 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
           selectedButtons: null,
         ),
         AspectRatio(
-          aspectRatio: 1.3,
+          aspectRatio: 1,
           child: Card(
             color: Colors.white,
             child: Column(
@@ -173,11 +166,13 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
                           pieTouchData:
                               PieTouchData(touchCallback: (pieTouchResponse) {
                             setState(() {
-                              if (pieTouchResponse.touchInput is FlLongPressEnd ||
+                              if (pieTouchResponse.touchInput
+                                      is FlLongPressEnd ||
                                   pieTouchResponse.touchInput is FlPanEnd) {
                                 touchedIndex = -1;
                               } else {
-                                touchedIndex = pieTouchResponse.touchedSectionIndex;
+                                touchedIndex =
+                                    pieTouchResponse.touchedSectionIndex;
                               }
                             });
                           }),
@@ -221,23 +216,23 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
     int i = 0;
     int sumValues = 0;
     map.forEach((key, value) {
-      sumValues +=value;
+      sumValues += value;
     });
     map.forEach((key, value) {
       final isTouched = i == touchedIndex;
       final double opacity = isTouched ? 1 : 0.6;
-      final double radius = isTouched ? 100 : 90;
+      final double radius = isTouched ? 150 : 128;
       list.add(PieChartSectionData(
         color: colors[i] ?? color1
           ..withOpacity(opacity),
         value: value.toDouble(),
-        title: '$key''\n''${(value/sumValues*100).toStringAsFixed(2)} %',
+        title: '$key' '\n' '${(value / sumValues * 100).toStringAsFixed(2)} %',
         radius: radius,
         titleStyle: TextStyle(
-            fontSize: 16,
+            fontSize: isTouched ? 16 : 14,
             fontWeight: FontWeight.bold,
-            color: colors[i+1] ?? color1),
-        titlePositionPercentageOffset: 0.55,
+            color: colors[i + 1] ?? color1),
+        titlePositionPercentageOffset: 0.7,
       ));
       i++;
     });

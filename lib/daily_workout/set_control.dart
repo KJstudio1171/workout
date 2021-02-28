@@ -54,7 +54,7 @@ class _SetInfoState extends State<SetInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SET 추가'),
+        title: Text('SET 추가',),
         backgroundColor: color1,
       ),
       body: Column(
@@ -70,7 +70,7 @@ class _SetInfoState extends State<SetInfo> {
                 controller: _controllerSet,
                 textAlign: TextAlign.end,
                 keyboardType: TextInputType.number,
-                style: TextStyle(color: color5, fontSize: 20),
+                style: TextStyle(color: color5, fontSize: 20,),
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 ],

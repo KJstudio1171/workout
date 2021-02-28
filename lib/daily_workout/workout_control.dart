@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:get/get.dart';
 
@@ -72,9 +75,9 @@ class _RoutineListState extends State<RoutineList> {
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: Text(
-        routineName,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
-      ),
+          routineName,
+          style: TextStyle(fontFamily:'godo',fontSize: 20),
+        ),
       onExpansionChanged: (bool) {},
       maintainState: true,
       children: [
@@ -124,11 +127,13 @@ class WorkoutList extends StatefulWidget {
 class _WorkoutListState extends State<WorkoutList> {
   bool delete = false;
   bool expansion = true;
+  int rand = Random().nextInt(8)+1;
 
   List<Widget> _activeSetList = [];
   List<Widget> _setList = [];
   List<DeleteSetButton> _deleteSetList = [];
   List<int> _delete = [];
+  List<Color> colors = [color3,color4,color5,color6,color7,color11,color12,color13,color17];
 
   WorkoutData setData = WorkoutData();
 
@@ -192,91 +197,98 @@ class _WorkoutListState extends State<WorkoutList> {
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
-      initiallyExpanded: true,
-      title: Text(
-        widget.workoutName,
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 17,
-        ),
-      ),
-      trailing: expansion
-          ? delete
-              ? InkWell(
-                  enableFeedback: false,
-                  onTap: () {
-                    setState(() {
-                      for (int i = 0; i < _deleteSetList.length; i++) {
-                        if (_deleteSetList[i].getPressed == true) {
-                          _delete.add(i);
-                          _deleteSetList[i]
-                              .workoutData
-                              .saveReps[_deleteSetList[i].index] = 0;
-                          _deleteSetList[i]
-                              .workoutData
-                              .saveTime[_deleteSetList[i].index] = 0;
-                        }
-                      }
-                      for (int i = _delete.length - 1; 0 <= i; i--) {
-                        _deleteSetList.removeAt(_delete[i]);
-                        _setList.removeAt(_delete[i]);
-                      }
-                      _delete.clear();
-                      _activeSetList = _setList;
-                      delete = false;
-                    });
-                  },
-                  child: Text(
-                    '확인',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                )
-              : InkWell(
-                  enableFeedback: false,
-                  onTap: () {
-                    setState(() {
-                      if (_setList.length != 1) {
-                        delete = true;
-                        _activeSetList = _deleteSetList;
-                      }
-                    });
-                  },
-                  child: Text(
-                    'set 삭제',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                )
-          : Icon(Icons.keyboard_arrow_down_outlined),
-      onExpansionChanged: (bool) {
-        setState(() {
-          expansion = !expansion;
-        });
-      },
-      maintainState: true,
-      children: [
-        GridView.builder(
-          physics: ScrollPhysics(),
-          shrinkWrap: true,
-          padding: EdgeInsets.fromLTRB(20, 5, 20, 20),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 5,
-            crossAxisSpacing: 9,
-            mainAxisSpacing: 9,
-            childAspectRatio: 0.7,
+    return Theme(
+      data: ThemeData(accentColor: colors[rand],textTheme: TextTheme(
+        subtitle1: TextStyle(),
+      ).apply(
+          bodyColor: color2,
+          fontFamily: 'cafe24ssurroundair'
+      ),),
+      child: ExpansionTile(
+        title: Text(
+          widget.workoutName,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 17,
           ),
-          itemBuilder: (_, index) {
-            return _activeSetList[index];
-          },
-          itemCount: _activeSetList.length,
         ),
-      ],
+        trailing: expansion
+            ? delete
+                ? InkWell(
+                    enableFeedback: false,
+                    onTap: () {
+                      setState(() {
+                        for (int i = 0; i < _deleteSetList.length; i++) {
+                          if (_deleteSetList[i].getPressed == true) {
+                            _delete.add(i);
+                            _deleteSetList[i]
+                                .workoutData
+                                .saveReps[_deleteSetList[i].index] = 0;
+                            _deleteSetList[i]
+                                .workoutData
+                                .saveTime[_deleteSetList[i].index] = 0;
+                          }
+                        }
+                        for (int i = _delete.length - 1; 0 <= i; i--) {
+                          _deleteSetList.removeAt(_delete[i]);
+                          _setList.removeAt(_delete[i]);
+                        }
+                        _delete.clear();
+                        _activeSetList = _setList;
+                        delete = false;
+                      });
+                    },
+                    child: Text(
+                      '확인',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  )
+                : InkWell(
+                    enableFeedback: false,
+                    onTap: () {
+                      setState(() {
+                        if (_setList.length != 1) {
+                          delete = true;
+                          _activeSetList = _deleteSetList;
+                        }
+                      });
+                    },
+                    child: Text(
+                      'set 삭제',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                  )
+            : Icon(Icons.keyboard_arrow_down_outlined),
+        onExpansionChanged: (bool) {
+          setState(() {
+            expansion = !expansion;
+          });
+        },
+        maintainState: true,
+        children: [
+          GridView.builder(
+            physics: ScrollPhysics(),
+            shrinkWrap: true,
+            padding: EdgeInsets.fromLTRB(20, 5, 20, 20),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 5,
+              crossAxisSpacing: 9,
+              mainAxisSpacing: 9,
+              childAspectRatio: 0.7,
+            ),
+            itemBuilder: (_, index) {
+              return _activeSetList[index];
+            },
+            itemCount: _activeSetList.length,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -35,7 +35,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
     super.initState();
     timerText = Text(
       '$_visualTime',
-      style: TextStyle(fontSize: 50),
+      style: TextStyle(fontSize: 50,fontFamily: 'labdigital'),
     );
   }
 
@@ -45,18 +45,18 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
     if (_visualTime <= 10) {
       timerText = Text(
         '$_visualTime',
-        style: TextStyle(fontSize: 50),
+        style: TextStyle(fontSize: 50,fontFamily: 'labdigital'),
       );
     } else if (_visualTime <= 60) {
       timerText = Text(
         '${_visualTime ~/ 10}' '${_visualTime % 10}',
-        style: TextStyle(fontSize: 50),
+        style: TextStyle(fontSize: 50,fontFamily: 'labdigital'),
       );
     } else {
       timerText = Text(
         '${_visualTime ~/ 60}' +
             ':' '${_visualTime % 60 ~/ 10}' '${_visualTime % 60 % 10}',
-        style: TextStyle(fontSize: 50),
+        style: TextStyle(fontSize: 50,fontFamily: 'labdigital'),
       );
     }
     super.setState(fn);
@@ -74,7 +74,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
     return Scaffold(
         appBar: AppBar(
           backgroundColor: color1,
-          title: Text('타이머'),
+          title: Text('타이머',style: TextStyle(color: color2,fontFamily: 'godo'),),
         ),
         backgroundColor: color15,
         body: Column(

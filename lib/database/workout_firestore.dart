@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:group_button/group_button.dart';
 import 'package:get/get.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -37,70 +37,95 @@ class IconButtonNeumorphic extends StatefulWidget {
 class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
   bool _pressIcon = false;
 
-  final String wkoName = "운동 이름";
-  final String wkoCategory = "운동 부위";
+  final String wkoName = "wko_name";
+  final String wkoCategory = "wko_category";
 
   List<String> workoutData = [];
 
   @override
   void initState() {
-    workoutData = [widget._document[wkoName],widget._document[wkoCategory]];
+    workoutData = [widget._document[wkoName], widget._document[wkoCategory]];
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-      width: 40,
-      height: 40,
-      child: InkWell(
-        enableFeedback: false,
-        borderRadius: BorderRadius.circular(50),
-        onTap: () {
-          setState(() {
-            _pressIcon = !_pressIcon;
-            if (_pressIcon) {
-              workoutList
-                  .add(workoutData);
-              print(workoutList);
-            } else {
-              workoutList
-                  .remove(workoutData);
-              print(workoutList);
-            }
-          });
-        },
-        child: Neumorphic(
-          style: _pressIcon
-              ? NeumorphicStyle(
-                  shape: NeumorphicShape.flat,
-                  intensity: 1.0,
-                  boxShape: NeumorphicBoxShape.circle(),
-                  lightSource: LightSource.topLeft,
-                  depth: -2,
-                  color: color7,
-                )
-              : NeumorphicStyle(
-                  shape: NeumorphicShape.flat,
-                  intensity: 1.0,
-                  boxShape: NeumorphicBoxShape.circle(),
-                  lightSource: LightSource.topLeft,
-                  depth: 0,
-                  color: Colors.grey[200],
-                ),
-          child: Icon(
-            _pressIcon ? Icons.check : Icons.add,
-            color: _pressIcon ? Colors.white : Colors.black,
+    return Row(
+      children: [
+        SizedBox(
+          width: 10,
+        ),
+        Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
+          width: 40,
+          height: 40,
+          child: InkWell(
+            enableFeedback: false,
+            borderRadius: BorderRadius.circular(50),
+            onTap: () {
+              setState(() {
+                _pressIcon = !_pressIcon;
+                if (_pressIcon) {
+                  workoutList.add(workoutData);
+                  print(workoutList);
+                } else {
+                  workoutList.remove(workoutData);
+                  print(workoutList);
+                }
+              });
+            },
+            child: Neumorphic(
+              style: _pressIcon
+                  ? NeumorphicStyle(
+                      shape: NeumorphicShape.flat,
+                      intensity: 1.0,
+                      boxShape: NeumorphicBoxShape.circle(),
+                      lightSource: LightSource.topLeft,
+                      depth: -2,
+                      color: color7,
+                    )
+                  : NeumorphicStyle(
+                      shape: NeumorphicShape.flat,
+                      intensity: 1.0,
+                      boxShape: NeumorphicBoxShape.circle(),
+                      lightSource: LightSource.topLeft,
+                      depth: 0,
+                      color: Colors.grey[200],
+                    ),
+              child: Icon(
+                _pressIcon ? Icons.check : Icons.add,
+                color: _pressIcon ? Colors.white : Colors.black,
+              ),
+            ),
           ),
         ),
-      ),
+        SizedBox(
+          width: 10,
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget._document[wkoName],
+              style: TextStyle(
+                color: _pressIcon ? color7 : color12,
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              widget._document[wkoCategory],
+              style: TextStyle(color: colorBlack54),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
 
 class FireStoreSelectWorkout extends StatefulWidget {
-
   @override
   _FireStoreSelectWorkoutState createState() => _FireStoreSelectWorkoutState();
 }
@@ -108,15 +133,13 @@ class FireStoreSelectWorkout extends StatefulWidget {
 class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  // 컬렉션명
-  final String identification = 'test_id00';
   final String classification = 'selectWorkout';
 
   // 필드명
-  final String wkoName = "운동 이름";
-  final String wkoCategory = "운동 부위";
+  final String wkoName = "wko_name";
+  final String wkoCategory = "wko_category";
   final String wkoDatetime = "datetime";
-  final String wkoMemo = '메모';
+  final String wkoMemo = 'memo';
   final String wkoUrl = 'URL';
   AsyncSnapshot snapshots;
   var db, stream;
@@ -155,7 +178,6 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
         backgroundColor: color1,
         title: Text(
           "운동 목록",
-          style: TextStyle(color: color8),
         ),
         actions: [
           Container(
@@ -172,8 +194,12 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                     size: 19,
                   ),
                   Text(
-                    '운동을 추가하세요',
-                    style: TextStyle(color: color8, fontSize: 15),
+                    '운동 추가하기',
+                    style: TextStyle(
+                      fontFamily: 'godo',
+                      color: color8,
+                      fontSize: 15,
+                    ),
                   ),
                 ],
               ),
@@ -266,23 +292,39 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                         return Card(
                           elevation: 2,
                           child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              InkWell(
-                                // Read Document
-                                enableFeedback: false,
-                                onTap: () {
-                                  final String documentID = document.id;
-                                  readWorkout(documentID);
-                                  print('$documentID');
-                                },
-                                // Update or Delete Document
-                                onLongPress: () {
-                                  showUpdateOrDeleteDoc(document);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  width: 350,
-                                  child: Column(
+                              IconButtonNeumorphic(document),
+                              Container(
+                                height: 60,
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(right: 10),
+                                width: 30,
+                                height: 30,
+                                child: InkWell(
+                                  // Read Document
+                                  enableFeedback: false,
+                                  onTap: () {
+                                    final String documentID = document.id;
+                                    readWorkout(documentID);
+                                    print('$documentID');
+                                  },
+                                  // Update or Delete Document
+                                  onLongPress: () {
+                                    showUpdateOrDeleteDoc(document);
+                                  },
+                                  child: Center(
+                                    child: Text(
+                                      'i',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontFamily: 'godo'),
+                                    ),
+                                  ),
+
+                                  /*child: Column(
                                     children: <Widget>[
                                       Row(
                                         mainAxisAlignment:
@@ -306,10 +348,9 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                                         ),
                                       )
                                     ],
-                                  ),
+                                  ),*/
                                 ),
                               ),
-                              IconButtonNeumorphic(document),
                             ],
                           ),
                         );
@@ -324,7 +365,10 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
       // Create Document
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: color7,
-        label: Text('                    선택하기                     '),
+        label: Text(
+          '                    선택하기                     ',
+          style: TextStyle(fontFamily: 'godo'),
+        ),
         onPressed: () {
           if (workoutList.isEmpty) {
             Get.defaultDialog(title: '운동없음', middleText: '운동을 선택해주세요.');
@@ -351,8 +395,10 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   }
 
   CollectionReference fireStoreDoc() {
+    String identification = FirebaseAuth.instance.currentUser.uid;
+
     return FirebaseFirestore.instance
-        .collection(this.identification)
+        .collection(identification)
         .doc(this.classification)
         .collection(this.classification);
   }
@@ -556,23 +602,23 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text.rich(TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '$wkoCategory: ',
+                  Text.rich(TextSpan(children: [
+                    TextSpan(
+                        text: '운동 부위: ',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                        )
-                      ),
-                      TextSpan(
-                        text: '${doc.data()[wkoCategory]}'
-                      ),
-                    ]
-                  )),
-                  SizedBox(height: 20,),
-                  Text('$wkoUrl:',style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),),
+                        )),
+                    TextSpan(text: '${doc.data()[wkoCategory]}'),
+                  ])),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'URL:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   InkWell(
                     enableFeedback: false,
                     onTap: () async {
@@ -586,8 +632,10 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                           decoration: TextDecoration.underline),
                     ),
                   ),
-                  SizedBox(height: 20,),
-                  Text('$wkoMemo: ',
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text('메모: ',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       )),
@@ -648,19 +696,19 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
             child: Column(
               children: <Widget>[
                 TextField(
-                  decoration: InputDecoration(labelText: wkoName),
+                  decoration: InputDecoration(labelText: '운동 이름'),
                   controller: _undNameCon,
                 ),
                 TextField(
-                  decoration: InputDecoration(labelText: wkoCategory),
+                  decoration: InputDecoration(labelText: '운동 부위'),
                   controller: _undCateCon,
                 ),
                 TextField(
-                  decoration: InputDecoration(labelText: wkoUrl),
+                  decoration: InputDecoration(labelText: 'URL'),
                   controller: _undUrlCon,
                 ),
                 TextField(
-                  decoration: InputDecoration(labelText: wkoMemo),
+                  decoration: InputDecoration(labelText: '메모'),
                   controller: _undMemoCon,
                 ),
               ],

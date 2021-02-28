@@ -101,6 +101,14 @@ class _MainPageState extends State<MainPage> {
         ),
         shadowColor: Colors.transparent,
         backgroundColor: Colors.transparent,
+        actions: [
+          Center(
+            child: Text('하루운동',style: TextStyle(
+              fontFamily: 'godo',fontSize:20,color: color1
+            ),),
+          ),
+          const SizedBox(width: 20,)
+        ],
       ),
       body: Column(
         children: [
@@ -267,7 +275,7 @@ class _FloatingButtonsState extends State<FloatingButtons>
       child: FloatingActionButton.extended(
         elevation: _elevation.value,
         heroTag: 'routine',
-        label: Text('루틴추가하기'),
+        label: Text('루틴추가하기',style: TextStyle(fontFamily: 'godo'),),
         onPressed: () {
           widget.function();
           animate();
@@ -284,7 +292,11 @@ class _FloatingButtonsState extends State<FloatingButtons>
         backgroundColor: color6,
         elevation: _elevation.value,
         heroTag: 'timer',
-        label: Text('타이머'),
+        label: Row(
+          children: [Icon(Icons.timer_outlined),const SizedBox(width: 11,),
+            Text('타이머',style: TextStyle(fontFamily: 'godo'),),
+          ],
+        ),
         onPressed: () {
           Get.to(TimerDialog(), fullscreenDialog: true);
         },
@@ -300,7 +312,11 @@ class _FloatingButtonsState extends State<FloatingButtons>
         backgroundColor: color13,
         elevation: _elevation.value,
         heroTag: 'save',
-        label: Text('저장하기'),
+        label: Row(
+          children: [Icon(Icons.save_alt_outlined),const SizedBox(width: 2,),
+            Text('저장하기',style: TextStyle(fontFamily: 'godo'),),
+          ],
+        ),
         onPressed: () {
           Get.defaultDialog(
             textCancel: '취소',
@@ -324,7 +340,7 @@ class _FloatingButtonsState extends State<FloatingButtons>
                 Get.offNamed('/h');
               }
             },
-            title: '',
+            title: '저장',
             middleText: '운동기록을 저장하시겠습니까?',
           );
         },

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
@@ -47,9 +48,6 @@ class FireStoreSelectedRoutine extends StatefulWidget {
 class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  // 컬렉션명
-  final String identification = 'test_id00';
-
   // 필드명
   final String routine = 'routine';
   final String routineName = 'routine_name';
@@ -61,6 +59,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   final String unitWeight = 'unit_weight';
   final String unitTime = 'unit_time';
   final String datetime = 'datetime';
+
   AsyncSnapshot snapshots;
   var db;
 
@@ -80,7 +79,6 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
       appBar: AppBar(
         title: Text(
           "루틴 목록",
-          style: TextStyle(color: color8),
         ),
         backgroundColor: color1,
         actions: [
@@ -95,7 +93,10 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                 child: Row(
                   children: [
                     Icon(Icons.add),
-                    Text('루틴 추가하기'),
+                    Text(
+                      '루틴 추가하기',
+                      style: TextStyle(fontFamily: 'godo'),
+                    ),
                   ],
                 ),
               ),
@@ -112,6 +113,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                 '루틴없이 운동하기',
                 style: TextStyle(
                   fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               trailing: Icon(Icons.arrow_forward_ios_sharp),
@@ -150,15 +152,15 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                         return Dismissible(
                           child: ExpansionTile(
                             maintainState: true,
-                            title: Text(
+                            /* title: Text(
                               document[this.routineName],
                               style: TextStyle(
                                 color: color12,
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
                               ),
-                            ),
-                            leading: IconButtonNeumorphic(document),
+                            ),*/
+                            title: IconButtonNeumorphic(document),
                             children: [
                               ListView.builder(
                                   physics: ScrollPhysics(),
@@ -167,11 +169,17 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     String wkoName = wkoCategory[index];
-                                    List wkoSetList = structure[wkoName]['set_info'];
+                                    List wkoSetList =
+                                        structure[wkoName]['set_info'];
                                     return Dismissible(
                                       child: ExpansionTile(
                                         maintainState: true,
-                                        title: Text(wkoName),
+                                        title: Text(
+                                          wkoName,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
                                         children: [
                                           ListView.builder(
                                             physics: ScrollPhysics(),
@@ -229,8 +237,10 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                         child: Center(
                                           child: Text(
                                             '삭제',
-                                            style:
-                                                TextStyle(color: Colors.white),
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                         color: color11,
@@ -257,9 +267,12 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                     createWorkout(document, map);
                                   },
                                   child: ListTile(
-                                    leading: Icon(Icons.add),
-                                    title: Text('운동 추가하기'),
-                                  )),
+                                      leading: Icon(Icons.add),
+                                      title: Text(
+                                        '운동 추가하기',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ))),
                             ],
                           ),
                           key: UniqueKey(),
@@ -288,7 +301,10 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: color7,
-        label: Text('                    선택하기                     '),
+        label: Text(
+          '                    선택하기                     ',
+          style: TextStyle(fontFamily: 'godo'),
+        ),
         onPressed: () {
           if (routineData.isEmpty || routineData == null) {
             Get.defaultDialog(title: '루틴없음', middleText: '루틴을 선택해주세요.');
@@ -353,6 +369,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   }
 
   CollectionReference routineDoc() {
+    String identification = FirebaseAuth.instance.currentUser.uid;
     return FirebaseFirestore.instance
         .collection(identification)
         .doc(routine)
@@ -373,7 +390,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
 
   void createSet(DocumentSnapshot document, String wkoName, List result) {
     Map<String, dynamic> data = document[wkoNames];
-    Map<String,dynamic> wkoData = document[wkoNames][wkoName];
+    Map<String, dynamic> wkoData = document[wkoNames][wkoName];
     List list = document[wkoNames][wkoName]['set_info'];
     list.add({
       set: result[0],
@@ -383,8 +400,8 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
       unitWeight: result[4],
       unitTime: result[5]
     });
-    wkoData['set_info']=list;
-    data[wkoName]=wkoData;
+    wkoData['set_info'] = list;
+    data[wkoName] = wkoData;
     routineDoc().doc(document.id).update({wkoNames: data});
   }
 
@@ -402,12 +419,12 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
 
   void deleteSet(DocumentSnapshot document, String wkoName, int index) {
     Map<String, dynamic> data = document[wkoNames];
-    Map<String,dynamic> wkoData = document[wkoNames][wkoName];
+    Map<String, dynamic> wkoData = document[wkoNames][wkoName];
     List listNames = document[wkoNames][wkoName]['set_info'];
     listNames.removeAt(index);
     data.remove(wkoName);
-    wkoData['set_info']=listNames;
-    data[wkoName]=wkoData;
+    wkoData['set_info'] = listNames;
+    data[wkoName] = wkoData;
     routineDoc().doc(document.id).update({wkoNames: data});
   }
 
@@ -465,49 +482,64 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
-      width: 40,
-      height: 40,
-      child: InkWell(
-        enableFeedback: false,
-        borderRadius: BorderRadius.circular(50),
-        onTap: () {
-          setState(() {
-            _pressIcon = !_pressIcon;
-            if (_pressIcon) {
-              routineData.add(widget._document.data());
-            } else {
-              routineData.removeWhere((element) =>
-                  element['routine_name'] ==
-                  widget._document.data()['routine_name']);
-            }
-          });
-        },
-        child: Neumorphic(
-          style: _pressIcon
-              ? NeumorphicStyle(
-                  shape: NeumorphicShape.flat,
-                  intensity: 1.0,
-                  boxShape: NeumorphicBoxShape.circle(),
-                  lightSource: LightSource.topLeft,
-                  depth: -2,
-                  color: color7,
-                )
-              : NeumorphicStyle(
-                  shape: NeumorphicShape.flat,
-                  intensity: 1.0,
-                  boxShape: NeumorphicBoxShape.circle(),
-                  lightSource: LightSource.topLeft,
-                  depth: 0,
-                  color: Colors.grey[200],
-                ),
-          child: Icon(
-            _pressIcon ? Icons.check : Icons.add,
-            color: _pressIcon ? color15 : color2,
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(50)),
+          width: 40,
+          height: 40,
+          child: InkWell(
+            enableFeedback: false,
+            borderRadius: BorderRadius.circular(50),
+            onTap: () {
+              setState(() {
+                _pressIcon = !_pressIcon;
+                if (_pressIcon) {
+                  routineData.add(widget._document.data());
+                } else {
+                  routineData.removeWhere((element) =>
+                      element['routine_name'] ==
+                      widget._document.data()['routine_name']);
+                }
+              });
+            },
+            child: Neumorphic(
+              style: _pressIcon
+                  ? NeumorphicStyle(
+                      shape: NeumorphicShape.flat,
+                      intensity: 1.0,
+                      boxShape: NeumorphicBoxShape.circle(),
+                      lightSource: LightSource.topLeft,
+                      depth: -2,
+                      color: color7,
+                    )
+                  : NeumorphicStyle(
+                      shape: NeumorphicShape.flat,
+                      intensity: 1.0,
+                      boxShape: NeumorphicBoxShape.circle(),
+                      lightSource: LightSource.topLeft,
+                      depth: 0,
+                      color: Colors.grey[200],
+                    ),
+              child: Icon(
+                _pressIcon ? Icons.check : Icons.add,
+                color: _pressIcon ? color15 : color2,
+              ),
+            ),
           ),
         ),
-      ),
+        SizedBox(
+          width: 10,
+        ),
+        Text(
+          widget._document['routine_name'],
+          style: TextStyle(
+            color: _pressIcon ? color7 : color12,
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+          ),
+        )
+      ],
     );
   }
 }

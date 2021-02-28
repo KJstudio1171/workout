@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /*var fireStoreMap = {
   'routine_name': 'name',
@@ -194,13 +194,12 @@ class WorkoutParse {
 }
 
 class ResultDataFireStore {
-  final String identification = 'test_id00';
-
   // 필드명
   final String resultData = 'resultData';
   final String routine = 'routine';
   final String workoutData = 'workout_data';
   final String date = 'date';
+  final String identification = FirebaseAuth.instance.currentUser.uid;
 
   resultDoc() {
     return FirebaseFirestore.instance

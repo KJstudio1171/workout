@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,10 +10,14 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
 import 'package:workout/calendar/calendar_control.dart';
-import 'package:workout/daily_workout/MainPage.dart';
+import 'package:workout/login_page/splash.dart';
+import 'package:workout/settings/settings.dart';
+import 'package:workout/daily_workout/mainpage.dart';
 import 'package:workout/settings/settings.dart';
 
+
 void main() async {
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   initializeDateFormatting().then((dynamic) => runApp(TestWidget()
@@ -63,42 +69,53 @@ class TestWidget extends StatelessWidget {
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
-          if (snapshot.data != null) {
+          if (snapshot.data == null) {
             return Scaffold(
               body: SafeArea(
                 child: Center(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      const SizedBox(
-                        height: 100,
+                      Column(
+                        children: [
+                          Text(
+                            '하루운동',
+                            style: TextStyle(
+                                color: color1,
+                                fontFamily: 'godo',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 50),
+                          ),
+                          const SizedBox(height: 10),
+                          Text(
+                            '기록하는 운동, 운동하는 하루',
+                            style: TextStyle(fontFamily: 'godo'),
+                          ),
+                        ],
                       ),
-                      Text(
-                        '하루운동',
-                        style: TextStyle(
-                            color: color1,
-                            fontFamily: 'godo',
-                            fontWeight: FontWeight.bold,
-                            fontSize: 50),
+                      Column(
+                        children: [
+                          InkWell(
+                              onTap: () {
+                                signInWithFacebook();
+                              },
+                              child: Image.asset(
+                                'images/facebook.png',
+                                width: 200,
+                              )),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          InkWell(
+                              onTap: () {
+                                signInWithGoogle();
+                              },
+                              child: Image.asset(
+                                'images/google.png',
+                                width: 205,
+                              )),
+                        ],
                       ),
-                      const SizedBox(height: 300,),
-                      InkWell(
-                          onTap: () {
-                            signInWithFacebook();
-                          },
-                          child: Image.asset(
-                            'images/facebook.png',
-                            width: 200,
-                          )),
-                      const SizedBox(height: 20,),
-                      InkWell(
-                          onTap: () {
-                            signInWithGoogle();
-                          },
-                          child: Image.asset(
-                            'images/google.png',
-                            width: 205,
-                          )),
                     ],
                   ),
                 ),
@@ -106,7 +123,7 @@ class TestWidget extends StatelessWidget {
             );
           } else {
             //print(FirebaseAuth.instance.currentUser.uid);
-            return MainPage();
+            return Splash();
             /*return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -138,6 +155,7 @@ class TestWidget extends StatelessWidget {
     );
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
+
   Future<UserCredential> signInWithFacebook() async {
     try {
       final AccessToken accessToken = await FacebookAuth.instance.login();
@@ -155,5 +173,4 @@ class TestWidget extends StatelessWidget {
     } finally {}
     return null;
   }
-
 }

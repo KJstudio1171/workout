@@ -117,7 +117,7 @@ class _DeleteSetButtonState extends State<DeleteSetButton> {
     return Column(
       children: [
         Container(
-          height: 68,
+          height: 70,
           child: InkWell(
               borderRadius: BorderRadius.circular(50),
               enableFeedback: false,
@@ -195,8 +195,8 @@ class _SetButtonState extends State<SetButton>
         shape: BoxShape.circle,
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.grey,
-            blurRadius: 4.0,
+            color: color1,
+            blurRadius: 7.0,
             spreadRadius: 2.0,
           )
         ]),

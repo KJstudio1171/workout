@@ -1,21 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:get/get.dart';
 
-void main() => runApp(new MyApp());
+import 'package:workout/daily_workout/mainpage.dart';
+import 'package:workout/lib_control/theme_control.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new MaterialApp(
-      color: Colors.blue,
-      home: new Intro(),
-    );
-  }
-}
 
 class Splash extends StatefulWidget {
   @override
@@ -26,19 +17,18 @@ class SplashState extends State<Splash> {
   Future checkFirstSeen() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool _seen = (prefs.getBool('seen') ?? false);
-
     if (_seen) {
-      Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (context) => new Home()));
+      Get.off(MainPage());
     } else {
       await prefs.setBool('seen', true);
-      Navigator.of(context).pushReplacement(
-          new MaterialPageRoute(builder: (context) => new Intro()));
+      Get.off(MainPage());
+      Get.to(Intro(),fullscreenDialog: true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    checkFirstSeen();
     return new Scaffold(
       body: new Center(
         child: new Text('Loading...'),
@@ -53,32 +43,32 @@ class Intro extends StatefulWidget {
 }
 
 class _IntroState extends State<Intro> {
+  List<Widget> list = [
+    Image.asset('images/guide1.png'),
+    Image.asset('images/guide2.png'),
+    Image.asset('images/guide3.png'),
+    Image.asset('images/guide4.png'),
+    Image.asset('images/guide5.png'),
+    Image.asset('images/guide6.png'),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      backgroundColor: color3,
+      appBar: AppBar(
+        backgroundColor: color1,
+      ),
       body: Swiper(
         itemBuilder: (BuildContext context, int index) {
-          return Text('$index');
+          return list[index];
         },
-        itemCount: 3,
+        itemCount: 6,
         pagination: SwiperPagination(),
-        control: SwiperControl(color: Colors.pinkAccent),
+        control: SwiperControl(color: color1),
+        outer: true,
       ),
     );
   }
 }
 
-class Home extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('Hello'),
-      ),
-      body: new Center(
-        child: new Text('This is the second page'),
-      ),
-    );
-  }
-}
