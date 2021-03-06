@@ -149,43 +149,92 @@ Map routineMap = {
     '풀업': {
       'category': '등',
       'set_info': [
-        ['4', '', '8', '', 'kg', '분'],
+        {
+          'set': '4',
+          'weight': '',
+          'reps': '8',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '랫 풀 다운': {
       'category': '등',
       'set_info': [
-        ['3', '', '8', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '8',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '바벨 로우': {
       'category': '등',
       'set_info': [
-        ['2', '0', '8', '', 'kg', '분'],
+        {
+          'set': '2',
+          'weight': '',
+          'reps': '8',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '시티드 로우': {
       'category': '등',
       'set_info': [
-        ['2', '0', '8', '', 'kg', '분'],
+        {
+          'set': '2',
+          'weight': '',
+          'reps': '8',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     'EZ-바 컬': {
       'category': '이두',
       'set_info': [
-        ['3', '0', '12 ', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '12',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '덤벨 컬': {
       'category': '이두',
       'set_info': [
-        ['2', '0', '12', '', 'kg', '분'],
+        {
+          'set': '2',
+          'weight': '',
+          'reps': '12',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '해머 컬': {
       'category': '이두',
       'set_info': [
-        ['3', '', '9', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '9',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
   },
@@ -193,25 +242,53 @@ Map routineMap = {
     '벤치 프레스': {
       'category': '가슴',
       'set_info': [
-        ['5', '0', '8', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '8',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '딥스': {
       'category': '가슴',
       'set_info': [
-        ['5', '0', '10', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '10',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '킥백': {
       'category': '삼두',
       'set_info': [
-        ['3', '', '12', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '12',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '케이블 푸쉬 다운': {
       'category': '삼두',
       'set_info': [
-        ['3', '', '8', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '8',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
   },
@@ -219,37 +296,79 @@ Map routineMap = {
     '밀리터리 프레스': {
       'category': '어깨',
       'set_info': [
-        ['3', '', '12', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '12',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '레터럴 레이즈': {
       'category': '어깨',
       'set_info': [
-        ['4', '', '12', '', 'kg', '분'],
+        {
+          'set': '4',
+          'weight': '',
+          'reps': '12',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '리버스 플라이': {
       'category': '어깨',
       'set_info': [
-        ['3', '', '12', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '12',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '스쿼트': {
       'category': '다리',
       'set_info': [
-        ['5', '', '8', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '8',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '런지': {
       'category': '다리',
       'set_info': [
-        ['5', '', '8', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '8',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '데드 리프트': {
       'category': '등',
       'set_info': [
-        ['3', '', '6', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '6',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
   },
@@ -257,19 +376,40 @@ Map routineMap = {
     '행잉 레그 레이즈': {
       'category': '복부',
       'set_info': [
-        ['3', '', '12', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '12',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '크런치': {
       'category': '복부',
       'set_info': [
-        ['3', '', '20', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '20',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '바이시클 크런치': {
       'category': '복부',
       'set_info': [
-        ['3', '', '20', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '20',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
   },
@@ -277,25 +417,53 @@ Map routineMap = {
     '풀업': {
       'category': '등',
       'set_info': [
-        ['3', '', '10', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '10',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '싯업': {
       'category': '복부',
       'set_info': [
-        ['3', '', '20', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '20',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '푸시업': {
       'category': '가슴',
       'set_info': [
-        ['3', '', '20', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '20',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '스쿼트': {
       'category': '다리',
       'set_info': [
-        ['3', '', '40', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '40',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
   },
@@ -303,19 +471,40 @@ Map routineMap = {
     '벤치 프레스': {
       'category': '가슴',
       'set_info': [
-        ['5', '', '5', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '5',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '바벨 스쿼트': {
       'category': '다리',
       'set_info': [
-        ['5', '', '5', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '5',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '바벨 로우': {
       'category': '등',
       'set_info': [
-        ['5', '', '5', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '5',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
   },
@@ -323,57 +512,120 @@ Map routineMap = {
     '바벨 스쿼트': {
       'category': '다리',
       'set_info': [
-        ['5', '', '5', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '5',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '밀리터리 프레스': {
       'category': '어깨',
       'set_info': [
-        ['5', '', '5', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '5',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '데드 리프트': {
       'category': '등',
       'set_info': [
-        ['1', '0', '5', '', 'kg', '분'],
+        {
+          'set': '1',
+          'weight': '',
+          'reps': '5',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
   },
-  '홈트 샘플': {
+  '홈 트레이닝 샘플': {
     '플랭크': {
       'category': '복부',
       'set_info': [
-        ['3', '0', '0', '1', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '',
+          'time': '1',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '브릿지': {
       'category': '엉덩이',
       'set_info': [
-        ['2', '', '20', '', 'kg', '분'],
+        {
+          'set': '2',
+          'weight': '',
+          'reps': '20',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '스쿼트': {
       'category': '다리',
       'set_info': [
-        ['5', '', '20', '', 'kg', '분'],
+        {
+          'set': '5',
+          'weight': '',
+          'reps': '20',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '크런치': {
       'category': '복부',
       'set_info': [
-        ['3', '', '15', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '15',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '푸시업': {
       'category': '가슴',
       'set_info': [
-        ['3', '0', '15', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '15',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
     '레터럴 레이즈': {
       'category': '어깨',
       'set_info': [
-        ['3', '', '30', '', 'kg', '분'],
+        {
+          'set': '3',
+          'weight': '',
+          'reps': '30',
+          'time': '',
+          'unit_time': 'kg',
+          'unit_weight': '분'
+        }
       ]
     },
   },

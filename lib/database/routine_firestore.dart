@@ -70,6 +70,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    sizeCheck();
     db = routineDoc().orderBy(routineName);
   }
 
@@ -391,26 +392,28 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
   }
 
   void initRoutine() async {
-    routineMap.forEach((key, value) {
+    routineMap.forEach((key, value) async {
       createRoutine(key);
+      DocumentSnapshot document = await findDocument(key);
+      createWorkout(document, value);
     });
-    String documentID = await findID('');
   }
 
-  Future<String> findID(String string) async {
+  Future<DocumentSnapshot> findDocument(String string) async {
+    DocumentSnapshot document;
     String documentID;
     await routineDoc()
         .where(this.routineName, isEqualTo: string)
         .get()
-        .then((value) => value.docs.forEach((element) {
+        .then((value) => value.docs.forEach((element) async {
               documentID = element.id;
             }));
-    return documentID;
+    document = await routineDoc().doc(documentID).get();
+    return document;
   }
 
-  ///여기서부터 수정 함수들
 
-  void createRoutine(String routineName) async{
+  void createRoutine(String routineName) async {
     await routineDoc().add({this.routineName: routineName, this.wkoNames: {}});
   }
 
@@ -418,7 +421,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
     await routineDoc().doc(document.id).update({wkoNames: map});
   }
 
-  void createSet(DocumentSnapshot document, String wkoName, List result) async{
+  void createSet(DocumentSnapshot document, String wkoName, List result) async {
     Map<String, dynamic> data = document[wkoNames];
     Map<String, dynamic> wkoData = document[wkoNames][wkoName];
     List list = document[wkoNames][wkoName]['set_info'];
