@@ -9,9 +9,10 @@ import 'package:get/get.dart';
 import 'package:workout/lib_control/theme_control.dart';
 import 'package:workout/daily_workout/set_control.dart';
 import 'package:workout/database/workout_firestore.dart';
-import 'package:workout/database/maindata_control.dart';
+import 'package:workout/database/workout_database.dart';
 
 List<Map<String, dynamic>> routineData = [];
+Map pressed = {};
 int chooseList = 0;
 
 void main() async {
@@ -72,6 +73,13 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
     db = routineDoc().orderBy(routineName);
   }
 
+  sizeCheck() async {
+    var tx = await routineDoc().get().then((value) => value.size);
+    if (tx == 0) {
+      initRoutine();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,7 +102,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                   children: [
                     Icon(Icons.add),
                     Text(
-                      '루틴 추가하기',
+                      '루틴 생성하기',
                       style: TextStyle(fontFamily: 'godo'),
                     ),
                   ],
@@ -144,6 +152,11 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                       shrinkWrap: true,
                       children:
                           snapshot.data.docs.map((DocumentSnapshot document) {
+                        IconButtonNeumorphic checkCircle = IconButtonNeumorphic(
+                          document,
+                          key: UniqueKey(),
+                        );
+                        pressed[checkCircle.key] = false;
                         Map structure = document[this.wkoNames];
                         List wkoCategory = [];
                         structure.forEach((key, value) {
@@ -160,7 +173,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),*/
-                            title: IconButtonNeumorphic(document),
+                            title: checkCircle,
                             children: [
                               ListView.builder(
                                   physics: ScrollPhysics(),
@@ -328,6 +341,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
     super.dispose();
     _newRoutineCon.dispose();
     routineData.clear();
+    pressed.clear();
   }
 
   Widget textChanger(List wkoSetList, int index) {
@@ -376,19 +390,35 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
         .collection(routine);
   }
 
-  void initWorkout() {}
+  void initRoutine() async {
+    routineMap.forEach((key, value) {
+      createRoutine(key);
+    });
+    String documentID = await findID('');
+  }
+
+  Future<String> findID(String string) async {
+    String documentID;
+    await routineDoc()
+        .where(this.routineName, isEqualTo: string)
+        .get()
+        .then((value) => value.docs.forEach((element) {
+              documentID = element.id;
+            }));
+    return documentID;
+  }
 
   ///여기서부터 수정 함수들
 
-  void createRoutine(String routineName) {
-    routineDoc().add({this.routineName: routineName, this.wkoNames: {}});
+  void createRoutine(String routineName) async{
+    await routineDoc().add({this.routineName: routineName, this.wkoNames: {}});
   }
 
   void createWorkout(DocumentSnapshot document, Map map) async {
     await routineDoc().doc(document.id).update({wkoNames: map});
   }
 
-  void createSet(DocumentSnapshot document, String wkoName, List result) {
+  void createSet(DocumentSnapshot document, String wkoName, List result) async{
     Map<String, dynamic> data = document[wkoNames];
     Map<String, dynamic> wkoData = document[wkoNames][wkoName];
     List list = document[wkoNames][wkoName]['set_info'];
@@ -402,7 +432,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
     });
     wkoData['set_info'] = list;
     data[wkoName] = wkoData;
-    routineDoc().doc(document.id).update({wkoNames: data});
+    await routineDoc().doc(document.id).update({wkoNames: data});
   }
 
   void deleteRoutine(String docID) {
@@ -469,7 +499,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
 }
 
 class IconButtonNeumorphic extends StatefulWidget {
-  IconButtonNeumorphic(this._document);
+  IconButtonNeumorphic(this._document, {Key key}) : super(key: key);
 
   DocumentSnapshot _document;
 
@@ -478,7 +508,13 @@ class IconButtonNeumorphic extends StatefulWidget {
 }
 
 class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
-  bool _pressIcon = false;
+  bool _pressIcon;
+
+  @override
+  void initState() {
+    _pressIcon = pressed[widget.key];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -492,14 +528,17 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
             enableFeedback: false,
             borderRadius: BorderRadius.circular(50),
             onTap: () {
+              pressed[widget.key] = !pressed[widget.key];
               setState(() {
                 _pressIcon = !_pressIcon;
                 if (_pressIcon) {
                   routineData.add(widget._document.data());
+                  print(routineData);
                 } else {
                   routineData.removeWhere((element) =>
                       element['routine_name'] ==
                       widget._document.data()['routine_name']);
+                  print(routineData);
                 }
               });
             },

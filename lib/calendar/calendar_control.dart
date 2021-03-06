@@ -9,13 +9,6 @@ import 'package:workout/lib_control/theme_control.dart';
 import 'package:workout/database/maindata_control.dart';
 import 'package:workout/calendar/graph.dart';
 
-List<int> list = [2020, 2, 23];
-
-Map<String, dynamic> calendarMap = {
-  'routine': {'테스트', '다이나믹'},
-  '팔씨름': ['9회'],
-};
-
 // Example holidays
 final Map<DateTime, List> _holidays = {
   /*DateTime(2020, 1, 1): ['New Year\'s Day'],
@@ -139,13 +132,13 @@ class _CalendarPageState extends State<CalendarPage>
     });
   }
 
-  void _onVisibleDaysChanged(
-      DateTime first, DateTime last, CalendarFormat format) {
+  void _onVisibleDaysChanged(DateTime first, DateTime last,
+      CalendarFormat format) {
     print('CALLBACK: _onVisibleDaysChanged');
   }
 
-  void _onCalendarCreated(
-      DateTime first, DateTime last, CalendarFormat format) {
+  void _onCalendarCreated(DateTime first, DateTime last,
+      CalendarFormat format) {
     print('CALLBACK: _onCalendarCreated');
   }
 
@@ -261,7 +254,7 @@ class _CalendarPageState extends State<CalendarPage>
       ),
       headerStyle: HeaderStyle(
         formatButtonTextStyle:
-            TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
+        TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
         formatButtonDecoration: BoxDecoration(
           color: color5,
           borderRadius: BorderRadius.circular(16.0),
@@ -378,8 +371,8 @@ class _CalendarPageState extends State<CalendarPage>
         color: _calendarController.isSelected(date)
             ? Colors.brown[500]
             : _calendarController.isToday(date)
-                ? Colors.brown[300]
-                : Colors.blue[400],
+            ? Colors.brown[300]
+            : Colors.blue[400],
       ),
       width: 16.0,
       height: 16.0,
@@ -411,18 +404,24 @@ class _CalendarPageState extends State<CalendarPage>
         child: ListTile(
           title: Text(
             '루틴 목록',
-            style: TextStyle(color: color10),
+            style: TextStyle(color: color10, fontFamily: 'godo'),
           ),
-          trailing: Text('${_selectedEvents[0]['routine']}'),
+          trailing: Text(
+            '${_selectedEvents[0]['routine']}',
+            style: TextStyle(color: color10, fontFamily: 'godo'),
+          ),
         ),
       ));
       list.add(Card(
         child: ListTile(
           title: Text(
             '운동 부위',
-            style: TextStyle(color: color12),
+            style: TextStyle(color: color13, fontFamily: 'godo'),
           ),
-          trailing: Text('${_selectedEvents[0]['category']}'),
+          trailing: Text(
+            '${_selectedEvents[0]['category']}',
+            style: TextStyle(color: color13, fontFamily: 'godo'),
+          ),
         ),
       ));
       _selectedEvents[0].forEach((key, value) {
@@ -430,26 +429,36 @@ class _CalendarPageState extends State<CalendarPage>
           list.add(Card(
             child: ListTile(
               title: Text('$key'),
-              trailing: Text('$value'),
+              trailing: Text(
+                '$value',
+                style: TextStyle(color: color7),
+              ),
             ),
           ));
       });
       list.add(Center(
         child: RaisedButton(
-          child: Text(
-            '삭제',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold
+            child: Text(
+              '삭제',
+              style: TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold),
             ),
-          ),
-          color: color11,
-          disabledColor: color2,
-          onPressed: () async {
-            await resultDataFireStore.deleteRoutine(
-                selectDate.year, selectDate.month, selectDate.day);
-            Get.off(CalendarPage());
-          },
+            color: color11,
+            disabledColor: color2,
+            onPressed: () {
+              Get.defaultDialog(
+                  title: '삭제',
+                  middleText: '정말 삭제하시겠습니까?',
+                  textCancel: '취소',
+                  textConfirm: '확인',
+                  onConfirm: ()
+              async {
+                await resultDataFireStore.deleteRoutine(
+                    selectDate.year, selectDate.month, selectDate.day);
+                Get.off(CalendarPage());
+              },
+              );
+            },
         ),
       ));
     }

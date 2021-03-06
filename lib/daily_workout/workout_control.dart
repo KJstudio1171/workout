@@ -1,18 +1,22 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:get/get.dart';
+import 'package:workout/database/routine_firestore.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
 import 'package:workout/daily_workout/neumorphic_control.dart';
 import 'package:workout/database/workout_firestore.dart';
 import 'package:workout/database/maindata_control.dart';
 
+Map refreshData = {};
+
 class RoutineList extends StatefulWidget {
-  RoutineList(this.routineData);
+  RoutineList(this.routineData,{Key key}):super(key: key);
 
   final Map routineData;
 
@@ -24,6 +28,7 @@ class _RoutineListState extends State<RoutineList> {
   List<Widget> activeWorkoutList = [];
   List listData = [];
   String routineName;
+  Map map;
 
   InkWell inkWell() {
     return InkWell(
@@ -43,7 +48,7 @@ class _RoutineListState extends State<RoutineList> {
         }
         _list.removeLast();
         result.forEach((element) {
-          _list.add(WorkoutList(routineName, element[0], listData, element[1]));
+          _list.add(WorkoutList(routineName, element[0], listData, element[1],key: GlobalKey(),));
         });
         _list.add(inkWell());
         setState(() {
@@ -62,9 +67,18 @@ class _RoutineListState extends State<RoutineList> {
 
   @override
   void initState() {
+    map = Map.from(widget.routineData);
     routineName = widget.routineData['routine_name'];
-    widget.routineData['wko_names'].forEach((key, value) {
-      activeWorkoutList.add(WorkoutList(routineName, key, value['set_info'],value['category']));
+    map['wko_names'].forEach((key, value) {
+      /*activeWorkoutList.add(
+          WorkoutList(routineName, key, value['set_info'], value['category']));*/
+      activeWorkoutList.add(WorkoutList(
+        routineName,
+        key,
+        value['set_info'],
+        value['category'],
+        key: GlobalKey(),
+      ));
     });
     activeWorkoutList.add(inkWell());
     // TODO: implement initState
@@ -75,9 +89,9 @@ class _RoutineListState extends State<RoutineList> {
   Widget build(BuildContext context) {
     return ExpansionTile(
       title: Text(
-          routineName,
-          style: TextStyle(fontFamily:'godo',fontSize: 20),
-        ),
+        routineName,
+        style: TextStyle(fontFamily: 'godo', fontSize: 20),
+      ),
       onExpansionChanged: (bool) {},
       maintainState: true,
       children: [
@@ -113,7 +127,10 @@ class _RoutineListState extends State<RoutineList> {
 }
 
 class WorkoutList extends StatefulWidget {
-  WorkoutList(this.routineName, this.workoutName, this.fireStoreWorkoutData, this.workoutCategory);
+  WorkoutList(this.routineName, this.workoutName, this.fireStoreWorkoutData,
+      this.workoutCategory,
+      {Key key})
+      : super(key: key);
 
   final String routineName;
   final String workoutName;
@@ -126,21 +143,31 @@ class WorkoutList extends StatefulWidget {
 
 class _WorkoutListState extends State<WorkoutList> {
   bool delete = false;
-  bool expansion = true;
-  int rand = Random().nextInt(8)+1;
+  bool expansion = false;
+  int rand = Random().nextInt(8) + 1;
 
   List<Widget> _activeSetList = [];
   List<Widget> _setList = [];
   List<DeleteSetButton> _deleteSetList = [];
   List<int> _delete = [];
-  List<Color> colors = [color3,color4,color5,color6,color7,color11,color12,color13,color17];
+  List<Color> colors = [
+    color3,
+    color4,
+    color5,
+    color6,
+    color7,
+    color11,
+    color12,
+    color13,
+    color17
+  ];
 
   WorkoutData setData = WorkoutData();
 
   setSetter(WorkoutData workoutData) {
     this.setData = workoutData;
-    WorkoutSaveData.addRawData(
-        widget.routineName, widget.workoutName, this.setData ,  widget.workoutCategory);
+    WorkoutSaveData.addRawData(widget.routineName, widget.workoutName,
+        this.setData, widget.workoutCategory);
   }
 
   addList() {
@@ -168,12 +195,12 @@ class _WorkoutListState extends State<WorkoutList> {
   void initState() {
     widget.fireStoreWorkoutData.forEach((element) {
       WorkoutData workoutData = WorkoutData();
-      WorkoutSaveData.addRawData(
-          widget.routineName, widget.workoutName, workoutData,widget.workoutCategory);
+      WorkoutSaveData.addRawData(widget.routineName, widget.workoutName,
+          workoutData, widget.workoutCategory);
       for (int i = 0; i < int.parse(element['set']); i++) {
         workoutData.saveReps.add(0);
         workoutData.saveTime.add(0);
-        workoutData.set = int.parse(element['set']) ?? null;
+        workoutData.set = int.tryParse(element['set']) ?? null;
         workoutData.weight = num.tryParse(element['weight']) ?? null;
         workoutData.reps = int.tryParse(element['reps']) ?? null;
         workoutData.time = num.tryParse(element['time']) ?? null;
@@ -198,12 +225,12 @@ class _WorkoutListState extends State<WorkoutList> {
   @override
   Widget build(BuildContext context) {
     return Theme(
-      data: ThemeData(accentColor: colors[rand],textTheme: TextTheme(
-        subtitle1: TextStyle(),
-      ).apply(
-          bodyColor: color2,
-          fontFamily: 'cafe24ssurroundair'
-      ),),
+      data: ThemeData(
+        accentColor: colors[rand],
+        textTheme: TextTheme(
+          subtitle1: TextStyle(),
+        ).apply(bodyColor: color2, fontFamily: 'cafe24ssurroundair'),
+      ),
       child: ExpansionTile(
         title: Text(
           widget.workoutName,

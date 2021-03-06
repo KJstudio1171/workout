@@ -11,7 +11,8 @@ class TimerDialog extends StatefulWidget {
   _TimerDialogState createState() => _TimerDialogState();
 }
 
-class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin {
+class _TimerDialogState extends State<TimerDialog>
+    with TickerProviderStateMixin {
   bool _mode = false;
   bool _paused = false;
   bool _play = false;
@@ -23,8 +24,16 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
   num _visualTime = 0;
   num _stopWatchTime = 0;
 
+  double up = 8;
+  double down = -3;
+  EdgeInsets edgeInsets = EdgeInsets.fromLTRB(10, 10, 10, 15);
+
+  String appbar = '카운트다운';
+
   AnimationController controller;
   num time = 2;
+
+  Color background = color15;
 
   @override
   void initState() {
@@ -35,7 +44,7 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
     super.initState();
     timerText = Text(
       '$_visualTime',
-      style: TextStyle(fontSize: 50,fontFamily: 'labdigital'),
+      style: TextStyle(fontSize: 65, fontFamily: 'labdigital'),
     );
   }
 
@@ -45,18 +54,18 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
     if (_visualTime <= 10) {
       timerText = Text(
         '$_visualTime',
-        style: TextStyle(fontSize: 50,fontFamily: 'labdigital'),
+        style: TextStyle(fontSize: 65, fontFamily: 'labdigital'),
       );
     } else if (_visualTime <= 60) {
       timerText = Text(
         '${_visualTime ~/ 10}' '${_visualTime % 10}',
-        style: TextStyle(fontSize: 50,fontFamily: 'labdigital'),
+        style: TextStyle(fontSize: 65, fontFamily: 'labdigital'),
       );
     } else {
       timerText = Text(
         '${_visualTime ~/ 60}' +
             ':' '${_visualTime % 60 ~/ 10}' '${_visualTime % 60 % 10}',
-        style: TextStyle(fontSize: 50,fontFamily: 'labdigital'),
+        style: TextStyle(fontSize: 65, fontFamily: 'labdigital'),
       );
     }
     super.setState(fn);
@@ -72,194 +81,183 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: color1,
-          title: Text('타이머',style: TextStyle(color: color2,fontFamily: 'godo'),),
+      appBar: AppBar(
+        backgroundColor: color1,
+        title: Text(
+          appbar,
+          style: TextStyle(color: color2, fontFamily: 'godo'),
         ),
-        backgroundColor: color15,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 250,
-              height: 250,
-              margin: EdgeInsets.only(bottom: 50),
-              child: CircleProgressBar(
-                controller: this.controller,
-                value: 1,
-                strokeWidth: 5,
-                backgroundColor: color1,
-                foregroundColor: color7,
-                timerText: timerText,
-              ),
+      ),
+      backgroundColor: background,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          /*SizedBox(height: 10,),
+          Center(child: Text('countdown',
+            style: TextStyle(fontFamily: 'labdigital', fontSize:30),),),
+          SizedBox(height: 20,),*/
+          Container(
+            width: 320,
+            height: 320,
+            margin: EdgeInsets.only(top: 20, bottom: 38),
+            child: CircleProgressBar(
+              controller: this.controller,
+              value: 1,
+              strokeWidth: 5,
+              backgroundColor: color1,
+              foregroundColor: color7,
+              timerText: timerText,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                containerButton(60),
-                containerButton(30),
-                containerButton(10),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    width: 80,
-                    height: 80,
-                    margin: EdgeInsets.all(10),
-                    child: InkWell(
-                      onTap: () {
-                        if (!_paused) _pause();
-                        this.controller.stop();
-                        setState(() {
-                          _paused = true;
-                          _play = false;
-                          _stop = false;
-                        });
-                      },
-                      child: _paused
-                          ? Neumorphic(
-                        child: Icon(Icons.pause),
-                        style: NeumorphicStyle(
-                            border: NeumorphicBorder(
-                                width: 2, color: color13),
-                            intensity: 1,
-                            depth: -3,
-                            color: color15),
-                      )
-                          : Neumorphic(
-                        child: Icon(Icons.pause),
-                        style: NeumorphicStyle(
-                            shape: NeumorphicShape.convex,
-                            border:
-                            NeumorphicBorder(width: 2, color: color1),
-                            intensity: 1,
-                            depth: 5,
-                            color: color15),
-                      ),
-                    )),
-                Container(
-                    width: 80,
-                    height: 80,
-                    margin: EdgeInsets.all(10),
-                    child: InkWell(
-                      onTap: () {
-                        if (!_play) {
-                          _start();
-                        }
-                        setState(() {
-                          _play = true;
-                          _paused = false;
-                          _stop = false;
-                        });
-                      },
-                      child: _play
-                          ? Neumorphic(
-                        child: Icon(Icons.play_arrow_sharp),
-                        style: NeumorphicStyle(
-                            border: NeumorphicBorder(
-                                width: 2, color: color11),
-                            intensity: 1,
-                            depth: -3,
-                            color: color15),
-                      )
-                          : Neumorphic(
-                        child: Icon(Icons.play_arrow_sharp),
-                        style: NeumorphicStyle(
-                            shape: NeumorphicShape.convex,
-                            border:
-                            NeumorphicBorder(width: 2, color: color1),
-                            intensity: 1,
-                            depth: 5,
-                            color: color15),
-                      ),
-                    )),
-                Container(
-                    width: 80,
-                    height: 80,
-                    margin: EdgeInsets.all(10),
-                    child: InkWell(
-                      onTap: () {
-                        if (!_stop) _reset();
-                        this.controller.reset();
-                        this.controller.stop();
-                        setState(() {
-                          _stop = true;
-                          _play = false;
-                          _paused = false;
-                        });
-                      },
-                      child: _stop
-                          ? Neumorphic(
-                        child: Icon(Icons.stop),
-                        style: NeumorphicStyle(
-                            border:
-                            NeumorphicBorder(width: 2, color: color3),
-                            intensity: 1,
-                            depth: -3,
-                            color: color15),
-                      )
-                          : Neumorphic(
-                        child: Icon(Icons.stop),
-                        style: NeumorphicStyle(
-                            shape: NeumorphicShape.convex,
-                            border:
-                            NeumorphicBorder(width: 2, color: color1),
-                            intensity: 1,
-                            depth: 5,
-                            color: color15),
-                      ),
-                    )),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                    width: 130,
-                    height: 50,
-                    margin: EdgeInsets.fromLTRB(10, 50, 10, 10),
-                    child: InkWell(
-                      onTap: () {
-                        _reset();
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              containerButton(60),
+              containerButton(30),
+              containerButton(10),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                  width: 80,
+                  height: 80,
+                  margin: edgeInsets,
+                  child: InkWell(
+                    onTap: () {
+                      if (!_paused) _pause();
+                      this.controller.stop();
+                      setState(() {
+                        _paused = true;
+                        _play = false;
+                        _stop = false;
+                      });
+                    },
+                    child: _paused
+                        ? Neumorphic(
+                            child: Icon(
+                              Icons.pause,
+                              size: 25,
+                              color: color13,
+                            ),
+                            style: NeumorphicStyle(
+                                border:
+                                    NeumorphicBorder(width: 2, color: color13),
+                                intensity: 1,
+                                depth: down,
+                                color: background),
+                          )
+                        : Neumorphic(
+                            child: Icon(
+                              Icons.pause,
+                              size: 25,
+                            ),
+                            style: NeumorphicStyle(
+                                shape: NeumorphicShape.convex,
+                                border:
+                                    NeumorphicBorder(width: 2, color: color1),
+                                intensity: 1,
+                                depth: up,
+                                color: background),
+                          ),
+                  )),
+              Container(
+                  width: 80,
+                  height: 80,
+                  margin: edgeInsets,
+                  child: InkWell(
+                    onTap: () {
+                      if (!_play) {
+                        _start();
+                      }
+                      setState(() {
+                        _play = true;
+                        _paused = false;
+                        _stop = false;
+                      });
+                    },
+                    child: _play
+                        ? Neumorphic(
+                            child: Icon(
+                              Icons.play_arrow_sharp,
+                              size: 25,
+                              color: color11,
+                            ),
+                            style: NeumorphicStyle(
+                                border:
+                                    NeumorphicBorder(width: 2, color: color11),
+                                intensity: 1,
+                                depth: down,
+                                color: background),
+                          )
+                        : Neumorphic(
+                            child: Icon(
+                              Icons.play_arrow_sharp,
+                              size: 25,
+                            ),
+                            style: NeumorphicStyle(
+                                shape: NeumorphicShape.convex,
+                                border:
+                                    NeumorphicBorder(width: 2, color: color1),
+                                intensity: 1,
+                                depth: up,
+                                color: background),
+                          ),
+                  )),
+              Container(
+                  width: 80,
+                  height: 80,
+                  margin: edgeInsets,
+                  child: InkWell(
+                    onTap: () {
+                      if (!_stop) _reset();
+                      this.controller.reset();
+                      this.controller.stop();
+                      setState(() {
                         _stop = true;
                         _play = false;
                         _paused = false;
-                        this.controller.stop();
-                        _stopWatchTime = 0;
-                        _progressTime = 0;
-                        this.controller.reset();
-                        this.controller.stop();
-                        setState(() {
-                          _mode = false;
-                        });
-                      },
-                      child: _mode
-                          ? Neumorphic(
-                          child: Icon(Icons.access_alarm),
-                          style: NeumorphicStyle(
-                              shape: NeumorphicShape.convex,
-                              border:
-                              NeumorphicBorder(width: 2, color: color1),
-                              intensity: 1,
-                              depth: 5,
-                              color: color15))
-                          : Neumorphic(
-                        child: Icon(Icons.access_alarm),
-                        style: NeumorphicStyle(
-                            border:
-                            NeumorphicBorder(width: 2, color: color1),
-                            intensity: 1,
-                            depth: -3,
-                            color: color15),
-                      ),
-                    )),
-                Container(
+                      });
+                    },
+                    child: _stop
+                        ? Neumorphic(
+                            child: Icon(
+                              Icons.stop,
+                              size: 25,
+                              color: color3,
+                            ),
+                            style: NeumorphicStyle(
+                                border:
+                                    NeumorphicBorder(width: 2, color: color3),
+                                intensity: 1,
+                                depth: down,
+                                color: background),
+                          )
+                        : Neumorphic(
+                            child: Icon(
+                              Icons.stop,
+                              size: 25,
+                            ),
+                            style: NeumorphicStyle(
+                                shape: NeumorphicShape.convex,
+                                border:
+                                    NeumorphicBorder(width: 2, color: color1),
+                                intensity: 1,
+                                depth: up,
+                                color: background),
+                          ),
+                  )),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
                   width: 130,
                   height: 50,
-                  margin: EdgeInsets.fromLTRB(10, 50, 10, 10),
+                  margin: edgeInsets,
                   child: InkWell(
                     onTap: () {
                       _reset();
@@ -269,42 +267,85 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
                       this.controller.stop();
                       _stopWatchTime = 0;
                       _progressTime = 0;
-                      this.controller = AnimationController(
-                        duration: Duration(seconds: 1),
-                        vsync: this,
-                      )..addListener(() {
-                        this.controller.repeat();
-                      });
+                      this.controller.reset();
+                      this.controller.stop();
                       setState(() {
-                        _mode = true;
+                        _mode = false;
+                        appbar = '카운트다운';
                       });
                     },
                     child: _mode
                         ? Neumorphic(
-                      child: Icon(Icons.watch_later_outlined),
-                      style: NeumorphicStyle(
-                          border:
-                          NeumorphicBorder(width: 2, color: color1),
-                          intensity: 1,
-                          depth: -3,
-                          color: color15),
-                    )
+                            child: Icon(Icons.access_alarm),
+                            style: NeumorphicStyle(
+                                shape: NeumorphicShape.convex,
+                                border:
+                                    NeumorphicBorder(width: 2, color: color1),
+                                intensity: 1,
+                                depth: up,
+                                color: background))
                         : Neumorphic(
-                      child: Icon(Icons.watch_later_outlined),
-                      style: NeumorphicStyle(
-                          shape: NeumorphicShape.convex,
-                          border:
-                          NeumorphicBorder(width: 2, color: color1),
-                          intensity: 1,
-                          depth: 5,
-                          color: color15),
-                    ),
-                  ),
+                            child: Icon(
+                              Icons.access_alarm,
+                              color: color7,
+                            ),
+                            style: NeumorphicStyle(
+                                border:
+                                    NeumorphicBorder(width: 2, color: color1),
+                                intensity: 1,
+                                depth: down,
+                                color: background),
+                          ),
+                  )),
+              Container(
+                width: 130,
+                height: 50,
+                margin: edgeInsets,
+                child: InkWell(
+                  onTap: () {
+                    _reset();
+                    _stop = true;
+                    _play = false;
+                    _paused = false;
+                    this.controller.stop();
+                    _stopWatchTime = 0;
+                    _progressTime = 0;
+                    this.controller = AnimationController(
+                      duration: Duration(seconds: 1),
+                      vsync: this,
+                    )..addListener(() {
+                        this.controller.repeat();
+                      });
+                    setState(() {
+                      _mode = true;
+                      appbar = '스탑와치';
+                    });
+                  },
+                  child: _mode
+                      ? Neumorphic(
+                          child:
+                              Icon(Icons.watch_later_outlined, color: color7),
+                          style: NeumorphicStyle(
+                              border: NeumorphicBorder(width: 2, color: color1),
+                              intensity: 1,
+                              depth: down,
+                              color: background),
+                        )
+                      : Neumorphic(
+                          child: Icon(Icons.watch_later_outlined),
+                          style: NeumorphicStyle(
+                              shape: NeumorphicShape.convex,
+                              border: NeumorphicBorder(width: 2, color: color1),
+                              intensity: 1,
+                              depth: up,
+                              color: background),
+                        ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -312,12 +353,16 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
     return Container(
       width: 80,
       height: 80,
-      margin: EdgeInsets.all(10),
+      margin: edgeInsets,
       child: NeumorphicButton(
         child: Center(
           child: Text(
             '+' + '$time' + '초',
-            style: TextStyle(fontSize: 15),
+            style: TextStyle(
+              fontSize: 15,
+              fontFamily: 'godo',
+              color: _mode ? Colors.black26 : color2,
+            ),
           ),
         ),
         onPressed: () {
@@ -342,8 +387,8 @@ class _TimerDialogState extends State<TimerDialog> with TickerProviderStateMixin
             intensity: 1.0,
             boxShape: NeumorphicBoxShape.circle(),
             lightSource: LightSource.topLeft,
-            depth: _mode ? -3 : 5,
-            color: color15),
+            depth: _mode ? down : up,
+            color: background),
       ),
     );
   }
@@ -438,7 +483,7 @@ class _CircleProgressBarState extends State<CircleProgressBar>
                   boxShape: NeumorphicBoxShape.circle(),
                   lightSource: LightSource.topLeft,
                   depth: 10,
-                  color: color15),
+                  color: color15 ),
             ),
           ),
           builder: (context, child) {
@@ -514,7 +559,7 @@ class CircleProgressBarPainter extends CustomPainter {
       ..strokeWidth = this.strokeWidth
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
-    final radius = (shortestSide / 2);
+    final radius = (shortestSide / 2 - 10);
 
     // Start at the top. 0 radians represents the right edge
     final double startAngle = -(2 * Math.pi * 0.25);
@@ -547,5 +592,3 @@ class CircleProgressBarPainter extends CustomPainter {
         oldPainter.strokeWidth != this.strokeWidth;
   }
 }
-
-

@@ -93,7 +93,7 @@ class Settings extends StatelessWidget {
               onTap: () {
                 Get.defaultDialog(
                     title: '로그아웃',
-                    middleText: '정말 로그아웃 하시겠습니까?',
+                    middleText: '정말 로그아웃하시겠습니까?',
                     textCancel: '취소',
                     textConfirm: '확인',
                     onConfirm: () {

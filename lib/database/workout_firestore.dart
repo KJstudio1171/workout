@@ -8,43 +8,32 @@ import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:workout/lib_control/theme_control.dart';
+import 'package:workout/database/workout_database.dart';
 
 List<dynamic> workoutList = [];
-List<String> cateButtonList = [
-  '전체',
-  '유산소',
-  '가슴',
-  '어깨',
-  '등',
-  '이두',
-  '삼두',
-  '복부',
-  '다리',
-  '기타'
-];
+
+Map pressed = {};
 int chooseList = 0;
 String undCateCon = '이두';
 
 class IconButtonNeumorphic extends StatefulWidget {
-  IconButtonNeumorphic(this._document);
+  IconButtonNeumorphic(this.workoutData, {Key key}) : super(key: key);
 
-  var _document;
+  List<String> workoutData;
 
   @override
   _IconButtonNeumorphicState createState() => _IconButtonNeumorphicState();
 }
 
 class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
-  bool _pressIcon = false;
+  bool _pressIcon;
 
   final String wkoName = "wko_name";
   final String wkoCategory = "wko_category";
 
-  List<String> workoutData = [];
-
   @override
   void initState() {
-    workoutData = [widget._document[wkoName], widget._document[wkoCategory]];
+    _pressIcon = pressed[widget.key];
     super.initState();
   }
 
@@ -63,13 +52,14 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
             enableFeedback: false,
             borderRadius: BorderRadius.circular(50),
             onTap: () {
+              pressed[widget.key] = !pressed[widget.key];
               setState(() {
                 _pressIcon = !_pressIcon;
                 if (_pressIcon) {
-                  workoutList.add(workoutData);
+                  workoutList.add(widget.workoutData);
                   print(workoutList);
                 } else {
-                  workoutList.remove(workoutData);
+                  workoutList.remove(widget.workoutData);
                   print(workoutList);
                 }
               });
@@ -107,7 +97,7 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget._document[wkoName],
+              widget.workoutData[0],
               style: TextStyle(
                 color: _pressIcon ? color7 : color12,
                 fontSize: 17,
@@ -115,7 +105,7 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
               ),
             ),
             Text(
-              widget._document[wkoCategory],
+              widget.workoutData[1],
               style: TextStyle(color: colorBlack54),
             ),
           ],
@@ -143,6 +133,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   final String wkoUrl = 'URL';
   AsyncSnapshot snapshots;
   var db, stream;
+  List<Widget> viewport = [];
 
   TextEditingController _newNameCon = TextEditingController();
   TextEditingController _newCateCon = TextEditingController();
@@ -194,7 +185,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                     size: 19,
                   ),
                   Text(
-                    '운동 추가하기',
+                    '운동 생성하기',
                     style: TextStyle(
                       fontFamily: 'godo',
                       color: color8,
@@ -256,8 +247,15 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                     chooseList = index;
                     if (chooseList != 0) {
                       setState(() {
-                        stream = fireStoreDoc().where(wkoCategory,
-                            isEqualTo: cateButtonList[chooseList]);
+                        if (cateButtonList[chooseList] == '기타') {
+                          List list = List.from(cateButtonList);
+                          list.removeLast();
+                          stream = fireStoreDoc()
+                              .where(wkoCategory, whereNotIn: list);
+                        } else {
+                          stream = fireStoreDoc().where(wkoCategory,
+                              isEqualTo: cateButtonList[chooseList]);
+                        }
                       });
                     } else {
                       setState(() {
@@ -287,6 +285,13 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                       shrinkWrap: true,
                       children:
                           snapshot.data.docs.map((DocumentSnapshot document) {
+                            List<String> workoutData = [
+                              document[wkoName],
+                              document[wkoCategory]
+                            ];
+                        IconButtonNeumorphic checkCircle =
+                            IconButtonNeumorphic(workoutData,key: UniqueKey());
+                        pressed[checkCircle.key] = false;
                         Timestamp ts = document[wkoDatetime];
                         String dt = timestampToStrDateTime(ts);
                         return Card(
@@ -295,7 +300,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              IconButtonNeumorphic(document),
+                              checkCircle,
                               Container(
                                 height: 60,
                               ),
@@ -319,36 +324,9 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                                     child: Text(
                                       'i',
                                       style: TextStyle(
-                                          fontSize: 20,
-                                          fontFamily: 'godo'),
+                                          fontSize: 20, fontFamily: 'godo'),
                                     ),
                                   ),
-
-                                  /*child: Column(
-                                    children: <Widget>[
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Text(
-                                            document[wkoName],
-                                            style: TextStyle(
-                                              color: color12,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Container(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          document[wkoCategory],
-                                          style: TextStyle(color: colorBlack54),
-                                        ),
-                                      )
-                                    ],
-                                  ),*/
                                 ),
                               ),
                             ],
@@ -384,12 +362,15 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   @override
   void dispose() {
     workoutList.clear();
+    pressed.clear();
     super.dispose();
     _newNameCon.dispose();
     _newCateCon.dispose();
+    _newUrlCon.dispose();
     _newMemoCon.dispose();
     _undNameCon.dispose();
     _undCateCon.dispose();
+    _undUrlCon.dispose();
     _undMemoCon.dispose();
     editingCon.dispose();
   }
@@ -404,87 +385,10 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   }
 
   void initWorkout() {
-    Map<String, List> workMap = {
-      '유산소': [
-        '걷기',
-        '런닝',
-        '로잉',
-        '마운틴 클라이머',
-        '사이클',
-        '스태퍼',
-        '점핑잭',
-        '줄넘기',
-        '버피 테스트',
-      ],
-      '가슴': [
-        '푸시업',
-        '딥스',
-        '플라이',
-        '풀오버',
-        '벤치 프레스',
-        '인클라인 벤치 프레스',
-        '디클라인 벤치 프레스',
-        '체스트 프레스',
-        '크로스 오버',
-      ],
-      '어깨': [
-        'Y-레이즈',
-        '플레이트 프레스',
-        '숄더 프레스',
-        '밀리터리 프레스',
-        '비하인드 넥 프레스',
-        '프런트 레이즈',
-        '레터럴 레이즈',
-        '벤트오버 레터럴 레이즈',
-        '슈럭',
-        '업라이트 로우',
-        '리버스 플라이',
-      ],
-      '등': [
-        '로우',
-        '데드 리프트',
-        '풀업',
-        '풀오버'
-            '랫 풀다운',
-      ],
-      '이두': [
-        'EZ-바 컬',
-        '바벨 컬',
-        '덤벨 컬',
-        '해머컬',
-        '케이블 컬',
-      ],
-      '삼두': [
-        '트라이셉스 익스텐션',
-        '킥백'
-            '트라이셉스 프레스 다운'
-      ],
-      '복부': [
-        'L-시트',
-        '러시안 트위스트',
-        '레그 레이즈',
-        '롤 아웃',
-        'V-업',
-        '사이드 밴드',
-        '싯업',
-        '에어 바이크',
-        '크런치',
-        '플랭크',
-        '행잉 레그 레이즈'
-      ],
-      '다리': [
-        '스쿼트',
-        '하이박스 점프',
-        '런지',
-        '카프 레이즈',
-        '힙 레이즈',
-        '스텝업',
-      ]
-    };
-    workMap.forEach((key, value) {
+    workoutMap.forEach((key, value) {
       value.forEach((element) {
         createWorkout(element, key,
-            url: 'https://www.youtube.com/results?search_query=$element');
+            url: 'https://www.youtube.com/results?search_query=운동+$element');
       });
     });
   }
@@ -502,16 +406,16 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   }
 
   // 문서 조회 (Read)
-  void readWorkout(String documentID) {
-    fireStoreDoc().doc(documentID).get().then((DocumentSnapshot doc) {
+  void readWorkout(String documentID) async {
+    await fireStoreDoc().doc(documentID).get().then((DocumentSnapshot doc) {
       showReadDoc(doc);
     });
   }
 
   // 문서 갱신 (Update)
   void updateWorkout(String docID, String name, String category,
-      {String url = '', String memo = ''}) {
-    fireStoreDoc().doc(docID).update({
+      {String url = '', String memo = ''}) async {
+    await fireStoreDoc().doc(docID).update({
       wkoName: name,
       wkoCategory: category,
       wkoUrl: url,
@@ -520,8 +424,8 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
   }
 
   // 문서 삭제 (Delete)
-  void deleteWorkout(String docID) {
-    fireStoreDoc().doc(docID).delete();
+  void deleteWorkout(String docID) async {
+    await fireStoreDoc().doc(docID).delete();
   }
 
   void showCreateDoc() {
@@ -561,6 +465,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
               onPressed: () {
                 _newNameCon.clear();
                 _newCateCon.clear();
+                _newUrlCon.clear();
                 _newMemoCon.clear();
                 Navigator.pop(context);
               },
@@ -570,10 +475,12 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
               onPressed: () {
                 if (_newCateCon.text.isNotEmpty &&
                     _newNameCon.text.isNotEmpty) {
-                  createWorkout(_newNameCon.text, _newCateCon.text);
+                  createWorkout(_newNameCon.text, _newCateCon.text,
+                      url: _newUrlCon.text, memo: _newMemoCon.text);
                 }
                 _newNameCon.clear();
                 _newCateCon.clear();
+                _newUrlCon.clear();
                 _newMemoCon.clear();
                 Navigator.pop(context);
               },
@@ -720,6 +627,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
               onPressed: () {
                 _undNameCon.clear();
                 _undCateCon.clear();
+                _undUrlCon.clear();
                 _undMemoCon.clear();
                 Navigator.pop(context);
               },
@@ -730,7 +638,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                 if (_undNameCon.text.isNotEmpty &&
                     _undCateCon.text.isNotEmpty) {
                   updateWorkout(doc.id, _undNameCon.text, _undCateCon.text,
-                      memo: _undMemoCon.text);
+                      url: _undUrlCon.text, memo: _undMemoCon.text);
                 }
                 Navigator.pop(context);
               },
@@ -738,8 +646,17 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
             FlatButton(
               child: Text("삭제"),
               onPressed: () {
-                deleteWorkout(doc.id);
-                Navigator.pop(context);
+                Get.defaultDialog(
+                  title: '삭제',
+                  middleText: '정말 삭제하시겠습니까?',
+                  textCancel: '취소',
+                  textConfirm: '확인',
+                  onConfirm: () {
+                    deleteWorkout(doc.id);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                );
               },
             )
           ],

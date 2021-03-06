@@ -18,7 +18,7 @@ class SplashState extends State<Splash> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool _seen = (prefs.getBool('seen') ?? false);
     if (_seen) {
-      Get.off(MainPage());
+      Get.off(() => MainPage());
     } else {
       await prefs.setBool('seen', true);
       Get.off(MainPage());

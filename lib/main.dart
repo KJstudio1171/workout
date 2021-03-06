@@ -17,8 +17,8 @@ import 'package:workout/settings/settings.dart';
 
 
 void main() async {
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await Firebase.initializeApp();
   initializeDateFormatting().then((dynamic) => runApp(TestWidget()
       /*ChangeNotifierProvider(

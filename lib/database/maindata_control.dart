@@ -49,49 +49,49 @@ class WorkoutSaveData {
   static List resultDate = [];
   static Map resultData = {
     'routine': Set(),
-    'category':Set(),
+    'category': Set(),
   };
 
-  static addRawData(
-      String routineName, String workoutName, WorkoutData workoutData,wkoCategory) {
-    rawData.add([routineName, workoutName, workoutData,wkoCategory]);
+  static addRawData(String routineName, String workoutName,
+      WorkoutData workoutData, wkoCategory) {
+    rawData.add([routineName, workoutName, workoutData, wkoCategory]);
   }
 
   static rawDataPreProcessing() {
     rawData.forEach((element) {
       WorkoutData workoutData = element[2];
-        workoutData.reps == 0 || workoutData.reps == null
-            ? workoutData.saveTime.forEach((element) {
-          workoutData.sumTime += element;
-        })
-            : workoutData.saveReps.forEach((element) {
-          workoutData.sumReps += element;
-        });
-        if (workoutData.sumReps != 0 || workoutData.sumTime != 0) {
-          if (workoutData.reps == 0 || workoutData.reps == null) {
-            workoutData.weight == 0 || workoutData.weight == null
-                ? workoutData.visualData =
-                '${workoutData.sumTime}' + '${workoutData.unitTime}'
-                : workoutData.visualData = '${workoutData.weight}' +
-                '${workoutData.unitWeight}' +
-                '${workoutData.sumTime}' +
-                '${workoutData.unitTime}';
-          } else {
-            workoutData.weight == 0 || workoutData.weight == null
-                ? workoutData.visualData = '${workoutData.sumReps}' + '회'
-                : workoutData.visualData = '${workoutData.weight}' +
-                '${workoutData.unitWeight}' +
-                '${workoutData.sumReps}' +
-                '회';
-          }
+      workoutData.reps == 0 || workoutData.reps == null
+          ? workoutData.saveTime.forEach((element) {
+              workoutData.sumTime += element;
+            })
+          : workoutData.saveReps.forEach((element) {
+              workoutData.sumReps += element;
+            });
+      if (workoutData.sumReps != 0 || workoutData.sumTime != 0) {
+        if (workoutData.reps == 0 || workoutData.reps == null) {
+          workoutData.weight == 0 || workoutData.weight == null
+              ? workoutData.visualData =
+                  '${workoutData.sumTime}' + '${workoutData.unitTime}'
+              : workoutData.visualData = '${workoutData.weight}' +
+                  '${workoutData.unitWeight}' +
+                  '${workoutData.sumTime}' +
+                  '${workoutData.unitTime}';
+        } else {
+          workoutData.weight == 0 || workoutData.weight == null
+              ? workoutData.visualData = '${workoutData.sumReps}' + '회'
+              : workoutData.visualData = '${workoutData.weight}' +
+                  '${workoutData.unitWeight}' +
+                  '${workoutData.sumReps}' +
+                  '회';
         }
+      }
     });
   }
 
   static rawDataPostProcessing(DateTime dateTime) {
     print(rawData);
     rawData.forEach((element) {
-      if(element[2].visualData!=null){
+      if (element[2].visualData != null) {
         resultData['routine'].add(element[0]);
         resultData['category'].add(element[3]);
         if (!resultData.containsKey(element[1])) {
@@ -101,7 +101,7 @@ class WorkoutSaveData {
           resultData[element[1]].add(element[2].visualData);
       }
     });
-    if(resultData['routine'].isNotEmpty){
+    if (resultData['routine'].isNotEmpty) {
       resultDate = [dateTime.year, dateTime.month, dateTime.day];
     }
     print(resultData);
@@ -111,7 +111,7 @@ class WorkoutSaveData {
     rawData = [];
     resultData = {
       'routine': Set(),
-      'category':Set(),
+      'category': Set(),
     };
   }
 }
@@ -201,6 +201,10 @@ class ResultDataFireStore {
   final String date = 'date';
   final String identification = FirebaseAuth.instance.currentUser.uid;
 
+  Map storedData = {};
+  bool overlap = false;
+  String documentID;
+
   resultDoc() {
     return FirebaseFirestore.instance
         .collection(identification)
@@ -208,7 +212,18 @@ class ResultDataFireStore {
         .collection(resultData);
   }
 
-  initCalendar(List list) async{
+  overlapCheck(int year, int month, int day) async {
+    await resultDoc()
+        .where(date, isEqualTo: [year, month, day])
+        .get()
+        .then((value) => value.docs.forEach((element) {
+              overlap = true;
+              storedData = element.data()['workout_data'];
+              documentID = element.id;
+            }));
+  }
+
+  initCalendar(List list) async {
     await resultDoc().get().then((QuerySnapshot querySnapshot) {
       querySnapshot.docs.forEach((doc) {
         list.add(doc.data());
@@ -216,18 +231,54 @@ class ResultDataFireStore {
     });
   }
 
+  createCalendar(List list, Map data) async {
+    data[this.routine] = data[this.routine]?.toList();
+    data['category'] = data['category']?.toList();
+    await resultDoc().add({
+      date: list,
+      this.workoutData: data,
+    });
+  }
+
+  updateCalendar(List list, Map data) async {
+    Map map = {};
+    storedData[this.routine] = storedData[this.routine]?.toSet();
+    storedData['category'] = storedData['category']?.toSet();
+    storedData.forEach((key, value) {
+      int i = 0;
+      data.forEach((k, d) {
+        i++;
+        if (key == k) {
+          d.addAll(value);
+          i = 0;
+        }
+        if (i == data.length) {
+          map.addAll({key: value});
+        }
+      });
+    });
+    data.addAll(map);
+    data[this.routine] = data[this.routine]?.toList();
+    data['category'] = data['category']?.toList();
+    await resultDoc().doc(documentID).update({
+      date: list,
+      this.workoutData: data,
+    });
+  }
+
   Map calendarDataToEvents(List list) {
-    Map<DateTime,List<dynamic>> map = {};
+    Map<DateTime, List<dynamic>> map = {};
     list.forEach((element) {
       map.addAll({
-        DateTime(element[date][0], element[date][1], element[date][2]):
-            [element[workoutData]]
+        DateTime(element[date][0], element[date][1], element[date][2]): [
+          element[workoutData]
+        ]
       });
     });
     return map;
   }
 
-  deleteRoutine(int year, int month, int day) async{
+  deleteRoutine(int year, int month, int day) async {
     String documentID;
     await resultDoc()
         .where(date, isEqualTo: [year, month, day])
@@ -236,18 +287,5 @@ class ResultDataFireStore {
               documentID = element.reference.id;
             }));
     resultDoc().doc(documentID).delete();
-  }
-
-  createCalendar(List list, Map map) async {
-    map[this.routine] = map[this.routine]?.toList();
-    map['category'] = map['category']?.toList();
-    await FirebaseFirestore.instance
-        .collection(identification)
-        .doc(resultData)
-        .collection(resultData)
-        .add({
-      date: list,
-      this.workoutData: map,
-    });
   }
 }

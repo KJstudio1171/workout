@@ -30,7 +30,7 @@ class _MainPageState extends State<MainPage> {
       List result = await Get.to(FireStoreSelectedRoutine());
       List<Widget> _list = activeRoutineList;
       result.forEach((element) {
-        _list.add(RoutineList(element));
+        _list.add(RoutineList(element,key: GlobalKey(),));
       });
       setState(() {
         activeRoutineList = _list;
@@ -103,11 +103,14 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: Colors.transparent,
         actions: [
           Center(
-            child: Text('하루운동',style: TextStyle(
-              fontFamily: 'godo',fontSize:20,color: color1
-            ),),
+            child: Text(
+              '하루운동',
+              style: TextStyle(fontFamily: 'godo', fontSize: 20, color: color1),
+            ),
           ),
-          const SizedBox(width: 20,)
+          const SizedBox(
+            width: 20,
+          )
         ],
       ),
       body: Column(
@@ -275,7 +278,10 @@ class _FloatingButtonsState extends State<FloatingButtons>
       child: FloatingActionButton.extended(
         elevation: _elevation.value,
         heroTag: 'routine',
-        label: Text('루틴추가하기',style: TextStyle(fontFamily: 'godo'),),
+        label: Text(
+          '루틴추가하기',
+          style: TextStyle(fontFamily: 'godo'),
+        ),
         onPressed: () {
           widget.function();
           animate();
@@ -293,8 +299,15 @@ class _FloatingButtonsState extends State<FloatingButtons>
         elevation: _elevation.value,
         heroTag: 'timer',
         label: Row(
-          children: [Icon(Icons.timer_outlined),const SizedBox(width: 11,),
-            Text('타이머',style: TextStyle(fontFamily: 'godo'),),
+          children: [
+            Icon(Icons.timer_outlined),
+            const SizedBox(
+              width: 11,
+            ),
+            Text(
+              '타이머',
+              style: TextStyle(fontFamily: 'godo'),
+            ),
           ],
         ),
         onPressed: () {
@@ -313,8 +326,15 @@ class _FloatingButtonsState extends State<FloatingButtons>
         elevation: _elevation.value,
         heroTag: 'save',
         label: Row(
-          children: [Icon(Icons.save_alt_outlined),const SizedBox(width: 2,),
-            Text('저장하기',style: TextStyle(fontFamily: 'godo'),),
+          children: [
+            Icon(Icons.save_alt_outlined),
+            const SizedBox(
+              width: 2,
+            ),
+            Text(
+              '저장하기',
+              style: TextStyle(fontFamily: 'godo'),
+            ),
           ],
         ),
         onPressed: () {
@@ -326,18 +346,27 @@ class _FloatingButtonsState extends State<FloatingButtons>
               await WorkoutSaveData.rawDataPostProcessing(widget.dateTime);
               if (WorkoutSaveData.resultDate.isEmpty) {
               } else {
-                await resultDataFireStore.deleteRoutine(
+                await resultDataFireStore.overlapCheck(
                     WorkoutSaveData.resultDate[0],
                     WorkoutSaveData.resultDate[1],
                     WorkoutSaveData.resultDate[2]);
-                await resultDataFireStore.createCalendar(
-                    WorkoutSaveData.resultDate, WorkoutSaveData.resultData);
+                if (resultDataFireStore.overlap) {
+                  await resultDataFireStore.updateCalendar(
+                      WorkoutSaveData.resultDate, WorkoutSaveData.resultData);
+                } else {
+                  await resultDataFireStore.deleteRoutine(
+                      WorkoutSaveData.resultDate[0],
+                      WorkoutSaveData.resultDate[1],
+                      WorkoutSaveData.resultDate[2]);
+                  await resultDataFireStore.createCalendar(
+                      WorkoutSaveData.resultDate, WorkoutSaveData.resultData);
+                }
               }
               await WorkoutSaveData.rawResultDataReset();
               if (Get.currentRoute == '/h') {
-                Get.off(MainPage());
+                Get.offAll(MainPage());
               } else {
-                Get.offNamed('/h');
+                Get.offAllNamed('/h');
               }
             },
             title: '저장',
