@@ -132,13 +132,13 @@ class _CalendarPageState extends State<CalendarPage>
     });
   }
 
-  void _onVisibleDaysChanged(DateTime first, DateTime last,
-      CalendarFormat format) {
+  void _onVisibleDaysChanged(
+      DateTime first, DateTime last, CalendarFormat format) {
     print('CALLBACK: _onVisibleDaysChanged');
   }
 
-  void _onCalendarCreated(DateTime first, DateTime last,
-      CalendarFormat format) {
+  void _onCalendarCreated(
+      DateTime first, DateTime last, CalendarFormat format) {
     print('CALLBACK: _onCalendarCreated');
   }
 
@@ -254,7 +254,7 @@ class _CalendarPageState extends State<CalendarPage>
       ),
       headerStyle: HeaderStyle(
         formatButtonTextStyle:
-        TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
+            TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
         formatButtonDecoration: BoxDecoration(
           color: color5,
           borderRadius: BorderRadius.circular(16.0),
@@ -371,8 +371,8 @@ class _CalendarPageState extends State<CalendarPage>
         color: _calendarController.isSelected(date)
             ? Colors.brown[500]
             : _calendarController.isToday(date)
-            ? Colors.brown[300]
-            : Colors.blue[400],
+                ? Colors.brown[300]
+                : Colors.blue[400],
       ),
       width: 16.0,
       height: 16.0,
@@ -406,9 +406,15 @@ class _CalendarPageState extends State<CalendarPage>
             '루틴 목록',
             style: TextStyle(color: color10, fontFamily: 'godo'),
           ),
-          trailing: Text(
-            '${_selectedEvents[0]['routine']}',
-            style: TextStyle(color: color10, fontFamily: 'godo'),
+          trailing: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: 50, maxWidth: 250),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                '${_selectedEvents[0]['routine']}',
+                style: TextStyle(color: color10, fontFamily: 'godo'),
+              ),
+            ),
           ),
         ),
       ));
@@ -418,9 +424,15 @@ class _CalendarPageState extends State<CalendarPage>
             '운동 부위',
             style: TextStyle(color: color13, fontFamily: 'godo'),
           ),
-          trailing: Text(
-            '${_selectedEvents[0]['category']}',
-            style: TextStyle(color: color13, fontFamily: 'godo'),
+          trailing: ConstrainedBox(
+            constraints: BoxConstraints(minWidth: 50, maxWidth: 250),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                '${_selectedEvents[0]['category']}',
+                style: TextStyle(color: color13, fontFamily: 'godo'),
+              ),
+            ),
           ),
         ),
       ));
@@ -428,37 +440,48 @@ class _CalendarPageState extends State<CalendarPage>
         if (key != 'routine' && value.isNotEmpty && key != 'category')
           list.add(Card(
             child: ListTile(
-              title: Text('$key'),
-              trailing: Text(
-                '$value',
-                style: TextStyle(color: color7),
+              title: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: 70, maxWidth: 100),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text('$key'),
+                ),
+              ),
+              trailing: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: 50, maxWidth: 223),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text(
+                    '$value',
+                    style: TextStyle(color: color7),
+                  ),
+                ),
               ),
             ),
           ));
       });
       list.add(Center(
         child: RaisedButton(
-            child: Text(
-              '삭제',
-              style: TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-            color: color11,
-            disabledColor: color2,
-            onPressed: () {
-              Get.defaultDialog(
-                  title: '삭제',
-                  middleText: '정말 삭제하시겠습니까?',
-                  textCancel: '취소',
-                  textConfirm: '확인',
-                  onConfirm: ()
-              async {
+          child: Text(
+            '삭제',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          color: color11,
+          disabledColor: color2,
+          onPressed: () {
+            Get.defaultDialog(
+              title: '삭제',
+              middleText: '정말 삭제하시겠습니까?',
+              textCancel: '취소',
+              textConfirm: '확인',
+              confirmTextColor: color8,
+              onConfirm: () async {
                 await resultDataFireStore.deleteRoutine(
                     selectDate.year, selectDate.month, selectDate.day);
                 Get.off(CalendarPage());
               },
-              );
-            },
+            );
+          },
         ),
       ));
     }

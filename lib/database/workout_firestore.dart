@@ -96,17 +96,29 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.workoutData[0],
-              style: TextStyle(
-                color: _pressIcon ? color7 : color12,
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
+            ConstrainedBox(
+              constraints: BoxConstraints(minWidth: 70, maxWidth: 300),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  widget.workoutData[0],
+                  style: TextStyle(
+                    color: _pressIcon ? color7 : color12,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
-            Text(
-              widget.workoutData[1],
-              style: TextStyle(color: colorBlack54),
+            ConstrainedBox(
+              constraints: BoxConstraints(minWidth: 70, maxWidth: 300),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Text(
+                  widget.workoutData[1],
+                  style: TextStyle(color: colorBlack54),
+                ),
+              ),
             ),
           ],
         ),
@@ -285,12 +297,12 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                       shrinkWrap: true,
                       children:
                           snapshot.data.docs.map((DocumentSnapshot document) {
-                            List<String> workoutData = [
-                              document[wkoName],
-                              document[wkoCategory]
-                            ];
+                        List<String> workoutData = [
+                          document[wkoName],
+                          document[wkoCategory]
+                        ];
                         IconButtonNeumorphic checkCircle =
-                            IconButtonNeumorphic(workoutData,key: UniqueKey());
+                            IconButtonNeumorphic(workoutData, key: UniqueKey());
                         pressed[checkCircle.key] = false;
                         Timestamp ts = document[wkoDatetime];
                         String dt = timestampToStrDateTime(ts);
@@ -338,6 +350,9 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
               }
             },
           ),
+          Container(
+            height: 80,
+          )
         ],
       ),
       // Create Document
@@ -473,8 +488,11 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
             FlatButton(
               child: Text("등록"),
               onPressed: () {
-                if (_newCateCon.text.isNotEmpty &&
-                    _newNameCon.text.isNotEmpty) {
+                if (_newNameCon.text.isNotEmpty &&
+                    _newNameCon.text.length <= 100 &&
+                    _newCateCon.text.length <= 100 &&
+                    _newUrlCon.text.length <= 1000 &&
+                    _newMemoCon.text.length <= 5000) {
                   createWorkout(_newNameCon.text, _newCateCon.text,
                       url: _newUrlCon.text, memo: _newMemoCon.text);
                 }
@@ -651,6 +669,7 @@ class _FireStoreSelectWorkoutState extends State<FireStoreSelectWorkout> {
                   middleText: '정말 삭제하시겠습니까?',
                   textCancel: '취소',
                   textConfirm: '확인',
+                  confirmTextColor: color8,
                   onConfirm: () {
                     deleteWorkout(doc.id);
                     Navigator.pop(context);

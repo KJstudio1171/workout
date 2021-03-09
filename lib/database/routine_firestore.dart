@@ -188,10 +188,17 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
                                     return Dismissible(
                                       child: ExpansionTile(
                                         maintainState: true,
-                                        title: Text(
-                                          wkoName,
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.bold,
+                                        title: ConstrainedBox(
+                                          constraints: BoxConstraints(
+                                              minWidth: 70, maxWidth: 300),
+                                          child: SingleChildScrollView(
+                                            scrollDirection: Axis.horizontal,
+                                            child: Text(
+                                              wkoName,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                         children: [
@@ -311,6 +318,9 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
               }
             },
           ),
+          Container(
+            height: 80,
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -412,7 +422,6 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
     return document;
   }
 
-
   void createRoutine(String routineName) async {
     await routineDoc().add({this.routineName: routineName, this.wkoNames: {}});
   }
@@ -487,7 +496,7 @@ class _FireStoreSelectedRoutineState extends State<FireStoreSelectedRoutine> {
             FlatButton(
               child: Text("등록"),
               onPressed: () {
-                if (_newRoutineCon.text != null) {
+                if (_newRoutineCon.text != null&&_newRoutineCon.text.length<=100) {
                   createRoutine(_newRoutineCon.text);
                 }
                 _newRoutineCon.clear();
@@ -573,14 +582,19 @@ class _IconButtonNeumorphicState extends State<IconButtonNeumorphic> {
         SizedBox(
           width: 10,
         ),
-        Text(
-          widget._document['routine_name'],
-          style: TextStyle(
-            color: _pressIcon ? color7 : color12,
-            fontSize: 17,
-            fontWeight: FontWeight.bold,
-          ),
-        )
+        ConstrainedBox(
+          constraints: BoxConstraints(minWidth: 70, maxWidth: 250),
+          child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Text(
+                widget._document['routine_name'],
+                style: TextStyle(
+                  color: _pressIcon ? color7 : color12,
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                ),
+              )),
+        ),
       ],
     );
   }

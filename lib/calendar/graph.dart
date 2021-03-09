@@ -90,15 +90,13 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
   Map modeChanger;
   List colors = [
     color1,
-    color2,
-    color3,
     color4,
-    color5,
-    color6,
     color7,
-    color8,
     color9,
-    color10
+    color11,
+    color13,
+    color16,
+    color17,
   ];
   List<String> mode = ['일주일', '한달', '일년', '전체'];
 
@@ -145,18 +143,18 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
           aspectRatio: 1,
           child: Card(
             color: Colors.white,
-            child: Column(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                const SizedBox(
-                  height: 28,
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: textBox(modeChanger),
-                ),
-                const SizedBox(
-                  height: 18,
+                Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: 50,maxWidth: 100),
+                    child: Center(
+                      child: ListView(
+                        children: textBox(modeChanger),
+                      ),
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: AspectRatio(
@@ -164,10 +162,10 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
                     child: PieChart(
                       PieChartData(
                           pieTouchData:
-                              PieTouchData(touchCallback: (pieTouchResponse) {
+                          PieTouchData(touchCallback: (pieTouchResponse) {
                             setState(() {
                               if (pieTouchResponse.touchInput
-                                      is FlLongPressEnd ||
+                              is FlLongPressEnd ||
                                   pieTouchResponse.touchInput is FlPanEnd) {
                                 touchedIndex = -1;
                               } else {
@@ -195,11 +193,11 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
   }
 
   List<Widget> textBox(Map map) {
-    List<Widget> list = [];
+    List<Widget> list = [Container(height: 20,)];
     int i = 0;
     map.forEach((key, value) {
       list.add(Indicator(
-        color: colors[i],
+        color: colors[i%8],
         text: key,
         isSquare: false,
         size: touchedIndex == i ? 18 : 16,
@@ -223,7 +221,7 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
       final double opacity = isTouched ? 1 : 0.6;
       final double radius = isTouched ? 150 : 128;
       list.add(PieChartSectionData(
-        color: colors[i] ?? color1
+        color: colors[i%8]
           ..withOpacity(opacity),
         value: value.toDouble(),
         title: '$key' '\n' '${(value / sumValues * 100).toStringAsFixed(2)} %',
@@ -231,7 +229,7 @@ class _PieChartWorkoutState extends State<PieChartWorkout> {
         titleStyle: TextStyle(
             fontSize: isTouched ? 16 : 14,
             fontWeight: FontWeight.bold,
-            color: colors[i + 1] ?? color1),
+            color: color2),
         titlePositionPercentageOffset: 0.7,
       ));
       i++;

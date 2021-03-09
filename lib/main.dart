@@ -71,17 +71,18 @@ class TestWidget extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot<User> snapshot) {
           if (snapshot.data == null) {
             return Scaffold(
+              backgroundColor: color1,
               body: SafeArea(
                 child: Center(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Column(
                         children: [
                           Text(
                             '하루운동',
                             style: TextStyle(
-                                color: color1,
+                                color: colorWhite,
                                 fontFamily: 'godo',
                                 fontWeight: FontWeight.bold,
                                 fontSize: 50),

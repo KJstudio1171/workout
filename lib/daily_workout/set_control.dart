@@ -54,7 +54,9 @@ class _SetInfoState extends State<SetInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('SET 추가',),
+        title: Text(
+          'SET 추가',
+        ),
         backgroundColor: color1,
       ),
       body: Column(
@@ -68,13 +70,18 @@ class _SetInfoState extends State<SetInfo> {
               // leading: Text('세트:',style: TextStyle(color: color5,fontSize: 20),),
               title: TextFormField(
                 controller: _controllerSet,
+                maxLength: 2,
                 textAlign: TextAlign.end,
                 keyboardType: TextInputType.number,
-                style: TextStyle(color: color5, fontSize: 20,),
+                style: TextStyle(
+                  color: color5,
+                  fontSize: 20,
+                ),
                 inputFormatters: <TextInputFormatter>[
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 ],
                 decoration: InputDecoration(
+                  counterText: '',
                   enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: color1, width: 3.0)),
                   focusedBorder: OutlineInputBorder(
@@ -93,12 +100,14 @@ class _SetInfoState extends State<SetInfo> {
             title: TextFormField(
               controller: _controllerWeight,
               textAlign: TextAlign.end,
+              maxLength: 6,
               style: TextStyle(color: color5),
               keyboardType: TextInputType.number,
               inputFormatters: <TextInputFormatter>[
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
               decoration: InputDecoration(
+                counterText: '',
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: color1, width: 3.0)),
                 disabledBorder:
@@ -152,6 +161,7 @@ class _SetInfoState extends State<SetInfo> {
               ),
               title: TextFormField(
                 controller: _controllerReps,
+                maxLength: 3,
                 textAlign: TextAlign.end,
                 style: TextStyle(color: color5),
                 keyboardType: TextInputType.number,
@@ -159,6 +169,7 @@ class _SetInfoState extends State<SetInfo> {
                   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                 ],
                 decoration: InputDecoration(
+                  counterText: '',
                   enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: color1, width: 3.0)),
                   disabledBorder:
@@ -211,6 +222,7 @@ class _SetInfoState extends State<SetInfo> {
             ),
             title: TextFormField(
               controller: _controllerTime,
+              maxLength: 3,
               textAlign: TextAlign.end,
               style: TextStyle(color: color5),
               keyboardType: TextInputType.number,
@@ -218,6 +230,7 @@ class _SetInfoState extends State<SetInfo> {
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
               ],
               decoration: InputDecoration(
+                counterText: '',
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: color1, width: 3.0)),
                 disabledBorder:

@@ -341,6 +341,7 @@ class _FloatingButtonsState extends State<FloatingButtons>
           Get.defaultDialog(
             textCancel: '취소',
             textConfirm: '확인',
+            confirmTextColor: color8,
             onConfirm: () async {
               await WorkoutSaveData.rawDataPreProcessing();
               await WorkoutSaveData.rawDataPostProcessing(widget.dateTime);

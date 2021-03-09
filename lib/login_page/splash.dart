@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:workout/daily_workout/mainpage.dart';
 import 'package:workout/lib_control/theme_control.dart';
 
-
 class Splash extends StatefulWidget {
   @override
   SplashState createState() => new SplashState();
@@ -22,7 +21,7 @@ class SplashState extends State<Splash> {
     } else {
       await prefs.setBool('seen', true);
       Get.off(MainPage());
-      Get.to(Intro(),fullscreenDialog: true);
+      Get.to(Intro(), fullscreenDialog: true);
     }
   }
 
@@ -44,12 +43,12 @@ class Intro extends StatefulWidget {
 
 class _IntroState extends State<Intro> {
   List<Widget> list = [
-    Image.asset('images/guide1.png'),
-    Image.asset('images/guide2.png'),
-    Image.asset('images/guide3.png'),
-    Image.asset('images/guide4.png'),
-    Image.asset('images/guide5.png'),
-    Image.asset('images/guide6.png'),
+    Image.asset('images/guide1-kr.png'),
+    Image.asset('images/guide2-kr.png'),
+    Image.asset('images/guide3-kr.png'),
+    Image.asset('images/guide4-kr.png'),
+    Image.asset('images/guide5-kr.png'),
+    Image.asset('images/guide6-kr.png'),
   ];
 
   @override
@@ -71,4 +70,3 @@ class _IntroState extends State<Intro> {
     );
   }
 }
-
